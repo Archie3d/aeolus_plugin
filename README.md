@@ -6,7 +6,7 @@ Aeolus was originally developed Fons Adriaensen and presented in 2004. The origi
 This project is my attempt to extract the systhesis part of the original Aeolus and frame it into a standard VST plugin using [JUCE](https://github.com/juce-framework/JUCE) framework, so that it can be run in Windows/macOS DAWs.
 
 ## Demo
-- [Pachelbel - Ciacona in Fm](demo/Pachelbel_Ciacona_in_Fm.mp3)
+- [Pachelbel - Ciacona in Fm](demo/Pachelbel - Ciacona in Fm.mp3)
 
 ## Implementation notes
 
