@@ -7,6 +7,7 @@ This project is my attempt to extract the systhesis part of the original Aeolus 
 
 ## Demo
 - [Pachelbel - Ciacona in Fm](demo/Pachelbel_Ciacona_in_Fm.mp3)
+- [Pachelbel - Chorale prelude](demo/Pachelbel_Chorale_prelude.mp3) 
 
 ## Implementation notes
 
