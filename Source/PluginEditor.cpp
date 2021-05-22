@@ -1,10 +1,21 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
+// ----------------------------------------------------------------------------
+//
+//  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
+//
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// ----------------------------------------------------------------------------
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -17,6 +28,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _audioProcessor(p)
     , _stopButtons()
     , _midiKeyboard(p.getEngine().getMidiKeyboardState(), MidiKeyboardComponent::horizontalKeyboard)
+    , _versionLabel{{}, JucePlugin_VersionString}
     , _cpuLoadLabel{{}, "CPU Load:"}
     , _cpuLoadValueLabel{}
     , _voiceCountLabel{{}, "Voices:"}
@@ -24,22 +36,24 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
     setSize (740, 480);
     setResizeLimits(740, 480, 2048, 1920);
 
-    addAndMakeVisible (_cpuLoadLabel);
+    addAndMakeVisible(_versionLabel);
+    _versionLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 10, Font::plain));
+    _versionLabel.setJustificationType (Justification::right);
+
+    addAndMakeVisible(_cpuLoadLabel);
     _cpuLoadValueLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 12, Font::plain));
     _cpuLoadValueLabel.setJustificationType (Justification::right);
     _cpuLoadValueLabel.setColour(Label::textColourId, Colours::lightyellow);
-    addAndMakeVisible (_cpuLoadValueLabel);
+    addAndMakeVisible(_cpuLoadValueLabel);
 
-    addAndMakeVisible (_voiceCountLabel);
+    addAndMakeVisible(_voiceCountLabel);
     _voiceCountValueLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 12, Font::plain));
     _voiceCountValueLabel.setJustificationType (Justification::right);
     _voiceCountValueLabel.setColour(Label::textColourId, Colours::lightyellow);
-    addAndMakeVisible (_voiceCountValueLabel);
+    addAndMakeVisible(_voiceCountValueLabel);
 
     populateStops();
 
@@ -65,10 +79,12 @@ void AeolusAudioProcessorEditor::resized()
 {
     constexpr int margin = 5;
 
+    _versionLabel.setBounds(getWidth() - 60, margin, 60 - margin, 20);
+
     _cpuLoadLabel.setBounds(margin, margin, 70, 20);
-    _cpuLoadValueLabel.setBounds (_cpuLoadLabel.getRight() + margin, margin, 30, 20);
-    _voiceCountLabel.setBounds (150, margin, 50, 20);
-    _voiceCountValueLabel.setBounds (_voiceCountLabel.getRight() + margin, margin, 24, 20);
+    _cpuLoadValueLabel.setBounds(_cpuLoadLabel.getRight() + margin, margin, 30, 20);
+    _voiceCountLabel.setBounds(150, margin, 50, 20);
+    _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 24, 20);
 
     constexpr int W = 120;
     constexpr int H = 30;
