@@ -46,6 +46,9 @@ public:
     /// Returns interpolated value for a note number (starting from 0).
     float operator[](int note) const;   // vi(n)
 
+    juce::var toVar() const;
+    void fromVar(const juce::var& v);
+
     void write(juce::OutputStream& stream) const;
     void read(juce::InputStream& stream);
 
@@ -76,6 +79,9 @@ public:
     N_func& operator[](int harm) { jassert(juce::isPositiveAndBelow(harm, _h.size())); return _h[harm]; }
     const N_func& operator[](int harm) const { jassert(juce::isPositiveAndBelow(harm, _h.size())); return _h[harm]; }
 
+    juce::var toVar(int n = N_HARM) const;
+    void fromVar(const juce::var& v);
+
     void write(juce::OutputStream& stream, int n = N_HARM) const;
     void read(juce::InputStream& stream, int n = N_HARM);
 
@@ -100,6 +106,9 @@ public:
 
     int getNoteMin() const noexcept { return _noteMin; }
     int getNoteMax() const noexcept { return _noteMax; }
+
+    juce::var toVar() const;
+    void fromVar(const juce::var& v);
 
     void write(juce::OutputStream& stream) const;
     juce::Result read(juce::InputStream& stream);

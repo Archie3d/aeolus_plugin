@@ -146,6 +146,33 @@ float N_func::operator[](int note) const
     return v;
 }
 
+var N_func::toVar() const
+{
+    auto* obj = new DynamicObject();
+    obj->setProperty("mask", _b);
+    Array<var> varr;
+
+    for (const auto v : _v)
+        varr.add(v);
+
+    obj->setProperty("values", varr);
+    return var{obj};
+}
+
+void N_func::fromVar(const juce::var& v)
+{
+    if (auto* obj = v.getDynamicObject()) {
+        _b = obj->getProperty("mask");
+
+        if (auto* varr = obj->getProperty("values").getArray()) {
+            if (varr->size() >= _v.size()) {
+                for (int i = 0; i < _v.size(); ++i)
+                    _v[i] = varr->getUnchecked(i);
+            }
+        }
+    }
+}
+
 void N_func::write(OutputStream& stream) const
 {
     stream.writeInt(_b);
@@ -223,6 +250,28 @@ bool HN_func::isSet(int harm, int idx) const
     return _h[harm].isSet(idx);
 }
 
+var HN_func::toVar(int n) const
+{
+    Array<var> varr;
+
+    const auto m = jmin(_h.size(), (size_t)n);
+
+    for (int i = 0; i < m; ++i)
+        varr.add(_h[i].toVar());
+
+    return varr;
+}
+
+void HN_func::fromVar(const var& v)
+{
+    if (const auto* varr = v.getArray()) {
+        if (varr->size() >= _h.size()) {
+            for (int i = 0; i < _h.size(); ++i)
+                _h[i].fromVar(varr->getUnchecked(i));
+        }
+    }
+}
+
 void HN_func::write(OutputStream& stream, int n) const
 {
     const auto m = jmin(_h.size(), (size_t)n);
@@ -273,6 +322,87 @@ static void writeString(const String& string, OutputStream& stream)
     char buffer[L] = {0};
     strncpy(buffer, string.toRawUTF8(), jmin(L, (size_t)string.length()));
     stream.write(buffer, L);
+}
+
+var Addsynth::toVar() const
+{
+    auto* obj = new DynamicObject();
+
+    obj->setProperty("version", defaultVersion);
+    obj->setProperty("n_harm", N_HARM);
+    obj->setProperty("note_min", _noteMin);
+    obj->setProperty("note_max", _noteMax);
+    obj->setProperty("fn", _fn);
+    obj->setProperty("fd", _fd);
+
+    obj->setProperty("name", _stopName);
+    obj->setProperty("copyright", _copyright);
+    obj->setProperty("mnemonic", _mnemonic);
+    obj->setProperty("comments", _comments);
+
+    obj->setProperty("n_vol", _n_vol.toVar());
+    obj->setProperty("n_off", _n_off.toVar());
+    obj->setProperty("n_ran", _n_ran.toVar());
+    obj->setProperty("n_ins", _n_ins.toVar());
+    obj->setProperty("n_att", _n_att.toVar());
+    obj->setProperty("n_atd", _n_atd.toVar());
+    obj->setProperty("n_dct", _n_dct.toVar());
+    obj->setProperty("n_dcd", _n_dcd.toVar());
+
+    obj->setProperty("h_lev", _h_lev.toVar());
+    obj->setProperty("h_ran", _h_ran.toVar());
+    obj->setProperty("h_att", _h_att.toVar());
+    obj->setProperty("h_atp", _h_atp.toVar());
+
+    return var{obj};
+}
+
+void Addsynth::fromVar(const juce::var& v)
+{
+    if (const auto* obj = v.getDynamicObject()) {
+        int version = obj->getProperty("version");
+
+        int nHarm = obj->getProperty("n_harm");
+
+        if (nHarm == 0)
+            nHarm = deprecated::N_HARM;
+
+        _noteMin = obj->getProperty("note_min");
+        _noteMax = obj->getProperty("note_max");
+
+        if (_noteMax == deprecated::NOTE_MAX)
+            _noteMax = NOTE_MAX;
+
+        _fn = obj->getProperty("fn");
+        _fd = obj->getProperty("fd");
+
+        _stopName = obj->getProperty("name");
+        _copyright = obj->getProperty("copyright");
+        _mnemonic = obj->getProperty("mnemonic");
+        _comments = obj->getProperty("comments");
+
+        _n_vol.fromVar(obj->getProperty("n_vol"));
+        _n_off.fromVar(obj->getProperty("n_off"));
+        _n_ran.fromVar(obj->getProperty("n_ran"));
+
+        if (version >= defaultVersion) {
+            _n_ins.fromVar(obj->getProperty("n_ins"));
+            _n_att.fromVar(obj->getProperty("n_att"));
+            _n_atd.fromVar(obj->getProperty("n_atd"));
+            _n_dct.fromVar(obj->getProperty("n_dct"));
+            _n_dcd.fromVar(obj->getProperty("n_dcd"));
+        }
+
+        _h_lev.reset(-100.0f);
+        _h_ran.reset(0.0f);
+        _h_att.reset(0.050f);
+        _h_atp.reset(0.0f);
+
+        _h_lev.fromVar(obj->getProperty("h_lev"));
+        _h_ran.fromVar(obj->getProperty("h_ran"));
+        _h_att.fromVar(obj->getProperty("h_att"));
+        _h_atp.fromVar(obj->getProperty("h_atp"));
+    }
 }
 
 void Addsynth::write(OutputStream& stream) const
@@ -441,7 +571,6 @@ Model::Model()
 
             if (res.wasOk()) {
                 auto* ptr = synth.get();
-
                 ptr->setStopName(name.dropLastCharacters(4));
 
                 _synths.add(synth.release());
