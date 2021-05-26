@@ -88,7 +88,7 @@ void AeolusAudioProcessorEditor::resized()
 
     constexpr int W = 120;
     constexpr int H = 30;
-    constexpr int S = 0;
+    constexpr int S = 5;
     constexpr int T = margin * 2 + 20;
 
     const int grid = getWidth() / (W + S);
@@ -118,18 +118,21 @@ void AeolusAudioProcessorEditor::populateStops()
 {
     auto& division = _audioProcessor.getEngine().getDivision();
 
-
     for (int i = 0; i < division.getStopsCount(); ++i) {
         auto& stop = division[i];
         auto stopName = stop.rankwave->getStopName();
 
-        auto button = std::make_unique<juce::ToggleButton>(stopName);
+
+
+        auto button = std::make_unique<StopButton>(stopName);
         button->setToggleState(stop.enabled, juce::dontSendNotification);
         button->setClickingTogglesState(true);
 
         auto* buttonPtr = button.get();
-        buttonPtr->setColour(ToggleButton::textColourId, Colours::lightgrey);
-        buttonPtr->setColour(ToggleButton::tickColourId, Colours::yellow);
+        //buttonPtr->setColour(StopButton::textColourId, Colours::lightgrey);
+        //buttonPtr->setColour(StopButton::tickColourId, Colours::yellow);
+
+        buttonPtr->setClickingTogglesState(true);
 
         button->onClick = [this, i, buttonPtr]() {
             auto& division = _audioProcessor.getEngine().getDivision();

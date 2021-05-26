@@ -36,27 +36,44 @@ class Division
 {
 public:
 
-    struct RankwaveRef
+    /// Single stop descriptor.
+    struct Stop
     {
-        Rankwave* rankwave = nullptr;
-        bool enabled = false;
+        Rankwave* rankwave = nullptr;   ///< Corresponding pipe model.
+        bool enabled = false;           ///< Stop enablement flag.
+        juce::String name = "";         ///< Stop display name.
     };
 
-    Division();
+    Division(const juce::String& name = juce::String());
 
-    void addRankwave(Rankwave* ptr, bool ena = false);
+    /**
+     * @brief Load the division configuration from a JSON object.
+     */
+    void fromVar(const juce::var& v);
+
+    void clear();
+    void addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
 
     int getStopsCount() const noexcept { return (int)_rankwaves.size(); }
     void enableStop(int i, bool ena) { _rankwaves[i].enabled = ena; }
     bool isStopEnabled(int i) const { return _rankwaves[i].enabled; }
-    const RankwaveRef& operator[](int i) const { return _rankwaves[i]; }
-    RankwaveRef& operator[](int i) { return _rankwaves[i]; }
+    const Stop& operator[](int i) const { return _rankwaves[i]; }
+    Stop& operator[](int i) { return _rankwaves[i]; }
+    Stop& getStopByIndex(int i) { return _rankwaves[i]; }
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
 
+    bool isForMIDIChannel(int channel) const noexcept;
+
 private:
 
-    std::vector<RankwaveRef> _rankwaves;
+    juce::String _name;     ///< The division name.
+    bool _hasSwell;         ///< Whetehr this division has a swell control.
+    bool _hasTremulant;     ///< Whether this division has a remulant control.
+
+    int _midiChannel;       ///< Division MIDI channel.
+
+    std::vector<Stop> _rankwaves;    ///< All the stops this division has.
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Division)
 };

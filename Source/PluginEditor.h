@@ -49,8 +49,10 @@ private:
     void updateMeters();
     void updateMidiKeyboardRange();
 
+    using StopButton = juce::TextButton;
+
     AeolusAudioProcessor& _audioProcessor;
-    juce::OwnedArray<juce::ToggleButton> _stopButtons;
+    juce::OwnedArray<StopButton> _stopButtons;
     CustomMidiKeyboard _midiKeyboard;
 
     juce::Label _versionLabel;

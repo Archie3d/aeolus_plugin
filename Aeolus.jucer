@@ -34,6 +34,11 @@
         <FILE id="n6Wjna" name="voice.cpp" compile="1" resource="0" file="Source/aeolus/voice.cpp"/>
         <FILE id="MKwBrx" name="voice.h" compile="0" resource="0" file="Source/aeolus/voice.h"/>
       </GROUP>
+      <GROUP id="{D9FB1BF8-A6EF-4144-A7AD-895D68334742}" name="ui">
+        <FILE id="ABDlK8" name="DivisionView.cpp" compile="1" resource="0"
+              file="Source/ui/DivisionView.cpp"/>
+        <FILE id="oWzSbD" name="DivisionView.h" compile="0" resource="0" file="Source/ui/DivisionView.h"/>
+      </GROUP>
       <FILE id="JDdoSw" name="CustomMidiKeyboard.cpp" compile="1" resource="0"
             file="Source/CustomMidiKeyboard.cpp"/>
       <FILE id="wnfbRp" name="CustomMidiKeyboard.h" compile="0" resource="0"

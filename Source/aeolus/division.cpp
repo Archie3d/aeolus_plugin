@@ -18,19 +18,61 @@
 // ----------------------------------------------------------------------------
 
 #include "division.h"
+#include "engine.h"
+
+using namespace juce;
 
 AEOLUS_NAMESPACE_BEGIN
 
-Division::Division()
-    : _rankwaves{}
+Division::Division(const String& name)
+    : _name(name)
+    , _hasSwell{false}
+    , _hasTremulant{false}
+    , _midiChannel{0}
+    , _rankwaves{}
 {
 }
 
-void Division::addRankwave(Rankwave* ptr, bool ena)
+void Division::fromVar(const var& v)
+{
+    if (const auto* obj = v.getDynamicObject()) {
+        _name = obj->getProperty("name");
+        _hasSwell = obj->getProperty("swell");
+        _hasTremulant = obj->getProperty("tremulant");
+
+        auto* g = EngineGlobal::getInstance();
+
+        if (const auto* arr = obj->getProperty("stops").getArray()) {
+            for (int i = 0; i < arr->size(); ++i) {
+                if (const auto* stopObj = arr->getUnchecked(i).getDynamicObject()) {
+                    const String stopName = stopObj->getProperty("name");
+                    const String pipeName = stopObj->getProperty("pipe");
+
+                    if (auto* rankwavePtr = g->getStopByName(pipeName)) {
+                        addRankwave(rankwavePtr, false);
+                    } else {
+                        DBG("Stop pipe " + pipeName + " cannot be found.");
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Division::clear()
+{
+    _rankwaves.clear();
+}
+
+void Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
 {
     jassert(ptr != nullptr);
 
-    RankwaveRef ref { ptr, ena };
+    Stop ref { ptr, ena, name };
+
+    if (name.isEmpty())
+        ref.name = ptr->getStopName();
+
     _rankwaves.push_back(ref);
 }
 
@@ -47,6 +89,12 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
                 maxNote = ref.rankwave->getNoteMax();
         }
     }
+}
+
+bool Division::isForMIDIChannel(int channel) const noexcept
+{
+    return _midiChannel == 0        // any channel
+        || _midiChannel == channel;
 }
 
 AEOLUS_NAMESPACE_END

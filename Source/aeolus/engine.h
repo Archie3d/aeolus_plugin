@@ -29,12 +29,20 @@
 
 AEOLUS_NAMESPACE_BEGIN
 
+/**
+ * @brief A global shared instance of the organ engine.
+ * 
+ * This class in a singleton which is shared among all the plugin instances.
+ */
 class EngineGlobal : public juce::DeletedAtShutdown
 {
 public:
 
     int getStopsCount() const noexcept { return _rankwaves.size(); }
     Rankwave* getStop(int i) { return _rankwaves[i]; }
+
+    juce::StringArray getAllStopNames() const;
+    Rankwave* getStopByName(const juce::String& name);
 
     void updateStops(float sampleRate);
 
@@ -47,6 +55,7 @@ private:
     void loadRankwaves();
 
     juce::OwnedArray<Rankwave> _rankwaves;
+    juce::HashMap<juce::String, Rankwave*> _rankwavesByName;
 };
 
 //==============================================================================
@@ -102,6 +111,8 @@ private:
 
     // For now we have only one division
     Division _division;
+
+    juce::OwnedArray<Division> _divisions;
 
     juce::AudioBuffer<float> _subFrameBuffer;
     juce::AudioBuffer<float> _voiceFrameBuffer;

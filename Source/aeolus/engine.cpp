@@ -29,6 +29,24 @@ EngineGlobal::EngineGlobal()
     loadRankwaves();
 }
 
+StringArray EngineGlobal::getAllStopNames() const
+{
+    StringArray names;
+
+    for (const auto* const rankwave : _rankwaves)
+        names.add(rankwave->getStopName());
+
+    return names;
+}
+
+Rankwave* EngineGlobal::getStopByName(const String& name)
+{
+    if (!_rankwavesByName.contains(name))
+        return nullptr;
+
+    return _rankwavesByName[name];
+}
+
 void EngineGlobal::updateStops(float sampleRate)
 {
     for (auto* rw : _rankwaves)
@@ -44,7 +62,9 @@ void EngineGlobal::loadRankwaves()
         jassert(synth);
 
         auto rankwave = std::make_unique<Rankwave>(*synth);
+        auto* ptr = rankwave.get();
         _rankwaves.add(rankwave.release());
+        _rankwavesByName.set(ptr->getStopName(), ptr);
     }
 }
 
@@ -56,7 +76,8 @@ Engine::Engine()
     : _sampleRate{SAMPLE_RATE}
     , _voicePool(*this)
     , _activeVoices{}
-    , _division{}
+    , _division{"Default"}
+    , _divisions{}
     , _subFrameBuffer{2, SUB_FRAME_LENGTH}
     , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
     , _remainedSamples{0}
