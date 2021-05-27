@@ -51,6 +51,8 @@ public:
      */
     void fromVar(const juce::var& v);
 
+    juce::String getName() const { return _name; }
+
     void clear();
     void addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
 

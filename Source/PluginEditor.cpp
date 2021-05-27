@@ -73,7 +73,7 @@ void AeolusAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-    g.setColour(Colour(0x33, 0x33, 0x33));
+    g.setColour(Colour(0x36, 0x35, 0x33));
     g.fillRect(0, 0, getWidth(), 30);
 }
 

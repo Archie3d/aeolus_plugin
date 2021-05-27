@@ -23,15 +23,20 @@ using namespace juce;
 
 namespace ui {
 
-constexpr int paddingTop = 20;
+constexpr int paddingTop = 30;
 constexpr int paddingBottom = 5;
 constexpr int buttonSize = 80;
 
 DivisionView::DivisionView(aeolus::Division* division)
     : _division(division)
+    , _nameLabel{{}, division->getName()}
     , _stopButtons{}
     , _tremulantButton{"Tremulant"}
 {
+    _nameLabel.setJustificationType(Justification::centred);
+    _nameLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0x99));
+    addAndMakeVisible(_nameLabel);
+
     populateStopButtons();
 }
 
@@ -44,6 +49,8 @@ int DivisionView::getEstimatedHeightForWidth(int width) const
 
 void DivisionView::resized()
 {
+    _nameLabel.setBounds(0, 0, getWidth(), paddingTop);
+
     FlexBox fbox;
     fbox.flexWrap = FlexBox::Wrap::wrap;
     fbox.justifyContent = FlexBox::JustifyContent::center;
@@ -69,7 +76,7 @@ void DivisionView::resized()
 
 void DivisionView::paint(Graphics& g)
 {
-    ColourGradient grad = ColourGradient::vertical(Colour(0x2F, 0x2F, 0x2F), 0, Colour(0x1F, 0x1F, 0x1F), getHeight());
+    ColourGradient grad = ColourGradient::vertical(Colour(0x31, 0x2F, 0x2F), 0, Colour(0x1F, 0x1F, 0x1F), getHeight());
     g.setGradientFill(grad);
     g.fillRect(getLocalBounds());
 }

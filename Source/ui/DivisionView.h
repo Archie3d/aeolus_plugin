@@ -44,6 +44,7 @@ private:
 
     aeolus::Division* _division;
 
+    juce::Label _nameLabel;
     juce::OwnedArray<StopButton> _stopButtons;
 
     juce::TextButton _tremulantButton;

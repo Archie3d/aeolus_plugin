@@ -1,7 +1,7 @@
 {
     "divisions": [
         {
-            "name": "III",
+            "name": "Manual III",
             "swell": true,
             "tremulant": true,
             "stops": [
@@ -19,7 +19,7 @@
             ]
         },
         {
-            "name": "II",
+            "name": "Manual II",
             "swell": true,
             "tremulant": true,
             "stops": [
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "name": "I",
+            "name": "Manual I",
             "swell": false,
             "tremulant": false,
             "stops": [
@@ -58,7 +58,7 @@
             ]
         },
         {
-            "name": "Pedal",
+            "name": "Pedals",
             "swell": false,
             "tremulant": false,
             "stops": [
