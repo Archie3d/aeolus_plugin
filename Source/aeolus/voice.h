@@ -48,6 +48,8 @@ public:
     bool isOver() const noexcept;
     bool isForNote(int note) const noexcept;
 
+    void resetAndReturnToPool();
+
 private:
     Engine& _engine;
     Pipewave::State _state; ///< Pipe state associated with this voice.

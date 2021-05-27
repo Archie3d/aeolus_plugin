@@ -87,6 +87,11 @@ bool Voice::isForNote(int note) const noexcept
     return false;
 }
 
+void Voice::resetAndReturnToPool()
+{
+    _engine.getVoicePool().resetAndReturnToPool(this);
+}
+
 //==============================================================================
 
 VoicePool::VoicePool(Engine& engine, int maxVoices)

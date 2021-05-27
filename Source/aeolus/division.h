@@ -21,10 +21,13 @@
 
 #include "aeolus/globals.h"
 #include "aeolus/rankwave.h"
+#include "aeolus/voice.h"
 
 #include <vector>
 
 AEOLUS_NAMESPACE_BEGIN
+
+class Engine;
 
 /**
  * @brief Single keyboard division.
@@ -44,7 +47,7 @@ public:
         juce::String name = "";         ///< Stop display name.
     };
 
-    Division(const juce::String& name = juce::String());
+    Division(Engine& engine, const juce::String& name = juce::String());
 
     /**
      * @brief Load the division configuration from a JSON object.
@@ -59,15 +62,20 @@ public:
     int getStopsCount() const noexcept { return (int)_rankwaves.size(); }
     void enableStop(int i, bool ena) { _rankwaves[i].enabled = ena; }
     bool isStopEnabled(int i) const { return _rankwaves[i].enabled; }
-    //const Stop& operator[](int i) const { return _rankwaves[i]; }
-    //Stop& operator[](int i) { return _rankwaves[i]; }
     Stop& getStopByIndex(int i) { return _rankwaves[i]; }
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
 
     bool isForMIDIChannel(int channel) const noexcept;
 
+    void noteOn(int note);
+    void noteOff(int note);
+
+    List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
+
 private:
+
+    Engine& _engine;
 
     juce::String _name;     ///< The division name.
     bool _hasSwell;         ///< Whetehr this division has a swell control.
@@ -76,6 +84,8 @@ private:
     int _midiChannel;       ///< Division MIDI channel.
 
     std::vector<Stop> _rankwaves;    ///< All the stops this division has.
+
+    List<Voice> _activeVoices;  ///< Active voices on this division.
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Division)
 };

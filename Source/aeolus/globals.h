@@ -53,6 +53,10 @@ constexpr static int NOTE_MAX = 96;
 /// Length of a processing frame (in samples).
 constexpr static int SUB_FRAME_LENGTH = 64;
 
+/// Tremulant modulation frequency.
+constexpr static float TREMULANT_FREQUENCY = 6.283184f;
+constexpr static float TREMULANT_PHASE_INCREMENT = juce::MathConstants<float>::twoPi * TREMULANT_FREQUENCY / SAMPLE_RATE;
+
 //==============================================================================
 
 /// Values used by previous version of the synth.

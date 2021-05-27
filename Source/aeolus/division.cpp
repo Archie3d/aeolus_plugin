@@ -24,8 +24,9 @@ using namespace juce;
 
 AEOLUS_NAMESPACE_BEGIN
 
-Division::Division(const String& name)
-    : _name(name)
+Division::Division(Engine& engine, const String& name)
+    : _engine{engine}
+    , _name{name}
     , _hasSwell{false}
     , _hasTremulant{false}
     , _midiChannel{0}
@@ -95,6 +96,30 @@ bool Division::isForMIDIChannel(int channel) const noexcept
 {
     return _midiChannel == 0        // any channel
         || _midiChannel == channel;
+}
+
+void Division::noteOn(int note)
+{
+    for (auto& rw : _rankwaves) {
+        if (rw.enabled && rw.rankwave->isForNote(note)) {
+            auto state = rw.rankwave->trigger(note);
+
+            if (auto* voice = _engine.getVoicePool().trigger(state))
+                _activeVoices.append(voice);
+        }
+    }
+}
+
+void Division::noteOff(int note)
+{
+    auto* voice = _activeVoices.first();
+
+    while (voice != nullptr) {
+        if (voice->isForNote(note))
+            voice->release();
+
+        voice = voice->next();
+    }
 }
 
 AEOLUS_NAMESPACE_END

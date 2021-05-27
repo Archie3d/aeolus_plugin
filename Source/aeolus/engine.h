@@ -86,6 +86,8 @@ public:
 
     juce::Range<int> getMidiKeyboardRange() const;
 
+    VoicePool& getVoicePool() noexcept { return _voicePool; }
+
     int getDivisionCount() const noexcept { return _divisions.size(); }
     Division* getDivisionByIndex(int i) { return _divisions[i]; }
 
@@ -102,12 +104,13 @@ private:
 
     void processPendingNoteEvents();
 
+    void generateTremulant();
+
     float _sampleRate;
 
     RingBuffer<NoteEvent, 1024> _pendingNoteEvents;
 
     VoicePool _voicePool;       ///< Voices.
-    List<Voice> _activeVoices;  ///< Active voices.
 
     /// List of all divisions
     juce::OwnedArray<Division> _divisions;
@@ -116,6 +119,10 @@ private:
     juce::AudioBuffer<float> _voiceFrameBuffer;
 
     int _remainedSamples;
+
+    juce::AudioBuffer<float> _tremulantBuffer;
+    float _tremulantLevel;
+    float _tremulantPhase;
 
     dsp::Interpolator _interpolator;
 

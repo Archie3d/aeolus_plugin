@@ -75,11 +75,13 @@ JUCE_IMPLEMENT_SINGLETON(EngineGlobal)
 Engine::Engine()
     : _sampleRate{SAMPLE_RATE}
     , _voicePool(*this)
-    , _activeVoices{}
     , _divisions{}
     , _subFrameBuffer{2, SUB_FRAME_LENGTH}
     , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
     , _remainedSamples{0}
+    , _tremulantBuffer{1, SUB_FRAME_LENGTH}
+    , _tremulantLevel{0.0f}
+    , _tremulantPhase{0.0f}
     , _interpolator{1.0f}
     , _midiKeybaordState{}
 {
@@ -153,29 +155,14 @@ void Engine::process(float* outL, float* outR, int numFrames)
 void Engine::noteOn(int note)
 {
     for (auto* division : _divisions) {
-        for (int i = 0; i < division->getStopsCount(); ++i) {
-            auto& rw = division->getStopByIndex(i);
-
-            if (rw.enabled && rw.rankwave->isForNote(note)) {
-                auto state = rw.rankwave->trigger(note);
-
-                if (auto* voice = _voicePool.trigger(state)) {
-                    _activeVoices.append(voice);
-                }
-            }
-        }
+        division->noteOn(note);
     }
 }
 
 void Engine::noteOff(int note)
 {
-    auto* voice = _activeVoices.first();
-
-    while (voice != nullptr) {
-        if (voice->isForNote(note))
-            voice->release();
-
-        voice = voice->next();
+    for (auto* division : _divisions) {
+        division->noteOff(note);
     }
 }
 
@@ -281,7 +268,7 @@ void Engine::populateDivisions()
     if (auto* divisions = config.getProperty("divisions", {}).getArray()) {
         for (int i = 0; i < divisions->size(); ++i) {
             if (auto* divisionObj = divisions->getUnchecked(i).getDynamicObject()) {
-                auto division = std::make_unique<Division>(divisionObj->getProperty("name"));
+                auto division = std::make_unique<Division>(*this, divisionObj->getProperty("name"));
 
                 if (auto* stops = divisionObj->getProperty("stops").getArray()) {
                     for (int j = 0; j < stops->size(); ++j) {
@@ -312,24 +299,28 @@ void Engine::processSubFrame()
 {
     _subFrameBuffer.clear();
 
-    auto* voice = _activeVoices.first();
+    for (auto* division : _divisions) {
+        auto& activeVoices = division->getActiveVoices();
+        
+        auto* voice = activeVoices.first();
 
-    while (voice != nullptr) {
-        _voiceFrameBuffer.clear();
-        float* outL = _voiceFrameBuffer.getWritePointer(0);
-        float* outR = _voiceFrameBuffer.getWritePointer(1);
+        while (voice != nullptr) {
+            _voiceFrameBuffer.clear();
+            float* outL = _voiceFrameBuffer.getWritePointer(0);
+            float* outR = _voiceFrameBuffer.getWritePointer(1);
 
-        voice->process(outL, outR);
+            voice->process(outL, outR);
 
-        _subFrameBuffer.addFrom(0, 0, _voiceFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
-        _subFrameBuffer.addFrom(1, 0, _voiceFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
+            _subFrameBuffer.addFrom(0, 0, _voiceFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
+            _subFrameBuffer.addFrom(1, 0, _voiceFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
 
-        if (voice->isOver()) {
-            auto* nextVoice = _activeVoices.removeAndReturnNext(voice);
-            _voicePool.resetAndReturnToPool(voice);
-            voice = nextVoice;
-        } else {
-            voice = voice->next();
+            if (voice->isOver()) {
+                auto* nextVoice = activeVoices.removeAndReturnNext(voice);
+                voice->resetAndReturnToPool();
+                voice = nextVoice;
+            } else {
+                voice = voice->next();
+            }
         }
     }
 
@@ -344,6 +335,20 @@ void Engine::processPendingNoteEvents()
             noteOn(event.note);
         else
             noteOff(event.note);
+    }
+}
+
+void Engine::generateTremulant()
+{
+    float* buf = _tremulantBuffer.getWritePointer(0);
+
+    for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+        const float s = sinf(_tremulantPhase);
+        buf[i] = 1.0f + s * _tremulantLevel;
+        _tremulantPhase += TREMULANT_PHASE_INCREMENT;
+
+        if (_tremulantPhase >= juce::MathConstants<float>::twoPi)
+            _tremulantPhase >= juce::MathConstants<float>::twoPi;
     }
 }
 
