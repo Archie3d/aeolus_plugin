@@ -17,9 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
-#include "DivisionView.h"
-
-#include "aeolus/division.h"
+#include "ui/DivisionView.h"
 
 using namespace juce;
 
@@ -30,10 +28,20 @@ DivisionView::DivisionView(aeolus::Division* division)
     , _stopButtons{}
     , _tremulantButton{"Tremulant"}
 {
+    populateStopButtons();
 }
 
 void DivisionView::resized()
 {
+    FlexBox fbox;
+    fbox.flexWrap = FlexBox::Wrap::wrap;
+    fbox.justifyContent = FlexBox::JustifyContent::center;
+    fbox.alignContent = FlexBox::AlignContent::center;
+
+    for (auto* button : _stopButtons)
+        fbox.items.add(FlexItem(*button).withMinWidth(80).withMinHeight(80));
+
+    fbox.performLayout(getLocalBounds().toFloat());
 }
 
 void DivisionView::populateStopButtons()
@@ -46,14 +54,10 @@ void DivisionView::populateStopButtons()
     for (int i = 0; i < _division->getStopsCount(); ++i) {
         auto& stop = _division->getStopByIndex(i);
 
-        auto button = std::make_unique<TextButton>(stop.name);
+        auto button = std::make_unique<StopButton>(stop.name);
 
         button->setToggleState(stop.enabled, juce::dontSendNotification);
-        button->setClickingTogglesState(true);
-
         auto* ptr = button.get();
-
-        ptr->setClickingTogglesState(true);
 
         button->onClick = [division=_division, i, ptr]() {
             division->getStopByIndex(i).enabled = ptr->getToggleState();

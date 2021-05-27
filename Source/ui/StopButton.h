@@ -20,33 +20,24 @@
 #pragma once
 
 #include "aeolus/globals.h"
-#include "aeolus/division.h"
-
-#include "ui/StopButton.h"
 
 namespace ui {
 
-class DivisionView : public juce::Component
+class StopButton : public juce::Button
 {
 public:
+    StopButton(const juce::String& name);
+    void setMargin(int m) noexcept { _margin = m; }
 
-    DivisionView(aeolus::Division* division = nullptr);
-
-    // juce::Component
-
-    void resized() override;
+protected:
+    // juce::Button
+    void paintButton (juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 
 private:
 
-    void populateStopButtons();
+    int _margin = 0;
 
-    aeolus::Division* _division;
-
-    juce::OwnedArray<StopButton> _stopButtons;
-
-    juce::TextButton _tremulantButton;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionView)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StopButton)
 };
 
 } // namespace ui

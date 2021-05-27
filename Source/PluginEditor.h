@@ -23,6 +23,8 @@
 #include "PluginProcessor.h"
 #include "CustomMidiKeyboard.h"
 
+#include "ui/DivisionView.h"
+
 //==============================================================================
 /**
  * @brief Plugin UI.
@@ -52,6 +54,9 @@ private:
     using StopButton = juce::TextButton;
 
     AeolusAudioProcessor& _audioProcessor;
+
+    ui::DivisionView _divisionView;
+
     juce::OwnedArray<StopButton> _stopButtons;
     CustomMidiKeyboard _midiKeyboard;
 

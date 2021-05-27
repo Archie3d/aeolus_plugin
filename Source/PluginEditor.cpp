@@ -27,6 +27,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     : AudioProcessorEditor (&p)
     , _audioProcessor(p)
     , _stopButtons()
+    , _divisionView(&_audioProcessor.getEngine().getDivision())
     , _midiKeyboard(p.getEngine().getMidiKeyboardState(), MidiKeyboardComponent::horizontalKeyboard)
     , _versionLabel{{}, JucePlugin_VersionString}
     , _cpuLoadLabel{{}, "CPU Load:"}
@@ -55,7 +56,9 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _voiceCountValueLabel.setColour(Label::textColourId, Colours::lightyellow);
     addAndMakeVisible(_voiceCountValueLabel);
 
-    populateStops();
+    addAndMakeVisible(_divisionView);
+
+    //populateStops();
 
     _midiKeyboard.setScrollButtonsVisible(false);
     _midiKeyboard.setAvailableRange(24, 108);
@@ -91,6 +94,9 @@ void AeolusAudioProcessorEditor::resized()
     constexpr int S = 5;
     constexpr int T = margin * 2 + 20;
 
+    _divisionView.setBounds(0, T, getWidth(), getHeight() - T - 70);
+
+    /*
     const int grid = getWidth() / (W + S);
 
     int i = 0;
@@ -103,6 +109,7 @@ void AeolusAudioProcessorEditor::resized()
 
         ++i;
     }
+    */
 
     int keyboardWidth = jmin((int)_midiKeyboard.getTotalKeyboardWidth(), getWidth());
 

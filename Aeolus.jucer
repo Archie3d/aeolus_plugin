@@ -38,6 +38,8 @@
         <FILE id="ABDlK8" name="DivisionView.cpp" compile="1" resource="0"
               file="Source/ui/DivisionView.cpp"/>
         <FILE id="oWzSbD" name="DivisionView.h" compile="0" resource="0" file="Source/ui/DivisionView.h"/>
+        <FILE id="IMWRu0" name="StopButton.cpp" compile="1" resource="0" file="Source/ui/StopButton.cpp"/>
+        <FILE id="lZISO8" name="StopButton.h" compile="0" resource="0" file="Source/ui/StopButton.h"/>
       </GROUP>
       <FILE id="JDdoSw" name="CustomMidiKeyboard.cpp" compile="1" resource="0"
             file="Source/CustomMidiKeyboard.cpp"/>
@@ -52,6 +54,10 @@
             file="Source/PluginProcessor.h"/>
     </GROUP>
     <GROUP id="{9E90580A-EE5A-EE88-9338-83E8FEECB687}" name="Resources">
+      <GROUP id="{0413AA97-E944-9A69-44BE-92CC02A4DFE5}" name="fonts">
+        <FILE id="A1ZG0U" name="WignersFriendRoman-1GY8e.ttf" compile="0" resource="1"
+              file="Resources/fonts/WignersFriendRoman-1GY8e.ttf"/>
+      </GROUP>
       <GROUP id="{10CE4C3F-2423-3369-B5E6-AAE7423AED1D}" name="stops">
         <FILE id="j678xH" name="bassoon.ae0" compile="0" resource="1" file="Resources/stops/bassoon.ae0"/>
         <FILE id="q5XJO4" name="bombarde.ae0" compile="0" resource="1" file="Resources/stops/bombarde.ae0"/>
