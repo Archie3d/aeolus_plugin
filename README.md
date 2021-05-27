@@ -15,6 +15,6 @@ From the original implementation I only ported `addsynth` and `rankwave` modules
 
 ## Current limitations
 - The ouput is dry, there is no reverb in the plugin. Though I've added simple stereo spatialisation of the pipes. You can use whatever reverb you want from your DAW.
-- There are no divisions. Actually, there is just a single division with all the stops available. If you want multiple divisions you may put multiple instances of the plugin onto seperate tracks in your DAW, and then route the MIDI correspondingly.
-- Stops are not arranged in any logical way but presented as their definition files appear.
-- There is no tremulant (yet).
+- Currently all divisions listen to the same MIDI events.
+- No links between manuals.
+- There is no tremulant and swell control yet.
