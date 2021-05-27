@@ -105,6 +105,7 @@ private:
     void processPendingNoteEvents();
 
     void generateTremulant();
+    void modulateDivision();
 
     float _sampleRate;
 
@@ -116,6 +117,7 @@ private:
     juce::OwnedArray<Division> _divisions;
 
     juce::AudioBuffer<float> _subFrameBuffer;
+    juce::AudioBuffer<float> _divisionFrameBuffer;
     juce::AudioBuffer<float> _voiceFrameBuffer;
 
     int _remainedSamples;

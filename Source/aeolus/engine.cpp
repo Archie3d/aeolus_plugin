@@ -77,6 +77,7 @@ Engine::Engine()
     , _voicePool(*this)
     , _divisions{}
     , _subFrameBuffer{2, SUB_FRAME_LENGTH}
+    , _divisionFrameBuffer{2, SUB_FRAME_LENGTH}
     , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
     , _remainedSamples{0}
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
@@ -297,9 +298,14 @@ void Engine::postNoteEvent(bool onOff, int note)
 
 void Engine::processSubFrame()
 {
+    generateTremulant();
+
     _subFrameBuffer.clear();
 
     for (auto* division : _divisions) {
+
+        _divisionFrameBuffer.clear();
+
         auto& activeVoices = division->getActiveVoices();
         
         auto* voice = activeVoices.first();
@@ -311,8 +317,8 @@ void Engine::processSubFrame()
 
             voice->process(outL, outR);
 
-            _subFrameBuffer.addFrom(0, 0, _voiceFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
-            _subFrameBuffer.addFrom(1, 0, _voiceFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
+            _divisionFrameBuffer.addFrom(0, 0, _voiceFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
+            _divisionFrameBuffer.addFrom(1, 0, _voiceFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
 
             if (voice->isOver()) {
                 auto* nextVoice = activeVoices.removeAndReturnNext(voice);
@@ -322,6 +328,12 @@ void Engine::processSubFrame()
                 voice = voice->next();
             }
         }
+
+        modulateDivision();
+
+        _subFrameBuffer.addFrom(0, 0, _divisionFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
+        _subFrameBuffer.addFrom(1, 0, _divisionFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
+
     }
 
     _remainedSamples = SUB_FRAME_LENGTH;
@@ -349,6 +361,19 @@ void Engine::generateTremulant()
 
         if (_tremulantPhase >= juce::MathConstants<float>::twoPi)
             _tremulantPhase >= juce::MathConstants<float>::twoPi;
+    }
+}
+
+void Engine::modulateDivision()
+{
+    float* outL = _divisionFrameBuffer.getWritePointer(0);
+    float* outR = _divisionFrameBuffer.getWritePointer(1);
+
+    const float* gain = _tremulantBuffer.getReadPointer(0);
+
+    for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+        outL[i] *= gain[i];
+        outR[i] *= gain[i];
     }
 }
 
