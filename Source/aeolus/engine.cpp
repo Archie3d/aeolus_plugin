@@ -76,7 +76,6 @@ Engine::Engine()
     : _sampleRate{SAMPLE_RATE}
     , _voicePool(*this)
     , _activeVoices{}
-    , _division{"Default"}
     , _divisions{}
     , _subFrameBuffer{2, SUB_FRAME_LENGTH}
     , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
@@ -153,14 +152,16 @@ void Engine::process(float* outL, float* outR, int numFrames)
 
 void Engine::noteOn(int note)
 {
-    for (int i = 0; i < _division.getStopsCount(); ++i) {
-        auto& rw = _division[i];
+    for (auto* division : _divisions) {
+        for (int i = 0; i < division->getStopsCount(); ++i) {
+            auto& rw = division->getStopByIndex(i);
 
-        if (rw.enabled && rw.rankwave->isForNote(note)) {
-            auto state = rw.rankwave->trigger(note);
+            if (rw.enabled && rw.rankwave->isForNote(note)) {
+                auto state = rw.rankwave->trigger(note);
 
-            if (auto* voice = _voicePool.trigger(state)) {
-                _activeVoices.append(voice);
+                if (auto* voice = _voicePool.trigger(state)) {
+                    _activeVoices.append(voice);
+                }
             }
         }
     }
@@ -180,10 +181,22 @@ void Engine::noteOff(int note)
 
 Range<int> Engine::getMidiKeyboardRange() const
 {
-    int minNote;
-    int maxNote;
+    int minNote = -1;
+    int maxNote = -1;
 
-    _division.getAvailableRange(minNote, maxNote);
+    for (auto* division : _divisions) {
+        int min, max;
+        division->getAvailableRange(min, max);
+
+        if (min >= 0 && max >= 0) {
+            if (minNote < 0 || minNote > min)
+                minNote = min;
+
+            if (maxNote < 0 || maxNote < max)
+                maxNote = max;
+        }
+    }
+    
     return Range<int>(minNote, maxNote);
 }
 
@@ -193,14 +206,15 @@ var Engine::getPersistentState() const
 
     Array<var> divisions;
 
-    {
+    for (auto* division : _divisions) {
+
         // Per division, but we have only one so far
         auto* divisionObj = new DynamicObject();
 
         Array<var> stops;
 
-        for (int i = 0; i < _division.getStopsCount(); ++i) {
-            auto stopRef = _division[i];
+        for (int i = 0; i < division->getStopsCount(); ++i) {
+            auto stopRef = division->getStopByIndex(i);
             auto* stopObj = new DynamicObject();
             stopObj->setProperty("name", stopRef.rankwave->getStopName());
             stopObj->setProperty("enabled", stopRef.enabled);
@@ -223,10 +237,16 @@ void Engine::setPersistentState(const var& state)
 {
     if (const auto* obj = state.getDynamicObject()) {
         if (const auto* divisions = obj->getProperty("divisions").getArray()) {
-            jassert(divisions->size() == 1);
 
-            {
-                if (const auto* divisionObj = divisions->getReference(0).getDynamicObject()) {
+            if (divisions->size() != _divisions.size()) {
+                DBG("Saved state is invalid and will be ignored");
+                return;
+            }
+
+            for (int divIdx = 0; divIdx < _divisions.size(); ++divIdx) {
+                auto* division = _divisions.getUnchecked(divIdx);
+
+                if (const auto* divisionObj = divisions->getReference(divIdx).getDynamicObject()) {
                     if (const auto* stops = divisionObj->getProperty("stops").getArray()) {
                         for (int i = 0; i < stops->size(); ++i) {
                             if (const auto* stopObj = stops->getReference(i).getDynamicObject()) {
@@ -234,8 +254,8 @@ void Engine::setPersistentState(const var& state)
                                 const bool enabled = stopObj->getProperty("enabled");
 
                                 // This is not optimal but meh...
-                                for (int j = 0; j < _division.getStopsCount(); ++j) {
-                                    auto& ref = _division[j];
+                                for (int j = 0; j < division->getStopsCount(); ++j) {
+                                    auto& ref = division->getStopByIndex(j);
                                     if (ref.rankwave->getStopName() == stopName) {
                                         ref.enabled = enabled;
                                         break;
@@ -252,13 +272,34 @@ void Engine::setPersistentState(const var& state)
 
 void Engine::populateDivisions()
 {
-    auto& g = *EngineGlobal::getInstance();
+    auto* g = EngineGlobal::getInstance();
 
-    for (int i = 0; i < g.getStopsCount(); ++i) {
-        auto* stop = g.getStop(i);
+    // Load corgan config
+    MemoryInputStream stream(BinaryData::default_organ_json, BinaryData::default_organ_jsonSize, false);
+    auto config = JSON::parse(stream);
 
-        // Add to all to the same division
-        _division.addRankwave(stop, false);
+    if (auto* divisions = config.getProperty("divisions", {}).getArray()) {
+        for (int i = 0; i < divisions->size(); ++i) {
+            if (auto* divisionObj = divisions->getUnchecked(i).getDynamicObject()) {
+                auto division = std::make_unique<Division>(divisionObj->getProperty("name"));
+
+                if (auto* stops = divisionObj->getProperty("stops").getArray()) {
+                    for (int j = 0; j < stops->size(); ++j) {
+                        if (auto* stopObj = stops->getUnchecked(j).getDynamicObject()) {
+                            const String stopName = stopObj->getProperty("name");
+                            const String stopPipe = stopObj->getProperty("pipe");
+
+                            if (auto* stop = g->getStopByName(stopPipe))
+                                division->addRankwave(stop, false, stopName);
+                            else
+                                DBG("Stop pipe " + stopPipe + " cannot be found.");
+                        }
+                    }
+                }
+
+                _divisions.add(division.release());
+            }
+        }
     }
 }
 

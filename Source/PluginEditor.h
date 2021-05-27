@@ -45,7 +45,7 @@ public:
 
 private:
 
-    void populateStops();
+    void populateDivisions();
     void refresh();
 
     void updateMeters();
@@ -55,9 +55,8 @@ private:
 
     AeolusAudioProcessor& _audioProcessor;
 
-    ui::DivisionView _divisionView;
+    juce::OwnedArray<ui::DivisionView> _divisionViews;
 
-    juce::OwnedArray<StopButton> _stopButtons;
     CustomMidiKeyboard _midiKeyboard;
 
     juce::Label _versionLabel;

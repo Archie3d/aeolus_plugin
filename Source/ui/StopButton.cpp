@@ -61,7 +61,7 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
 
     g.setColour(Colours::black);
     auto font = getButtonFont();
-    font.setHeight(16);
+    font.setHeight(14);
     g.setFont(font);
 
     //g.drawText(getName(), offset, offset, getWidth() - 8, getHeight() - 8, Justification::centred);

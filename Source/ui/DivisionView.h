@@ -32,9 +32,11 @@ public:
 
     DivisionView(aeolus::Division* division = nullptr);
 
-    // juce::Component
+    int getEstimatedHeightForWidth(int width) const;
 
+    // juce::Component
     void resized() override;
+    void paint(juce::Graphics&) override;
 
 private:
 

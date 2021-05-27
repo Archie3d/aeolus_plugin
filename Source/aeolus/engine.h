@@ -86,8 +86,8 @@ public:
 
     juce::Range<int> getMidiKeyboardRange() const;
 
-    // For now we have only one division with all the stops.
-    Division& getDivision() { return _division; }
+    int getDivisionCount() const noexcept { return _divisions.size(); }
+    Division* getDivisionByIndex(int i) { return _divisions[i]; }
 
     juce::var getPersistentState() const;
     void setPersistentState(const juce::var& state);
@@ -109,9 +109,7 @@ private:
     VoicePool _voicePool;       ///< Voices.
     List<Voice> _activeVoices;  ///< Active voices.
 
-    // For now we have only one division
-    Division _division;
-
+    /// List of all divisions
     juce::OwnedArray<Division> _divisions;
 
     juce::AudioBuffer<float> _subFrameBuffer;

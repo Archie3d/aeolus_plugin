@@ -23,12 +23,23 @@ using namespace juce;
 
 namespace ui {
 
+constexpr int paddingTop = 20;
+constexpr int paddingBottom = 5;
+constexpr int buttonSize = 80;
+
 DivisionView::DivisionView(aeolus::Division* division)
     : _division(division)
     , _stopButtons{}
     , _tremulantButton{"Tremulant"}
 {
     populateStopButtons();
+}
+
+int DivisionView::getEstimatedHeightForWidth(int width) const
+{
+    const int nButtonsInRow = width / buttonSize;
+    const int nRows = _stopButtons.size() / nButtonsInRow + (_stopButtons.size() % nButtonsInRow > 0 ? 1 : 0);
+    return nRows * buttonSize + paddingTop + paddingBottom;
 }
 
 void DivisionView::resized()
@@ -39,9 +50,28 @@ void DivisionView::resized()
     fbox.alignContent = FlexBox::AlignContent::center;
 
     for (auto* button : _stopButtons)
-        fbox.items.add(FlexItem(*button).withMinWidth(80).withMinHeight(80));
+        fbox.items.add(FlexItem(*button).withWidth(buttonSize).withHeight(buttonSize));
 
-    fbox.performLayout(getLocalBounds().toFloat());
+    auto bounds = getLocalBounds();
+    bounds.setTop(paddingTop);
+    bounds.setBottom(bounds.getHeight() - paddingTop - paddingBottom);
+    fbox.performLayout(bounds.toFloat());
+
+    // For some reason the performLayout ignores the target rectangle
+    // top and left coordinates, so we reposition all the buttons to respect
+    // the padding.
+    for (auto* button : _stopButtons) {
+        auto b = button->getBounds();
+        b.setY(b.getY() + paddingTop);
+        button->setBounds(b);
+    }
+}
+
+void DivisionView::paint(Graphics& g)
+{
+    ColourGradient grad = ColourGradient::vertical(Colour(0x2F, 0x2F, 0x2F), 0, Colour(0x1F, 0x1F, 0x1F), getHeight());
+    g.setGradientFill(grad);
+    g.fillRect(getLocalBounds());
 }
 
 void DivisionView::populateStopButtons()

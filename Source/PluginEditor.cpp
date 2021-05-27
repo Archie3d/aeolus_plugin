@@ -26,8 +26,7 @@ using namespace juce;
 AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     : AudioProcessorEditor (&p)
     , _audioProcessor(p)
-    , _stopButtons()
-    , _divisionView(&_audioProcessor.getEngine().getDivision())
+    , _divisionViews{}
     , _midiKeyboard(p.getEngine().getMidiKeyboardState(), MidiKeyboardComponent::horizontalKeyboard)
     , _versionLabel{{}, JucePlugin_VersionString}
     , _cpuLoadLabel{{}, "CPU Load:"}
@@ -37,7 +36,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
-    setSize (740, 480);
+    setSize (1150, 600);
     setResizeLimits(740, 480, 2048, 1920);
 
     addAndMakeVisible(_versionLabel);
@@ -56,13 +55,13 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _voiceCountValueLabel.setColour(Label::textColourId, Colours::lightyellow);
     addAndMakeVisible(_voiceCountValueLabel);
 
-    addAndMakeVisible(_divisionView);
-
-    //populateStops();
+    populateDivisions();
 
     _midiKeyboard.setScrollButtonsVisible(false);
     _midiKeyboard.setAvailableRange(24, 108);
     addAndMakeVisible(_midiKeyboard);
+
+    resized();
 
     startTimerHz(10);
 }
@@ -94,22 +93,13 @@ void AeolusAudioProcessorEditor::resized()
     constexpr int S = 5;
     constexpr int T = margin * 2 + 20;
 
-    _divisionView.setBounds(0, T, getWidth(), getHeight() - T - 70);
+    int y = T;
 
-    /*
-    const int grid = getWidth() / (W + S);
-
-    int i = 0;
-
-    for (auto* button : _stopButtons) {
-        int x = (i % grid) * (W + S);
-        int y = (i / grid) * (H + S) + T;
-
-        button->setBounds(x, y, W, H);
-
-        ++i;
+    for (auto* divisionView : _divisionViews) {
+        const auto h = divisionView->getEstimatedHeightForWidth(getWidth());
+        divisionView->setBounds(0, y, getWidth(), h);
+        y += h;
     }
-    */
 
     int keyboardWidth = jmin((int)_midiKeyboard.getTotalKeyboardWidth(), getWidth());
 
@@ -121,36 +111,15 @@ void AeolusAudioProcessorEditor::timerCallback()
     refresh();
 }
 
-void AeolusAudioProcessorEditor::populateStops()
+void AeolusAudioProcessorEditor::populateDivisions()
 {
-    auto& division = _audioProcessor.getEngine().getDivision();
+    for (int i = 0; i < _audioProcessor.getEngine().getDivisionCount(); ++i) {
+        auto* div = _audioProcessor.getEngine().getDivisionByIndex(i);
 
-    for (int i = 0; i < division.getStopsCount(); ++i) {
-        auto& stop = division[i];
-        auto stopName = stop.rankwave->getStopName();
-
-
-
-        auto button = std::make_unique<StopButton>(stopName);
-        button->setToggleState(stop.enabled, juce::dontSendNotification);
-        button->setClickingTogglesState(true);
-
-        auto* buttonPtr = button.get();
-        //buttonPtr->setColour(StopButton::textColourId, Colours::lightgrey);
-        //buttonPtr->setColour(StopButton::tickColourId, Colours::yellow);
-
-        buttonPtr->setClickingTogglesState(true);
-
-        button->onClick = [this, i, buttonPtr]() {
-            auto& division = _audioProcessor.getEngine().getDivision();
-            division[i].enabled = buttonPtr->getToggleState();
-        };
-
-        addAndMakeVisible(button.get());
-        _stopButtons.add(button.release());
+        auto view = std::make_unique<ui::DivisionView>(div);
+        addAndMakeVisible(view.get());
+        _divisionViews.add(view.release());
     }
-
-    resized();
 }
 
 void AeolusAudioProcessorEditor::refresh()

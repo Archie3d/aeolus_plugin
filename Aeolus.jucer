@@ -54,6 +54,10 @@
             file="Source/PluginProcessor.h"/>
     </GROUP>
     <GROUP id="{9E90580A-EE5A-EE88-9338-83E8FEECB687}" name="Resources">
+      <GROUP id="{8A578D86-D9AC-1580-B55B-572CCF77D103}" name="configs">
+        <FILE id="VieJCy" name="default_organ.json" compile="0" resource="1"
+              file="Resources/configs/default_organ.json"/>
+      </GROUP>
       <GROUP id="{0413AA97-E944-9A69-44BE-92CC02A4DFE5}" name="fonts">
         <FILE id="A1ZG0U" name="WignersFriendRoman-1GY8e.ttf" compile="0" resource="1"
               file="Resources/fonts/WignersFriendRoman-1GY8e.ttf"/>

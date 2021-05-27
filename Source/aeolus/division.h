@@ -57,8 +57,8 @@ public:
     int getStopsCount() const noexcept { return (int)_rankwaves.size(); }
     void enableStop(int i, bool ena) { _rankwaves[i].enabled = ena; }
     bool isStopEnabled(int i) const { return _rankwaves[i].enabled; }
-    const Stop& operator[](int i) const { return _rankwaves[i]; }
-    Stop& operator[](int i) { return _rankwaves[i]; }
+    //const Stop& operator[](int i) const { return _rankwaves[i]; }
+    //Stop& operator[](int i) { return _rankwaves[i]; }
     Stop& getStopByIndex(int i) { return _rankwaves[i]; }
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
