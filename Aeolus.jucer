@@ -9,8 +9,13 @@
     <GROUP id="{F5BD30ED-E053-46A6-92B3-3C91BCF2F283}" name="Source">
       <GROUP id="{23278877-F57C-DD4B-1CA0-6C0998101C82}" name="aeolus">
         <GROUP id="{ADEAE9AA-4D39-19AB-214C-AF591693BD50}" name="dsp">
+          <FILE id="Z3hcgq" name="convolve.h" compile="0" resource="0" file="Source/aeolus/dsp/convolve.h"/>
+          <FILE id="VH9ZVZ" name="convolver.cpp" compile="1" resource="0" file="Source/aeolus/dsp/convolver.cpp"/>
+          <FILE id="NuSK66" name="convolver.h" compile="0" resource="0" file="Source/aeolus/dsp/convolver.h"/>
           <FILE id="LIOnzx" name="delay.cpp" compile="1" resource="0" file="Source/aeolus/dsp/delay.cpp"/>
           <FILE id="xJrpyb" name="delay.h" compile="0" resource="0" file="Source/aeolus/dsp/delay.h"/>
+          <FILE id="ALLCXB" name="fft.cpp" compile="1" resource="0" file="Source/aeolus/dsp/fft.cpp"/>
+          <FILE id="N5cUo2" name="fft.h" compile="0" resource="0" file="Source/aeolus/dsp/fft.h"/>
           <FILE id="kpOTJW" name="interpolator.cpp" compile="1" resource="0"
                 file="Source/aeolus/dsp/interpolator.cpp"/>
           <FILE id="vN3ukI" name="interpolator.h" compile="0" resource="0" file="Source/aeolus/dsp/interpolator.h"/>
@@ -19,6 +24,8 @@
         </GROUP>
         <FILE id="l2BY1q" name="addsynth.cpp" compile="1" resource="0" file="Source/aeolus/addsynth.cpp"/>
         <FILE id="thv9th" name="addsynth.h" compile="0" resource="0" file="Source/aeolus/addsynth.h"/>
+        <FILE id="hVyNUu" name="audioparam.cpp" compile="1" resource="0" file="Source/aeolus/audioparam.cpp"/>
+        <FILE id="vY0uLD" name="audioparam.h" compile="0" resource="0" file="Source/aeolus/audioparam.h"/>
         <FILE id="A2GTMg" name="division.cpp" compile="1" resource="0" file="Source/aeolus/division.cpp"/>
         <FILE id="lgSvSM" name="division.h" compile="0" resource="0" file="Source/aeolus/division.h"/>
         <FILE id="X5WCwK" name="engine.cpp" compile="1" resource="0" file="Source/aeolus/engine.cpp"/>
@@ -26,13 +33,20 @@
         <FILE id="XR6aeZ" name="globals.cpp" compile="1" resource="0" file="Source/aeolus/globals.cpp"/>
         <FILE id="YlC0jE" name="globals.h" compile="0" resource="0" file="Source/aeolus/globals.h"/>
         <FILE id="yLr9Qp" name="list.h" compile="0" resource="0" file="Source/aeolus/list.h"/>
+        <FILE id="kUHE2Z" name="memory.h" compile="0" resource="0" file="Source/aeolus/memory.h"/>
         <FILE id="RmflY5" name="rankwave.cpp" compile="1" resource="0" file="Source/aeolus/rankwave.cpp"/>
         <FILE id="WuRBRY" name="rankwave.h" compile="0" resource="0" file="Source/aeolus/rankwave.h"/>
         <FILE id="jhj54N" name="ringbuffer.h" compile="0" resource="0" file="Source/aeolus/ringbuffer.h"/>
         <FILE id="ijJb7I" name="scale.cpp" compile="1" resource="0" file="Source/aeolus/scale.cpp"/>
         <FILE id="uUyrX4" name="scale.h" compile="0" resource="0" file="Source/aeolus/scale.h"/>
+        <FILE id="Mkp0Z3" name="sema.cpp" compile="1" resource="0" file="Source/aeolus/sema.cpp"/>
+        <FILE id="h3XlZ1" name="sema.h" compile="0" resource="0" file="Source/aeolus/sema.h"/>
+        <FILE id="r5AvHj" name="simd.cpp" compile="1" resource="0" file="Source/aeolus/simd.cpp"/>
+        <FILE id="kfppw1" name="simd.h" compile="0" resource="0" file="Source/aeolus/simd.h"/>
         <FILE id="n6Wjna" name="voice.cpp" compile="1" resource="0" file="Source/aeolus/voice.cpp"/>
         <FILE id="MKwBrx" name="voice.h" compile="0" resource="0" file="Source/aeolus/voice.h"/>
+        <FILE id="W3dxh5" name="worker.cpp" compile="1" resource="0" file="Source/aeolus/worker.cpp"/>
+        <FILE id="BYizpr" name="worker.h" compile="0" resource="0" file="Source/aeolus/worker.h"/>
       </GROUP>
       <GROUP id="{D9FB1BF8-A6EF-4144-A7AD-895D68334742}" name="ui">
         <FILE id="VEO5ph" name="DivisionControlPanel.cpp" compile="1" resource="0"
@@ -58,6 +72,10 @@
             file="Source/PluginProcessor.h"/>
     </GROUP>
     <GROUP id="{9E90580A-EE5A-EE88-9338-83E8FEECB687}" name="Resources">
+      <GROUP id="{816D46C7-791C-0717-71E5-DD94749AC10C}" name="irs">
+        <FILE id="wmNctk" name="1st_baptist_nashville_balcony.wav" compile="0"
+              resource="1" file="Resources/irs/1st_baptist_nashville_balcony.wav"/>
+      </GROUP>
       <GROUP id="{8A578D86-D9AC-1580-B55B-572CCF77D103}" name="configs">
         <FILE id="VieJCy" name="default_organ.json" compile="0" resource="1"
               file="Resources/configs/default_organ.json"/>

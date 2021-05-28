@@ -14,6 +14,6 @@ This project is my attempt to extract the systhesis part of the original Aeolus 
 From the original implementation I only ported `addsynth` and `rankwave` modules. These modules describe the 64-harmonics additive synth and organ pipes wavetables generation. Plus this repo inclused the `ae0` files that contain the harmonics tables for various pipes (these are embedded into the plugin during compilation).
 
 ## Current limitations
-- The ouput is dry, there is no reverb in the plugin. Though I've added simple stereo spatialisation of the pipes. You can use whatever reverb you want from your DAW.
 - No links between manuals.
 - There is no swell control yet.
+- No reverb dry/wet control yet.

@@ -25,6 +25,7 @@
 #include "aeolus/addsynth.h"
 #include "aeolus/rankwave.h"
 #include "aeolus/division.h"
+#include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
 
 AEOLUS_NAMESPACE_BEGIN
@@ -44,6 +45,8 @@ public:
     juce::StringArray getAllStopNames() const;
     Rankwave* getStopByName(const juce::String& name);
 
+    const juce::AudioBuffer<float>& getIR() const noexcept { return _ir; }
+
     void updateStops(float sampleRate);
 
     JUCE_DECLARE_SINGLETON (EngineGlobal, false)
@@ -53,9 +56,12 @@ private:
     ~EngineGlobal() override  { clearSingletonInstance(); }
 
     void loadRankwaves();
+    void loadIR();
 
     juce::OwnedArray<Rankwave> _rankwaves;
     juce::HashMap<juce::String, Rankwave*> _rankwavesByName;
+
+    juce::AudioBuffer<float> _ir;
 };
 
 //==============================================================================
@@ -76,9 +82,9 @@ public:
     float getSampleRate() const noexcept { return _sampleRate; }
     int getVoiceCount() const noexcept { return _voicePool.getNumberOfActiveVoices(); }
 
-    void prepareToPlay(float sampleRate);
+    void prepareToPlay(float sampleRate, int frameSize);
 
-    void process(float* outL, float* outR, int numFrames);
+    void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
     void noteOn(int note, int midiChannel);
     void noteOff(int note, int midiChannel);
@@ -126,6 +132,7 @@ private:
     juce::AudioBuffer<float> _tremulantBuffer;
     float _tremulantPhase;
 
+    dsp::Convolver _convolver;
     dsp::Interpolator _interpolator;
 
     juce::MidiKeyboardState _midiKeybaordState;

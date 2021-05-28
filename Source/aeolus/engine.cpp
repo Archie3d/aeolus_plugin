@@ -27,6 +27,7 @@ EngineGlobal::EngineGlobal()
     : _rankwaves{}
 {
     loadRankwaves();
+    loadIR();
 }
 
 StringArray EngineGlobal::getAllStopNames() const
@@ -68,6 +69,21 @@ void EngineGlobal::loadRankwaves()
     }
 }
 
+void EngineGlobal::loadIR()
+{
+    std::unique_ptr<InputStream> stream = std::make_unique<MemoryInputStream>(
+                                BinaryData::_1st_baptist_nashville_balcony_wav,
+                                BinaryData::_1st_baptist_nashville_balcony_wavSize,
+                                false);
+
+    AudioFormatManager manager;
+    manager.registerBasicFormats();
+    std::unique_ptr<AudioFormatReader> reader{manager.createReaderFor(std::move(stream))};
+
+    _ir.setSize(reader->numChannels, (int)reader->lengthInSamples);
+    reader->read(&_ir, 0, _ir.getNumSamples(), 0, true, true);
+}
+
 JUCE_IMPLEMENT_SINGLETON(EngineGlobal)
 
 //==============================================================================
@@ -82,28 +98,44 @@ Engine::Engine()
     , _remainedSamples{0}
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
     , _tremulantPhase{0.0f}
+    , _convolver{}
     , _interpolator{1.0f}
     , _midiKeybaordState{}
 {
     populateDivisions();
+
+    auto* g = EngineGlobal::getInstance();
 }
 
-void Engine::prepareToPlay(float sampleRate)
+void Engine::prepareToPlay(float sampleRate, int frameSize)
 {
+    // Make sure the stops wavetable is updated.
+    auto* g = EngineGlobal::getInstance();
+    g->updateStops(SAMPLE_RATE);
+
+    const auto& ir = g->getIR();
+    _convolver.setLength(int(ir.getNumSamples() / 4096 + 1) * 4096);
+    _convolver.prepareToPlay(sampleRate, frameSize); // Must be called before setting the IR
+    _convolver.setIR(ir);
+    _convolver.setDryWet(1.0f, 0.25f, true);
+    _convolver.setZeroDelay(true);
+
     _interpolator.setRatio(SAMPLE_RATE / sampleRate); // 44100 / sampleRate
     _interpolator.reset();
 
     _sampleRate = sampleRate;
 
-    // Make sure the stops wavetable is updated.
-    auto* g = EngineGlobal::getInstance();
-    g->updateStops(SAMPLE_RATE);
+
 }
 
-void Engine::process(float* outL, float* outR, int numFrames)
+void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime)
 {
     jassert(outL != nullptr);
     jassert(outR != nullptr);
+
+    float* origOutL = outL;
+    float* origOutR = outR;
+    int origNumFrames = numFrames;
 
     processPendingNoteEvents();
 
@@ -130,17 +162,6 @@ void Engine::process(float* outL, float* outR, int numFrames)
                 outL += 1;
                 outR += 1;
             }
-
-            /*
-            memcpy (outL, subL, sizeof(float) * n);
-            memcpy (outR, subR, sizeof(float) * n);
-
-            _remainedSamples -= n;
-            numFrames -= n;
-
-            outL += n;
-            outR += n;
-            */
         }
 
         if (_remainedSamples == 0 && numFrames > 0)
@@ -148,8 +169,10 @@ void Engine::process(float* outL, float* outR, int numFrames)
             processSubFrame();
             jassert(_remainedSamples > 0);
         }
-
     }
+
+    _convolver.setNonRealtime(isNonRealtime);
+    _convolver.process(origOutL, origOutR, origOutL, origOutR, origNumFrames);
 }
 
 void Engine::noteOn(int note, int midiChannel)

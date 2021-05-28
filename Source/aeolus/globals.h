@@ -99,6 +99,59 @@ T lagr (T* x, T frac)
     return ((c3 * frac + c2) * frac + c1) * frac + x[1];
 }
 
+//----------------------------------------------------------
+
+template<unsigned M, unsigned N, unsigned B, unsigned A>
+struct SinCosSeries
+{
+    constexpr static double value =
+        1.0 - (A * MathConstants<double>::pi / B) * ( A * MathConstants<double>::pi / B) / M / (M + 1)
+        * SinCosSeries<M + 2, N, B, A>::value;
+};
+
+template<unsigned N, unsigned B, unsigned A>
+struct SinCosSeries<N, N, B, A> {
+    constexpr static double value = 1.0;
+};
+
+template<unsigned B, unsigned A, typename T = double>
+struct Sin;
+
+template<unsigned B, unsigned A>
+struct Sin<B, A, float>
+{
+    constexpr static float value = (A * MathConstants<float>::pi / B) * float (SinCosSeries<2, 24, B, A>::value);
+};
+
+template<unsigned B, unsigned A>
+struct Sin<B, A, double> {
+    constexpr static double value = (A * MathConstants<double>::pi / B) * SinCosSeries<2, 34, B, A>::value;
+};
+
+template<unsigned B, unsigned A, typename T = double>
+struct Cos;
+
+template<unsigned B, unsigned A>
+struct Cos<B, A, float>
+{
+    constexpr static float value = float (SinCosSeries<1, 23, B, A>::value);
+};
+
+template<unsigned B, unsigned A>
+struct Cos<B, A, double>
+{
+    constexpr static double value = SinCosSeries<1, 33, B, A>::value;
+};
+
+//----------------------------------------------------------
+
+template <typename T>
+constexpr bool isPowerOfTwo (T v)
+{
+    return (v & (v - 1)) == 0;
+}
+
+
 } // namespace math
 
 AEOLUS_NAMESPACE_END

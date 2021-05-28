@@ -106,9 +106,9 @@ void AeolusAudioProcessor::changeProgramName (int /* index */, const juce::Strin
 }
 
 //==============================================================================
-void AeolusAudioProcessor::prepareToPlay (double sampleRate, int /* samplesPerBlock */)
+void AeolusAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    _engine.prepareToPlay((float)sampleRate);
+    _engine.prepareToPlay((float)sampleRate, samplesPerBlock);
 }
 
 void AeolusAudioProcessor::releaseResources()
@@ -170,7 +170,7 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     if (totalNumOutputChannels > 1)
         outR = buffer.getWritePointer (1);
 
-    _engine.process(outL, outR, (size_t) buffer.getNumSamples());
+    _engine.process(outL, outR, (size_t) buffer.getNumSamples(), isNonRealtime());
 
     auto timestampStop = high_resolution_clock::now();
     auto duration_us = duration_cast<microseconds> (timestampStop - timestampStart).count();
