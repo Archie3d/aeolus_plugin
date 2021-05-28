@@ -81,7 +81,6 @@ Engine::Engine()
     , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
     , _remainedSamples{0}
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
-    , _tremulantLevel{0.0f}
     , _tremulantPhase{0.0f}
     , _interpolator{1.0f}
     , _midiKeybaordState{}
@@ -199,6 +198,9 @@ var Engine::getPersistentState() const
         // Per division, but we have only one so far
         auto* divisionObj = new DynamicObject();
 
+        divisionObj->setProperty("midi_channel", division->getMIDIChannel());
+        divisionObj->setProperty("tremulant_enabled", division->isTremulantEnabled());
+
         Array<var> stops;
 
         for (int i = 0; i < division->getStopsCount(); ++i) {
@@ -235,6 +237,10 @@ void Engine::setPersistentState(const var& state)
                 auto* division = _divisions.getUnchecked(divIdx);
 
                 if (const auto* divisionObj = divisions->getReference(divIdx).getDynamicObject()) {
+
+                    division->setMIDIChannel(divisionObj->getProperty("midi_channel"));
+                    division->setTremulantEnabled(divisionObj->getProperty("tremulant_enabled"));
+
                     if (const auto* stops = divisionObj->getProperty("stops").getArray()) {
                         for (int i = 0; i < stops->size(); ++i) {
                             if (const auto* stopObj = stops->getReference(i).getDynamicObject()) {
@@ -270,6 +276,9 @@ void Engine::populateDivisions()
         for (int i = 0; i < divisions->size(); ++i) {
             if (auto* divisionObj = divisions->getUnchecked(i).getDynamicObject()) {
                 auto division = std::make_unique<Division>(*this, divisionObj->getProperty("name"));
+
+                division->setHasSwell(divisionObj->getProperty("swell"));
+                division->setHasTremulant(divisionObj->getProperty("tremulant"));
 
                 if (auto* stops = divisionObj->getProperty("stops").getArray()) {
                     for (int j = 0; j < stops->size(); ++j) {
@@ -309,6 +318,7 @@ void Engine::processSubFrame()
         auto& activeVoices = division->getActiveVoices();
         
         auto* voice = activeVoices.first();
+        bool hasVoices = (voice != nullptr);
 
         while (voice != nullptr) {
             _voiceFrameBuffer.clear();
@@ -329,10 +339,12 @@ void Engine::processSubFrame()
             }
         }
 
-        modulateDivision();
+        if (hasVoices) {
+            modulateDivision(division);
 
-        _subFrameBuffer.addFrom(0, 0, _divisionFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
-        _subFrameBuffer.addFrom(1, 0, _divisionFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
+            _subFrameBuffer.addFrom(0, 0, _divisionFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
+            _subFrameBuffer.addFrom(1, 0, _divisionFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
+        }
 
     }
 
@@ -353,27 +365,37 @@ void Engine::processPendingNoteEvents()
 void Engine::generateTremulant()
 {
     float* buf = _tremulantBuffer.getWritePointer(0);
+    jassert(buf != nullptr);
 
     for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
         const float s = sinf(_tremulantPhase);
-        buf[i] = 1.0f + s * _tremulantLevel;
+        buf[i] = s * TREMULANT_LEVEL;
         _tremulantPhase += TREMULANT_PHASE_INCREMENT;
 
         if (_tremulantPhase >= juce::MathConstants<float>::twoPi)
-            _tremulantPhase >= juce::MathConstants<float>::twoPi;
+            _tremulantPhase -= juce::MathConstants<float>::twoPi;
     }
 }
 
-void Engine::modulateDivision()
+void Engine::modulateDivision(Division* division)
 {
+    jassert(division != nullptr);
+
     float* outL = _divisionFrameBuffer.getWritePointer(0);
     float* outR = _divisionFrameBuffer.getWritePointer(1);
 
+    jassert(outL != nullptr);
+    jassert(outR != nullptr);
+
     const float* gain = _tremulantBuffer.getReadPointer(0);
+    jassert(gain != nullptr);
+
+    const float lvl = division->getTremulantLevel(true);
 
     for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
-        outL[i] *= gain[i];
-        outR[i] *= gain[i];
+        float g = 1.0f + gain[i] * lvl;
+        outL[i] *= g;
+        outR[i] *= g;
     }
 }
 

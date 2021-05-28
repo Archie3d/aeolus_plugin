@@ -30,6 +30,9 @@ Division::Division(Engine& engine, const String& name)
     , _hasSwell{false}
     , _hasTremulant{false}
     , _midiChannel{0}
+    , _tremulantEnabled{false}
+    , _tremulantLevel{0.0f}
+    , _tremulantTargetLevel{0.0f}
     , _rankwaves{}
 {
 }
@@ -96,6 +99,22 @@ bool Division::isForMIDIChannel(int channel) const noexcept
 {
     return _midiChannel == 0        // any channel
         || _midiChannel == channel;
+}
+
+void Division::setTremulantEnabled(bool ena) noexcept
+{
+    _tremulantEnabled = _hasTremulant && ena;
+    _tremulantTargetLevel = _tremulantEnabled ? 1.0f : 0.0f;
+}
+
+float Division::getTremulantLevel(bool update)
+{
+    const auto level = _tremulantLevel;
+
+    if (update)
+        _tremulantLevel += 0.5f * (_tremulantTargetLevel - _tremulantLevel);
+
+    return level;
 }
 
 void Division::noteOn(int note)

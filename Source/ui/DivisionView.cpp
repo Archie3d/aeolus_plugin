@@ -30,26 +30,30 @@ constexpr int buttonSize = 80;
 DivisionView::DivisionView(aeolus::Division* division)
     : _division(division)
     , _nameLabel{{}, division->getName()}
+    , _controlPanel(division)
     , _stopButtons{}
-    , _tremulantButton{"Tremulant"}
 {
     _nameLabel.setJustificationType(Justification::centred);
     _nameLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0x99));
     addAndMakeVisible(_nameLabel);
 
+    addAndMakeVisible(_controlPanel);
+
     populateStopButtons();
 }
 
+constexpr int controlPanelWidth = 120;
+
 int DivisionView::getEstimatedHeightForWidth(int width) const
 {
-    const int nButtonsInRow = width / buttonSize;
+    const int nButtonsInRow = (width - controlPanelWidth) / buttonSize;
     const int nRows = _stopButtons.size() / nButtonsInRow + (_stopButtons.size() % nButtonsInRow > 0 ? 1 : 0);
     return nRows * buttonSize + paddingTop + paddingBottom;
 }
 
 void DivisionView::resized()
 {
-    _nameLabel.setBounds(0, 0, getWidth(), paddingTop);
+    _nameLabel.setBounds(0, 0, getWidth() - controlPanelWidth, paddingTop);
 
     FlexBox fbox;
     fbox.flexWrap = FlexBox::Wrap::wrap;
@@ -62,6 +66,8 @@ void DivisionView::resized()
     auto bounds = getLocalBounds();
     bounds.setTop(paddingTop);
     bounds.setBottom(bounds.getHeight() - paddingTop - paddingBottom);
+    bounds.setWidth(bounds.getWidth() - controlPanelWidth);
+
     fbox.performLayout(bounds.toFloat());
 
     // For some reason the performLayout ignores the target rectangle
@@ -72,6 +78,8 @@ void DivisionView::resized()
         b.setY(b.getY() + paddingTop);
         button->setBounds(b);
     }
+
+    _controlPanel.setBounds(getWidth() - controlPanelWidth, 0, controlPanelWidth, getHeight());
 }
 
 void DivisionView::paint(Graphics& g)

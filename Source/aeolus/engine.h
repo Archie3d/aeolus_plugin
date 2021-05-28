@@ -105,7 +105,7 @@ private:
     void processPendingNoteEvents();
 
     void generateTremulant();
-    void modulateDivision();
+    void modulateDivision(Division* division);
 
     float _sampleRate;
 
@@ -123,7 +123,6 @@ private:
     int _remainedSamples;
 
     juce::AudioBuffer<float> _tremulantBuffer;
-    float _tremulantLevel;
     float _tremulantPhase;
 
     dsp::Interpolator _interpolator;

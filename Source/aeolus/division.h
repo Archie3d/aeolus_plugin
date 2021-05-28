@@ -23,6 +23,7 @@
 #include "aeolus/rankwave.h"
 #include "aeolus/voice.h"
 
+#include <atomic>
 #include <vector>
 
 AEOLUS_NAMESPACE_BEGIN
@@ -66,7 +67,18 @@ public:
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
 
+    int getMIDIChannel() const noexcept { return _midiChannel; }
     bool isForMIDIChannel(int channel) const noexcept;
+    void setMIDIChannel(int channel) noexcept { _midiChannel = channel; }
+
+    bool hasSwell() const noexcept { return _hasSwell; }
+    void setHasSwell(bool v) noexcept { _hasSwell = v; }
+    bool hasTremulant() const noexcept { return _hasTremulant; }
+    void setHasTremulant(bool v) noexcept { _hasTremulant = v; }
+    bool isTremulantEnabled() const noexcept { return _tremulantEnabled; }
+    void setTremulantEnabled(bool ena) noexcept;
+
+    float getTremulantLevel(bool update = true);
 
     void noteOn(int note);
     void noteOff(int note);
@@ -81,7 +93,11 @@ private:
     bool _hasSwell;         ///< Whetehr this division has a swell control.
     bool _hasTremulant;     ///< Whether this division has a remulant control.
 
-    int _midiChannel;       ///< Division MIDI channel.
+    std::atomic<int> _midiChannel;          ///< Division MIDI channel.
+    std::atomic<bool> _tremulantEnabled;    ///< Whether tremulant is enabled.
+
+    float _tremulantLevel;
+    std::atomic<float> _tremulantTargetLevel;
 
     std::vector<Stop> _rankwaves;    ///< All the stops this division has.
 

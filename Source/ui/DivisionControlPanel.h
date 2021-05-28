@@ -17,20 +17,31 @@
 //
 // ----------------------------------------------------------------------------
 
+#pragma once
+
 #include "aeolus/globals.h"
+#include "aeolus/division.h"
 
-AEOLUS_NAMESPACE_BEGIN
+namespace ui {
 
-namespace math {
-
-float exp2ap(float x)
+class DivisionControlPanel : public juce::Component
 {
-    int i = (int)(floor (x));
-    x -= i;
-    // return ldexp (1 + x * (0.66 + 0.34 * x), i);
-    return ldexp (1 + x * (0.6930f + x * (0.2416f + x * (0.0517f + x * 0.0137f))), i);
-}
+public:
+    DivisionControlPanel(aeolus::Division* division = nullptr);
 
-} // namespace math
+    // juce::Component
+    void resized() override;
+    void paint(juce::Graphics& g) override;
 
-AEOLUS_NAMESPACE_END
+private:
+
+    aeolus::Division* _division;
+
+    juce::Label _midiChannelLabel;
+    juce::ComboBox _midiChannelComboBox;
+    juce::TextButton _tremulantButton;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionControlPanel)
+};
+
+} // namespace ui

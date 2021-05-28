@@ -22,6 +22,7 @@
 #include "aeolus/globals.h"
 #include "aeolus/division.h"
 
+#include "ui/DivisionControlPanel.h"
 #include "ui/StopButton.h"
 
 namespace ui {
@@ -45,9 +46,8 @@ private:
     aeolus::Division* _division;
 
     juce::Label _nameLabel;
+    DivisionControlPanel _controlPanel;
     juce::OwnedArray<StopButton> _stopButtons;
-
-    juce::TextButton _tremulantButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionView)
 };

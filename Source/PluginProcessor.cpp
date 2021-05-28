@@ -92,23 +92,23 @@ int AeolusAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void AeolusAudioProcessor::setCurrentProgram (int index)
+void AeolusAudioProcessor::setCurrentProgram (int /* index */)
 {
 }
 
-const juce::String AeolusAudioProcessor::getProgramName (int index)
+const juce::String AeolusAudioProcessor::getProgramName (int /* index */)
 {
     return {};
 }
 
-void AeolusAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void AeolusAudioProcessor::changeProgramName (int /* index */, const juce::String& /* newName */)
 {
 }
 
 //==============================================================================
-void AeolusAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void AeolusAudioProcessor::prepareToPlay (double sampleRate, int /* samplesPerBlock */)
 {
-    _engine.prepareToPlay(sampleRate);
+    _engine.prepareToPlay((float)sampleRate);
 }
 
 void AeolusAudioProcessor::releaseResources()
@@ -227,7 +227,7 @@ void AeolusAudioProcessor::setStateInformation (const void* data, int sizeInByte
 
 //==============================================================================
 
-void AeolusAudioProcessor::handleNoteOn(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
+void AeolusAudioProcessor::handleNoteOn(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float /* velocity */)
 {
     if (MessageManager::getInstance()->isThisTheMessageThread()) {
         _engine.postNoteEvent(true, midiNoteNumber);
@@ -236,7 +236,7 @@ void AeolusAudioProcessor::handleNoteOn(juce::MidiKeyboardState* source, int mid
     }
 }
 
-void AeolusAudioProcessor::handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
+void AeolusAudioProcessor::handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float /* velocity */)
 {
     if (MessageManager::getInstance()->isThisTheMessageThread()) {
         _engine.postNoteEvent(false, midiNoteNumber);
