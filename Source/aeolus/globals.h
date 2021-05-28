@@ -56,7 +56,9 @@ constexpr static int SUB_FRAME_LENGTH = 64;
 /// Tremulant modulation frequency.
 constexpr static float TREMULANT_FREQUENCY = 6.283184f;
 constexpr static float TREMULANT_PHASE_INCREMENT = juce::MathConstants<float>::twoPi * TREMULANT_FREQUENCY / SAMPLE_RATE;
-constexpr static float TREMULANT_LEVEL = 0.2f;
+
+/// Tremulant OSC wavetable amplitude.
+constexpr static float TREMULANT_LEVEL = 1.0f;
 
 //==============================================================================
 

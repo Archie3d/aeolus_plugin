@@ -32,17 +32,23 @@ Division::Division(Engine& engine, const String& name)
     , _midiChannel{0}
     , _tremulantEnabled{false}
     , _tremulantLevel{0.0f}
+    , _tremulantMaxLevel{1.0f}
     , _tremulantTargetLevel{0.0f}
     , _rankwaves{}
 {
 }
 
-void Division::fromVar(const var& v)
+void Division::initFromVar(const var& v)
 {
     if (const auto* obj = v.getDynamicObject()) {
         _name = obj->getProperty("name");
         _hasSwell = obj->getProperty("swell");
         _hasTremulant = obj->getProperty("tremulant");
+
+        _tremulantMaxLevel = 0.0f;
+
+        if (_hasTremulant)
+            _tremulantMaxLevel = obj->getProperty("tremulant_level");
 
         auto* g = EngineGlobal::getInstance();
 
@@ -53,7 +59,7 @@ void Division::fromVar(const var& v)
                     const String pipeName = stopObj->getProperty("pipe");
 
                     if (auto* rankwavePtr = g->getStopByName(pipeName)) {
-                        addRankwave(rankwavePtr, false);
+                        addRankwave(rankwavePtr, false, stopName);
                     } else {
                         DBG("Stop pipe " + pipeName + " cannot be found.");
                     }
@@ -61,6 +67,56 @@ void Division::fromVar(const var& v)
             }
         }
     }
+}
+
+var Division::getPersistentState() const
+{
+    // Per division, but we have only one so far
+    auto* divisionObj = new DynamicObject();
+
+    divisionObj->setProperty("midi_channel", getMIDIChannel());
+    divisionObj->setProperty("tremulant_enabled", isTremulantEnabled());
+
+    Array<var> stops;
+
+    for (const auto& stop : _rankwaves) {
+        auto* stopObj = new DynamicObject();
+        stopObj->setProperty("name", stop.rankwave->getStopName());
+        stopObj->setProperty("enabled", stop.enabled);
+
+        stops.add(var{stopObj});
+    }
+
+    divisionObj->setProperty("stops", stops);
+
+    return var{divisionObj};
+}
+
+void Division::setPersistentState(const juce::var& v)
+{
+    if (const auto* divisionObj = v.getDynamicObject()) {
+
+        setMIDIChannel(divisionObj->getProperty("midi_channel"));
+        setTremulantEnabled(divisionObj->getProperty("tremulant_enabled"));
+
+        if (const auto* stops = divisionObj->getProperty("stops").getArray()) {
+            for (int i = 0; i < stops->size(); ++i) {
+                if (const auto* stopObj = stops->getReference(i).getDynamicObject()) {
+                    const String stopName = stopObj->getProperty("name");
+                    const bool enabled = stopObj->getProperty("enabled");
+
+                    // This is not optimal but meh...
+                    for (auto& stop : _rankwaves) {
+                        if (stop.rankwave->getStopName() == stopName) {
+                            stop.enabled = enabled;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 void Division::clear()
@@ -104,7 +160,7 @@ bool Division::isForMIDIChannel(int channel) const noexcept
 void Division::setTremulantEnabled(bool ena) noexcept
 {
     _tremulantEnabled = _hasTremulant && ena;
-    _tremulantTargetLevel = _tremulantEnabled ? 1.0f : 0.0f;
+    _tremulantTargetLevel = _tremulantEnabled ? _tremulantMaxLevel : 0.0f;
 }
 
 float Division::getTremulantLevel(bool update)

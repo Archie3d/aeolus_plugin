@@ -193,30 +193,8 @@ var Engine::getPersistentState() const
 
     Array<var> divisions;
 
-    for (auto* division : _divisions) {
-
-        // Per division, but we have only one so far
-        auto* divisionObj = new DynamicObject();
-
-        divisionObj->setProperty("midi_channel", division->getMIDIChannel());
-        divisionObj->setProperty("tremulant_enabled", division->isTremulantEnabled());
-
-        Array<var> stops;
-
-        for (int i = 0; i < division->getStopsCount(); ++i) {
-            auto stopRef = division->getStopByIndex(i);
-            auto* stopObj = new DynamicObject();
-            stopObj->setProperty("name", stopRef.rankwave->getStopName());
-            stopObj->setProperty("enabled", stopRef.enabled);
-
-            stops.add(var{stopObj});
-        }
-
-        divisionObj->setProperty("stops", stops);
-
-        divisions.add(var{divisionObj});
-    }
-
+    for (auto* division : _divisions)
+        divisions.add(division->getPersistentState());
 
     obj->setProperty("divisions", divisions);
 
@@ -235,30 +213,7 @@ void Engine::setPersistentState(const var& state)
 
             for (int divIdx = 0; divIdx < _divisions.size(); ++divIdx) {
                 auto* division = _divisions.getUnchecked(divIdx);
-
-                if (const auto* divisionObj = divisions->getReference(divIdx).getDynamicObject()) {
-
-                    division->setMIDIChannel(divisionObj->getProperty("midi_channel"));
-                    division->setTremulantEnabled(divisionObj->getProperty("tremulant_enabled"));
-
-                    if (const auto* stops = divisionObj->getProperty("stops").getArray()) {
-                        for (int i = 0; i < stops->size(); ++i) {
-                            if (const auto* stopObj = stops->getReference(i).getDynamicObject()) {
-                                const String stopName = stopObj->getProperty("name");
-                                const bool enabled = stopObj->getProperty("enabled");
-
-                                // This is not optimal but meh...
-                                for (int j = 0; j < division->getStopsCount(); ++j) {
-                                    auto& ref = division->getStopByIndex(j);
-                                    if (ref.rankwave->getStopName() == stopName) {
-                                        ref.enabled = enabled;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                division->setPersistentState(divisions->getReference(divIdx));
             }
         }
     }
@@ -268,31 +223,16 @@ void Engine::populateDivisions()
 {
     auto* g = EngineGlobal::getInstance();
 
-    // Load corgan config
+    // Load organ config
     MemoryInputStream stream(BinaryData::default_organ_json, BinaryData::default_organ_jsonSize, false);
     auto config = JSON::parse(stream);
 
     if (auto* divisions = config.getProperty("divisions", {}).getArray()) {
         for (int i = 0; i < divisions->size(); ++i) {
             if (auto* divisionObj = divisions->getUnchecked(i).getDynamicObject()) {
-                auto division = std::make_unique<Division>(*this, divisionObj->getProperty("name"));
+                auto division = std::make_unique<Division>(*this);
 
-                division->setHasSwell(divisionObj->getProperty("swell"));
-                division->setHasTremulant(divisionObj->getProperty("tremulant"));
-
-                if (auto* stops = divisionObj->getProperty("stops").getArray()) {
-                    for (int j = 0; j < stops->size(); ++j) {
-                        if (auto* stopObj = stops->getUnchecked(j).getDynamicObject()) {
-                            const String stopName = stopObj->getProperty("name");
-                            const String stopPipe = stopObj->getProperty("pipe");
-
-                            if (auto* stop = g->getStopByName(stopPipe))
-                                division->addRankwave(stop, false, stopName);
-                            else
-                                DBG("Stop pipe " + stopPipe + " cannot be found.");
-                        }
-                    }
-                }
+                division->initFromVar(divisions->getUnchecked(i));
 
                 _divisions.add(division.release());
             }

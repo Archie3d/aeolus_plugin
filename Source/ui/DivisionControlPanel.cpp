@@ -35,6 +35,8 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _midiChannelLabel.setFont(f);
     addAndMakeVisible(_midiChannelLabel);
 
+    _midiChannelComboBox.setColour(ComboBox::backgroundColourId, Colour(0x33, 0x33, 0x33));
+    _midiChannelComboBox.setColour(ComboBox::arrowColourId, Colour(0x66, 0x66, 0x66));
     _midiChannelComboBox.addItem("All", 1);
     for (int i = 1; i <= 16; ++i) {
         _midiChannelComboBox.addItem(String(i), i + 1);
@@ -48,6 +50,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     addAndMakeVisible(_midiChannelComboBox);
 
     _tremulantButton.setClickingTogglesState(true);
+    _tremulantButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
     _tremulantButton.setColour(TextButton::buttonOnColourId, Colours::green);
     _tremulantButton.setToggleState(_division->isTremulantEnabled(), false);
 

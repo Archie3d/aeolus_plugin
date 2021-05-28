@@ -36,7 +36,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
-    setSize (1150, 600);
+    setSize (1160, 600);
     setResizeLimits(740, 480, 2048, 1920);
 
     addAndMakeVisible(_versionLabel);

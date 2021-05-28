@@ -4,6 +4,7 @@
             "name": "Manual III",
             "swell": true,
             "tremulant": true,
+            "tremulant_level": 0.2,
             "stops": [
                 { "name": "Principal\n8",       "pipe": "III_principal_8" },
                 { "name": "Gemshorn\n8",        "pipe": "gemshorn8" },
@@ -22,6 +23,7 @@
             "name": "Manual II",
             "swell": true,
             "tremulant": true,
+            "tremulant_level": 0.2,
             "stops": [
                 { "name": "Rohrflöte\n8",       "pipe": "rohrflute8" },
                 { "name": "Harmonic\nFlute 8",  "pipe": "harmflute8" },
@@ -44,8 +46,6 @@
                 { "name": "Principal\n8",       "pipe": "I_principal_8" },
                 { "name": "Principal\n4",       "pipe": "I_principal_4" },
                 { "name": "Octave\n2",          "pipe": "I_octave_2" },
-                { "name": "*Octave\n1",         "pipe": "I_octave_1" },
-                { "name": "*Quint\n5 1/3",      "pipe": "I_quinte_513" },
                 { "name": "Quint\n2 2/3",       "pipe": "I_quinte_223" },
                 { "name": "Tibia\n8",           "pipe": "tibia8" },
                 { "name": "Celesta\n8",         "pipe": "celesta" },

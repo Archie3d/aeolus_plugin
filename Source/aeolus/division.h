@@ -52,8 +52,13 @@ public:
 
     /**
      * @brief Load the division configuration from a JSON object.
+     * 
+     * This will configure the division from an organ configuration data.
      */
-    void fromVar(const juce::var& v);
+    void initFromVar(const juce::var& v);
+
+    juce::var getPersistentState() const;
+    void setPersistentState(const juce::var& v);
 
     juce::String getName() const { return _name; }
 
@@ -97,6 +102,7 @@ private:
     std::atomic<bool> _tremulantEnabled;    ///< Whether tremulant is enabled.
 
     float _tremulantLevel;
+    float _tremulantMaxLevel;
     std::atomic<float> _tremulantTargetLevel;
 
     std::vector<Stop> _rankwaves;    ///< All the stops this division has.
