@@ -163,6 +163,12 @@ struct Convolver::Impl
         params[WET].setValue (wet, force);
     }
 
+    float isAudible() const
+    {
+        return params[WET].target() > 0.0f
+            || params[WET].value() > 0.0f;
+    }
+
     void setIR (const AudioBuffer<float>& buffer)
     {
         ir = buffer;
@@ -232,21 +238,6 @@ struct Convolver::Impl
         {
             for (size_t i = 0; i < numFrames; ++i)
             {
-                /*
-                float irSampleL = 0.0f;
-                float irSampleR = 0.0f;
-                
-                if (irSamplesRead < ir.getNumSamples())
-                {
-                    irSampleL = ir.getReadPointer (0)[irSamplesRead];
-                    irSampleR = ir.getReadPointer (1)[irSamplesRead];
-                    ++irSamplesRead;
-                }
-
-                convL.feedIr (irSampleL);
-                convR.feedIr (irSampleR);
-                */
-
                 float l = convL.tick (inL[i]);
                 float r = convR.tick (inR[i]);
 
@@ -316,6 +307,11 @@ void Convolver::setIR (const AudioBuffer<float>& ir)
 void Convolver::setDryWet (float dry, float wet, bool force)
 {
     d->setDryWet (dry, wet, force);
+}
+
+bool Convolver::isAudible() const
+{
+    return d->isAudible();
 }
 
 void Convolver::prepareToPlay (float /* sampleRate */, size_t /* nFrames */)

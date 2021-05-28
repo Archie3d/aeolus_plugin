@@ -119,6 +119,16 @@ AudioParameter& AudioParameterPool::operator[] (int index)
     return _dummyParameter;
 }
 
+const AudioParameter& AudioParameterPool::operator[] (int index) const
+{
+    jassert(index >= 0 && index < (int)_params.size());
+
+    if (index >= 0 && index < (int)_params.size())
+        return _params.at(index);
+
+    return _dummyParameter;
+}
+
 AudioParameter& AudioParameterPool::findByName(const String& n)
 {
     for (auto& p : _params) {

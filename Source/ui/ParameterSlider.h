@@ -22,55 +22,28 @@
 #include "aeolus/globals.h"
 #include <memory>
 
-AEOLUS_NAMESPACE_BEGIN
+namespace ui {
 
-namespace dsp {
-
-class Convolver final
+/**
+ * @brief Slider widget linked to an audio processor parameter.
+ */
+class ParameterSlider : public juce::Slider
 {
 public:
+    explicit ParameterSlider (juce::AudioProcessorParameter &p,
+                              juce::Slider::SliderStyle style = juce::Slider::LinearVertical,
+                              juce::Slider::TextEntryBoxPosition textBoxPosition = juce::Slider::NoTextBox);
+    ~ParameterSlider();
 
-    enum Params
-    {
-        DRY = 0,
-        WET,
-        GAIN,   // IR sample gain.
+    double getValueFromText (const juce::String &text) override;
+    juce::String getTextFromValue (double value) override;
 
-        NUM_PARAMS
-    };
-
-    // Default parameters set on creation
-    constexpr static float DefaultDry  = 0.0f;
-    constexpr static float DefaultWet  = 1.0f;
-    constexpr static float DefaultGain = 1.0f;
-
-    Convolver();
-    ~Convolver();
-
-    void setIR (const juce::AudioBuffer<float>& ir);
-
-    void setDryWet (float dry, float wet, bool force = false);
-    bool isAudible() const;
-
-    void prepareToPlay (float sampleRate, size_t nFrames);
-
-    void process(const float *inL, const float *inR, float *outL, float *outR, size_t numFrames);
-
-    void setNonRealtime (bool nonRealtime);
-
-    int length() const noexcept;
-    void setLength (int len) noexcept;
-
-    bool zeroDelay() const noexcept;
-    void setZeroDelay (bool v) noexcept;
-
-protected:
+private:
 
     struct Impl;
     std::unique_ptr<Impl> d;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
 };
 
-} // namespace dsp
-
-AEOLUS_NAMESPACE_END
+} // namespace ui

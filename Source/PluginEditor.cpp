@@ -17,6 +17,8 @@
 //
 // ----------------------------------------------------------------------------
 
+#include "ui/CustomLookAndFeel.h"
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -33,6 +35,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _cpuLoadValueLabel{}
     , _voiceCountLabel{{}, "Voices:"}
     , _voiceCountValueLabel{}
+    , _reverbLabel{{}, "Reverb:"}
+    , _reverbSlider{*p.getParameters().reverbWet, juce::Slider::LinearHorizontal}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
@@ -54,6 +58,11 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _voiceCountValueLabel.setJustificationType (Justification::right);
     _voiceCountValueLabel.setColour(Label::textColourId, Colours::lightyellow);
     addAndMakeVisible(_voiceCountValueLabel);
+
+    addAndMakeVisible(_reverbLabel);
+
+    _reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
+    addAndMakeVisible(_reverbSlider);
 
     populateDivisions();
 
@@ -87,6 +96,9 @@ void AeolusAudioProcessorEditor::resized()
     _cpuLoadValueLabel.setBounds(_cpuLoadLabel.getRight() + margin, margin, 30, 20);
     _voiceCountLabel.setBounds(150, margin, 50, 20);
     _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 24, 20);
+
+    _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 60, margin, 60, 20);
+    _reverbSlider.setBounds(_reverbLabel.getRight() + margin, margin, 100, 20);
 
     constexpr int W = 120;
     constexpr int H = 30;

@@ -84,6 +84,8 @@ public:
 
     void prepareToPlay(float sampleRate, int frameSize);
 
+    void setReverbWet(float v);
+
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
     void noteOn(int note, int midiChannel);

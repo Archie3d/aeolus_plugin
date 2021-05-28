@@ -103,8 +103,6 @@ Engine::Engine()
     , _midiKeybaordState{}
 {
     populateDivisions();
-
-    auto* g = EngineGlobal::getInstance();
 }
 
 void Engine::prepareToPlay(float sampleRate, int frameSize)
@@ -124,8 +122,11 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
     _interpolator.reset();
 
     _sampleRate = sampleRate;
+}
 
-
+void Engine::setReverbWet(float v)
+{
+    _convolver.setDryWet(1.0f, v);
 }
 
 void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime)
@@ -171,8 +172,10 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
         }
     }
 
-    _convolver.setNonRealtime(isNonRealtime);
-    _convolver.process(origOutL, origOutR, origOutL, origOutR, origNumFrames);
+    if (_convolver.isAudible()) {
+        _convolver.setNonRealtime(isNonRealtime);
+        _convolver.process(origOutL, origOutR, origOutL, origOutR, origNumFrames);
+    }
 }
 
 void Engine::noteOn(int note, int midiChannel)

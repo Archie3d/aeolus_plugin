@@ -23,6 +23,7 @@
 #include "PluginProcessor.h"
 #include "CustomMidiKeyboard.h"
 
+#include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"
 
 //==============================================================================
@@ -64,6 +65,8 @@ private:
     juce::Label _cpuLoadValueLabel;
     juce::Label _voiceCountLabel;
     juce::Label _voiceCountValueLabel;
+    juce::Label _reverbLabel;
+    ui::ParameterSlider _reverbSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

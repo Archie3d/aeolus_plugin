@@ -23,6 +23,8 @@
 
 #include "aeolus/engine.h"
 
+#include "Parameters.h"
+
 //==============================================================================
 /**
 */
@@ -34,7 +36,9 @@ public:
     AeolusAudioProcessor();
     ~AeolusAudioProcessor() override;
 
-    aeolus::Engine& getEngine() { return _engine; }
+    aeolus::Engine& getEngine() noexcept { return _engine; }
+
+    Parameters& getParameters() noexcept { return _parameters; }
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -80,6 +84,8 @@ public:
 private:
 
     aeolus::Engine _engine;
+
+    Parameters _parameters;
 
     std::atomic<float> _processLoad;
 

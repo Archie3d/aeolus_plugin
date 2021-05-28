@@ -26,13 +26,12 @@ using namespace juce;
 
 //==============================================================================
 AeolusAudioProcessor::AeolusAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                        )
     , _engine{}
+    , _parameters(*this)
     , _processLoad{0.0f}
-#endif
 {
     _engine.getMidiKeyboardState().addListener(this);
 }
@@ -170,6 +169,7 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     if (totalNumOutputChannels > 1)
         outR = buffer.getWritePointer (1);
 
+    _engine.setReverbWet(_parameters.reverbWet->get());
     _engine.process(outL, outR, (size_t) buffer.getNumSamples(), isNonRealtime());
 
     auto timestampStop = high_resolution_clock::now();
@@ -209,7 +209,10 @@ juce::AudioProcessorEditor* AeolusAudioProcessor::createEditor()
 //==============================================================================
 void AeolusAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    const auto state = _engine.getPersistentState();
+    auto state = _engine.getPersistentState();
+
+    if (auto* obj = state.getDynamicObject())
+        obj->setProperty("parameters", _parameters.toVar());
 
     MemoryOutputStream stream(destData, false);
 
@@ -221,6 +224,10 @@ void AeolusAudioProcessor::setStateInformation (const void* data, int sizeInByte
     MemoryInputStream stream(data, sizeInBytes, false);
 
     const auto state = JSON::parse(stream);
+
+    if (const auto* obj = state.getDynamicObject()) {
+        _parameters.fromVar(obj->getProperty("parameters"));
+    }
 
     _engine.setPersistentState(state);
 }

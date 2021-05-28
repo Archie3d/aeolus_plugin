@@ -78,6 +78,7 @@ public:
     AudioParameterPool(size_t size);
     size_t size() const { return _params.size(); }
     AudioParameter& operator[] (int index);
+    const AudioParameter& operator[] (int index) const;
 
     AudioParameter& findByName(const juce::String& n);
 

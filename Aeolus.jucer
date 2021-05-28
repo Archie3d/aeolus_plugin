@@ -49,6 +49,10 @@
         <FILE id="BYizpr" name="worker.h" compile="0" resource="0" file="Source/aeolus/worker.h"/>
       </GROUP>
       <GROUP id="{D9FB1BF8-A6EF-4144-A7AD-895D68334742}" name="ui">
+        <FILE id="dvcN9v" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/ui/CustomLookAndFeel.cpp"/>
+        <FILE id="Hjk4TF" name="CustomLookAndFeel.h" compile="0" resource="0"
+              file="Source/ui/CustomLookAndFeel.h"/>
         <FILE id="VEO5ph" name="DivisionControlPanel.cpp" compile="1" resource="0"
               file="Source/ui/DivisionControlPanel.cpp"/>
         <FILE id="vuqkdZ" name="DivisionControlPanel.h" compile="0" resource="0"
@@ -56,6 +60,10 @@
         <FILE id="ABDlK8" name="DivisionView.cpp" compile="1" resource="0"
               file="Source/ui/DivisionView.cpp"/>
         <FILE id="oWzSbD" name="DivisionView.h" compile="0" resource="0" file="Source/ui/DivisionView.h"/>
+        <FILE id="vA3Bb5" name="ParameterSlider.cpp" compile="1" resource="0"
+              file="Source/ui/ParameterSlider.cpp"/>
+        <FILE id="j8xpdL" name="ParameterSlider.h" compile="0" resource="0"
+              file="Source/ui/ParameterSlider.h"/>
         <FILE id="IMWRu0" name="StopButton.cpp" compile="1" resource="0" file="Source/ui/StopButton.cpp"/>
         <FILE id="lZISO8" name="StopButton.h" compile="0" resource="0" file="Source/ui/StopButton.h"/>
       </GROUP>
@@ -63,6 +71,8 @@
             file="Source/CustomMidiKeyboard.cpp"/>
       <FILE id="wnfbRp" name="CustomMidiKeyboard.h" compile="0" resource="0"
             file="Source/CustomMidiKeyboard.h"/>
+      <FILE id="cjTy99" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
+      <FILE id="RIEbIi" name="Parameters.h" compile="0" resource="0" file="Source/Parameters.h"/>
       <FILE id="FksDQz" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="pwFyrg" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
