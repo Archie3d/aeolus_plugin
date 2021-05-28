@@ -15,6 +15,5 @@ From the original implementation I only ported `addsynth` and `rankwave` modules
 
 ## Current limitations
 - The ouput is dry, there is no reverb in the plugin. Though I've added simple stereo spatialisation of the pipes. You can use whatever reverb you want from your DAW.
-- Currently all divisions listen to the same MIDI events.
 - No links between manuals.
-- There is no tremulant and swell control yet.
+- There is no swell control yet.
