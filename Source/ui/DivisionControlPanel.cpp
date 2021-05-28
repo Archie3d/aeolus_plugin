@@ -72,7 +72,7 @@ void DivisionControlPanel::resized()
     _midiChannelLabel.setBounds(margin, margin, getWidth() - 2 * margin, 20);
     _midiChannelComboBox.setBounds(margin, 2*margin + 20, getWidth() - 2 * margin, 20);
 
-    _tremulantButton.setBounds((getWidth() - 80) / 2, 5*margin + 40, 80, 40);
+    _tremulantButton.setBounds((getWidth() - 80) / 2, 5*margin + 40, 80, 35);
 }
 
 void DivisionControlPanel::paint(juce::Graphics& g)

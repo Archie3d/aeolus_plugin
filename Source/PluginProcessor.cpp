@@ -230,18 +230,18 @@ void AeolusAudioProcessor::setStateInformation (const void* data, int sizeInByte
 void AeolusAudioProcessor::handleNoteOn(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float /* velocity */)
 {
     if (MessageManager::getInstance()->isThisTheMessageThread()) {
-        _engine.postNoteEvent(true, midiNoteNumber);
+        _engine.postNoteEvent(true, midiNoteNumber, midiChannel);
     } else {
-        _engine.noteOn(midiNoteNumber);
+        _engine.noteOn(midiNoteNumber, midiChannel);
     }
 }
 
 void AeolusAudioProcessor::handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float /* velocity */)
 {
     if (MessageManager::getInstance()->isThisTheMessageThread()) {
-        _engine.postNoteEvent(false, midiNoteNumber);
+        _engine.postNoteEvent(false, midiNoteNumber, midiChannel);
     } else {
-        _engine.noteOff(midiNoteNumber);
+        _engine.noteOff(midiNoteNumber, midiChannel);
     }
 }
 

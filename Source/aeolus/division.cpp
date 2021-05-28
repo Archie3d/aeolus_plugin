@@ -173,8 +173,11 @@ float Division::getTremulantLevel(bool update)
     return level;
 }
 
-void Division::noteOn(int note)
+void Division::noteOn(int note, int midiChannel)
 {
+    if (!isForMIDIChannel(midiChannel))
+        return;
+
     for (auto& rw : _rankwaves) {
         if (rw.enabled && rw.rankwave->isForNote(note)) {
             auto state = rw.rankwave->trigger(note);
@@ -185,8 +188,11 @@ void Division::noteOn(int note)
     }
 }
 
-void Division::noteOff(int note)
+void Division::noteOff(int note, int midiChannel)
 {
+    if (!isForMIDIChannel(midiChannel))
+        return;
+
     auto* voice = _activeVoices.first();
 
     while (voice != nullptr) {

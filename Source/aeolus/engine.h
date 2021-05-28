@@ -68,6 +68,7 @@ public:
     {
         bool on;
         int note;
+        int midiChannel;
     };
 
     Engine();
@@ -79,8 +80,8 @@ public:
 
     void process(float* outL, float* outR, int numFrames);
 
-    void noteOn(int note);
-    void noteOff(int note);
+    void noteOn(int note, int midiChannel);
+    void noteOff(int note, int midiChannel);
 
     juce::MidiKeyboardState& getMidiKeyboardState() noexcept { return _midiKeybaordState; }
 
@@ -94,7 +95,7 @@ public:
     juce::var getPersistentState() const;
     void setPersistentState(const juce::var& state);
 
-    void postNoteEvent(bool onOff, int note);
+    void postNoteEvent(bool onOff, int note, int midiChannel);
 
 private:
 

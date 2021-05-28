@@ -85,8 +85,8 @@ public:
 
     float getTremulantLevel(bool update = true);
 
-    void noteOn(int note);
-    void noteOff(int note);
+    void noteOn(int note, int midiChannel);
+    void noteOff(int note, int midiChannel);
 
     List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
 

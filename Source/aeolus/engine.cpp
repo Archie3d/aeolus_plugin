@@ -152,17 +152,17 @@ void Engine::process(float* outL, float* outR, int numFrames)
     }
 }
 
-void Engine::noteOn(int note)
+void Engine::noteOn(int note, int midiChannel)
 {
     for (auto* division : _divisions) {
-        division->noteOn(note);
+        division->noteOn(note, midiChannel);
     }
 }
 
-void Engine::noteOff(int note)
+void Engine::noteOff(int note, int midiChannel)
 {
     for (auto* division : _divisions) {
-        division->noteOff(note);
+        division->noteOff(note, midiChannel);
     }
 }
 
@@ -221,8 +221,6 @@ void Engine::setPersistentState(const var& state)
 
 void Engine::populateDivisions()
 {
-    auto* g = EngineGlobal::getInstance();
-
     // Load organ config
     MemoryInputStream stream(BinaryData::default_organ_json, BinaryData::default_organ_jsonSize, false);
     auto config = JSON::parse(stream);
@@ -240,9 +238,9 @@ void Engine::populateDivisions()
     }
 }
 
-void Engine::postNoteEvent(bool onOff, int note)
+void Engine::postNoteEvent(bool onOff, int note, int midiChannel)
 {
-    _pendingNoteEvents.send({onOff, note});
+    _pendingNoteEvents.send({onOff, note, midiChannel});
 }
 
 void Engine::processSubFrame()
@@ -296,9 +294,9 @@ void Engine::processPendingNoteEvents()
     NoteEvent event;
     while (_pendingNoteEvents.receive(event)) {
         if (event.on)
-            noteOn(event.note);
+            noteOn(event.note, event.midiChannel);
         else
-            noteOff(event.note);
+            noteOff(event.note, event.midiChannel);
     }
 }
 
