@@ -11,9 +11,10 @@ This project is my attempt to extract the systhesis part of the original Aeolus 
 
 ## Implementation notes
 
-From the original implementation I only ported `addsynth` and `rankwave` modules. These modules describe the 64-harmonics additive synth and organ pipes wavetables generation. Plus this repo inclused the `ae0` files that contain the harmonics tables for various pipes (these are embedded into the plugin during compilation).
+From the original implementation I only ported `addsynth` and `rankwave` modules. These modules describe the 64-harmonics additive synth and organ pipes wavetables generation. Plus this repo includes the `ae0` files that contain the harmonics tables for various pipes (these are embedded into the plugin during compilation).
+
+Convolution reverb uses IRs from the [Open AIR](https://www.openair.hosted.york.ac.uk/) project database.
 
 ## Current limitations
 - No links between manuals.
 - There is no swell control yet.
-- No reverb dry/wet control yet.
