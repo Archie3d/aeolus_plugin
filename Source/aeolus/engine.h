@@ -28,6 +28,8 @@
 #include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
 
+#include <vector>
+
 AEOLUS_NAMESPACE_BEGIN
 
 /**
@@ -39,13 +41,26 @@ class EngineGlobal : public juce::DeletedAtShutdown
 {
 public:
 
+    struct IR
+    {
+        juce::String name;
+        const char* data;
+        size_t size;
+
+        float gain;
+        bool zeroDelay;
+
+        juce::AudioBuffer<float> waveform;
+    };
+
     int getStopsCount() const noexcept { return _rankwaves.size(); }
     Rankwave* getStop(int i) { return _rankwaves[i]; }
 
     juce::StringArray getAllStopNames() const;
     Rankwave* getStopByName(const juce::String& name);
 
-    const juce::AudioBuffer<float>& getIR() const noexcept { return _ir; }
+    const std::vector<IR>& getIRs() const noexcept { return _irs; }
+    int getLongestIRLength() const noexcept { return _longestIRLength; }
 
     void updateStops(float sampleRate);
 
@@ -56,12 +71,13 @@ private:
     ~EngineGlobal() override  { clearSingletonInstance(); }
 
     void loadRankwaves();
-    void loadIR();
+    void loadIRs();
 
     juce::OwnedArray<Rankwave> _rankwaves;
     juce::HashMap<juce::String, Rankwave*> _rankwavesByName;
 
-    juce::AudioBuffer<float> _ir;
+    std::vector<IR> _irs;
+    int _longestIRLength;   ///< Longest IR length in samples
 };
 
 //==============================================================================
@@ -77,6 +93,12 @@ public:
         int midiChannel;
     };
 
+    struct IRSwithEvent
+    {
+        int num;
+    };
+
+
     Engine();
 
     float getSampleRate() const noexcept { return _sampleRate; }
@@ -84,6 +106,17 @@ public:
 
     void prepareToPlay(float sampleRate, int frameSize);
 
+    /**
+     * This can be called upon initialisation or on the audio thread.
+     */
+    void setReverbIR(int num);
+
+    /**
+     * This to be called on the main (UI) thread.
+     */
+    void postReverbIR(int num);
+
+    int getReverbIR() const noexcept { return _selectedIR; }
     void setReverbWet(float v);
 
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
@@ -112,6 +145,7 @@ private:
     void processSubFrame();
 
     void processPendingNoteEvents();
+    void processPendingIRSwitchEvents();
 
     void generateTremulant();
     void modulateDivision(Division* division);
@@ -135,6 +169,9 @@ private:
     float _tremulantPhase;
 
     dsp::Convolver _convolver;
+    std::atomic<int> _selectedIR;
+    RingBuffer<IRSwithEvent, 1024> _irSwitchEvents;
+
     dsp::Interpolator _interpolator;
 
     juce::MidiKeyboardState _midiKeybaordState;

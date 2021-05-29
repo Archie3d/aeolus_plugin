@@ -27,7 +27,7 @@ EngineGlobal::EngineGlobal()
     : _rankwaves{}
 {
     loadRankwaves();
-    loadIR();
+    loadIRs();
 }
 
 StringArray EngineGlobal::getAllStopNames() const
@@ -69,19 +69,89 @@ void EngineGlobal::loadRankwaves()
     }
 }
 
-void EngineGlobal::loadIR()
+void EngineGlobal::loadIRs()
 {
-    std::unique_ptr<InputStream> stream = std::make_unique<MemoryInputStream>(
-                                BinaryData::_1st_baptist_nashville_balcony_wav,
-                                BinaryData::_1st_baptist_nashville_balcony_wavSize,
-                                false);
+    _irs.clear();
+
+    _irs.push_back({
+            "1st Baptist Church Nashville",
+            BinaryData::_1st_baptist_nashville_balcony_wav,
+            BinaryData::_1st_baptist_nashville_balcony_wavSize,
+            1.0f,
+            true,
+            {}
+        });
+
+    _irs.push_back({
+            "Elveden Hall (Suffolk England)",
+            BinaryData::elveden_hall_suffolk_england_wav,
+            BinaryData::elveden_hall_suffolk_england_wavSize,
+            0.1f,
+            false,
+            {}
+        });
+    
+    _irs.push_back({
+            "Lady Chapel, St Albans Cathedral",
+            BinaryData::lady_chapel_stalbans_wav,
+            BinaryData::lady_chapel_stalbans_wavSize,
+            1.0f,
+            true,
+            {}
+        });
+
+    _irs.push_back({
+            "St Andrew's Church",
+            BinaryData::st_andrews_church_wav,
+            BinaryData::st_andrews_church_wavSize,
+            1.0f,
+            true,
+            {}
+        });
+
+    _irs.push_back({
+            "St. George's Episcopal Church",
+            BinaryData::st_georges_far_wav,
+            BinaryData::st_georges_far_wavSize,
+            1.0f,
+            true,
+            {}
+        });
+
+    _irs.push_back({
+            "York Minster",
+            BinaryData::york_minster_wav,
+            BinaryData::york_minster_wavSize,
+            0.3f,
+            true,
+            {}
+        });
+
+    _irs.push_back({
+            "R1 Nuclear Reactor Hall",
+            BinaryData::r1_nuclear_reactor_hall_wav,
+            BinaryData::r1_nuclear_reactor_hall_wavSize,
+            0.4f,
+            true,
+            {}
+        });
 
     AudioFormatManager manager;
     manager.registerBasicFormats();
-    std::unique_ptr<AudioFormatReader> reader{manager.createReaderFor(std::move(stream))};
 
-    _ir.setSize(reader->numChannels, (int)reader->lengthInSamples);
-    reader->read(&_ir, 0, _ir.getNumSamples(), 0, true, true);
+    _longestIRLength = 4096;
+
+    for (auto& ir : _irs) {
+        std::unique_ptr<InputStream> stream = std::make_unique<MemoryInputStream>(ir.data, ir.size, false);
+        std::unique_ptr<AudioFormatReader> reader{manager.createReaderFor(std::move(stream))};
+        ir.waveform.setSize(reader->numChannels, (int)reader->lengthInSamples);
+        reader->read(&ir.waveform, 0, ir.waveform.getNumSamples(), 0, true, true);
+
+        ir.waveform.applyGain(ir.gain);
+
+        _longestIRLength = jmax(_longestIRLength, ir.waveform.getNumSamples());
+    }
+
 }
 
 JUCE_IMPLEMENT_SINGLETON(EngineGlobal)
@@ -99,6 +169,8 @@ Engine::Engine()
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
     , _tremulantPhase{0.0f}
     , _convolver{}
+    , _selectedIR{0}
+    , _irSwitchEvents{}
     , _interpolator{1.0f}
     , _midiKeybaordState{}
 {
@@ -111,17 +183,38 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
     auto* g = EngineGlobal::getInstance();
     g->updateStops(SAMPLE_RATE);
 
-    const auto& ir = g->getIR();
-    _convolver.setLength(int(ir.getNumSamples() / 4096 + 1) * 4096);
-    _convolver.prepareToPlay(sampleRate, frameSize); // Must be called before setting the IR
-    _convolver.setIR(ir);
+    setReverbIR(_selectedIR);
     _convolver.setDryWet(1.0f, 0.25f, true);
-    _convolver.setZeroDelay(true);
 
     _interpolator.setRatio(SAMPLE_RATE / sampleRate); // 44100 / sampleRate
     _interpolator.reset();
 
     _sampleRate = sampleRate;
+}
+
+void Engine::setReverbIR(int num)
+{
+    auto* g = EngineGlobal::getInstance();
+    const auto& irs = g->getIRs();
+
+    if (num >= 0 && num < irs.size()) {
+        const auto& ir = irs[num];
+        _convolver.setLength(int(ir.waveform.getNumSamples()/ 4096 + 1) * 4096);
+        _convolver.prepareToPlay(SAMPLE_RATE, SUB_FRAME_LENGTH); // these parameters are irrelevant
+        _convolver.setZeroDelay(ir.zeroDelay);
+        _convolver.setIR(ir.waveform);
+
+        _selectedIR = num;
+    }
+}
+
+void Engine::postReverbIR(int num)
+{
+    // Anticipate the IR change that will happen later.
+    // This is required for the UI to be updated correctly.
+    _selectedIR = num;
+
+    _irSwitchEvents.send({num});
 }
 
 void Engine::setReverbWet(float v)
@@ -138,6 +231,7 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
     float* origOutR = outR;
     int origNumFrames = numFrames;
 
+    processPendingIRSwitchEvents();
     processPendingNoteEvents();
 
     while (numFrames > 0)
@@ -217,6 +311,9 @@ var Engine::getPersistentState() const
 {
     auto* obj = new DynamicObject();
 
+    int irNum = _selectedIR;
+    obj->setProperty("ir", irNum);
+
     Array<var> divisions;
 
     for (auto* division : _divisions)
@@ -230,6 +327,16 @@ var Engine::getPersistentState() const
 void Engine::setPersistentState(const var& state)
 {
     if (const auto* obj = state.getDynamicObject()) {
+
+        int irNum = obj->getProperty("ir");
+
+        if (MessageManager::getInstance()->isThisTheMessageThread())
+            postReverbIR(irNum);
+        else
+            setReverbIR(irNum);
+
+        postReverbIR(irNum);
+
         if (const auto* divisions = obj->getProperty("divisions").getArray()) {
 
             if (divisions->size() != _divisions.size()) {
@@ -318,11 +425,26 @@ void Engine::processSubFrame()
 void Engine::processPendingNoteEvents()
 {
     NoteEvent event;
+
     while (_pendingNoteEvents.receive(event)) {
         if (event.on)
             noteOn(event.note, event.midiChannel);
         else
             noteOff(event.note, event.midiChannel);
+    }
+}
+
+void Engine::processPendingIRSwitchEvents()
+{
+    IRSwithEvent event;
+    bool received = false;
+
+    while (_irSwitchEvents.receive(event)) {
+        received = true;
+    }
+
+    if (received) {
+        setReverbIR(event.num);
     }
 }
 

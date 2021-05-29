@@ -4,7 +4,7 @@
             "name": "Manual III",
             "swell": true,
             "tremulant": true,
-            "tremulant_level": 0.2,
+            "tremulant_level": 0.3,
             "stops": [
                 { "name": "Principal\n8",       "pipe": "III_principal_8" },
                 { "name": "Gemshorn\n8",        "pipe": "gemshorn8" },
@@ -23,7 +23,7 @@
             "name": "Manual II",
             "swell": true,
             "tremulant": true,
-            "tremulant_level": 0.2,
+            "tremulant_level": 0.3,
             "stops": [
                 { "name": "Rohrflöte\n8",       "pipe": "rohrflute8" },
                 { "name": "Harmonic\nFlute 8",  "pipe": "harmflute8" },

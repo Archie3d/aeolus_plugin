@@ -85,6 +85,18 @@
       <GROUP id="{816D46C7-791C-0717-71E5-DD94749AC10C}" name="irs">
         <FILE id="wmNctk" name="1st_baptist_nashville_balcony.wav" compile="0"
               resource="1" file="Resources/irs/1st_baptist_nashville_balcony.wav"/>
+        <FILE id="rrwwtj" name="elveden_hall_suffolk_england.wav" compile="0"
+              resource="1" file="Resources/irs/elveden_hall_suffolk_england.wav"/>
+        <FILE id="buHCTt" name="lady_chapel_stalbans.wav" compile="0" resource="1"
+              file="Resources/irs/lady_chapel_stalbans.wav"/>
+        <FILE id="epImAI" name="r1_nuclear_reactor_hall.wav" compile="0" resource="1"
+              file="Resources/irs/r1_nuclear_reactor_hall.wav"/>
+        <FILE id="mB3z4o" name="st_andrews_church.wav" compile="0" resource="1"
+              file="Resources/irs/st_andrews_church.wav"/>
+        <FILE id="a7NOA9" name="st_georges_far.wav" compile="0" resource="1"
+              file="Resources/irs/st_georges_far.wav"/>
+        <FILE id="f4O5QF" name="york_minster.wav" compile="0" resource="1"
+              file="Resources/irs/york_minster.wav"/>
       </GROUP>
       <GROUP id="{8A578D86-D9AC-1580-B55B-572CCF77D103}" name="configs">
         <FILE id="VieJCy" name="default_organ.json" compile="0" resource="1"

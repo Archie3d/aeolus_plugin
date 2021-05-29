@@ -17,6 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
+#include "aeolus/engine.h"
 #include "ui/CustomLookAndFeel.h"
 
 #include "PluginProcessor.h"
@@ -36,6 +37,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _voiceCountLabel{{}, "Voices:"}
     , _voiceCountValueLabel{}
     , _reverbLabel{{}, "Reverb:"}
+    , _reverbComboBox{}
     , _reverbSlider{*p.getParameters().reverbWet, juce::Slider::LinearHorizontal}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
@@ -60,6 +62,23 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     addAndMakeVisible(_voiceCountValueLabel);
 
     addAndMakeVisible(_reverbLabel);
+
+    addAndMakeVisible(_reverbComboBox);
+    _reverbComboBox.setColour(ComboBox::backgroundColourId, Colour(0x33, 0x33, 0x33));    
+    _reverbComboBox.setColour(ComboBox::arrowColourId, Colour(0x66, 0x66, 0x66));
+
+    auto* g = aeolus::EngineGlobal::getInstance();
+
+    int id = 0;
+    for (const auto& ir : g->getIRs()) {
+        _reverbComboBox.addItem(ir.name, ++id);
+    }
+
+    _reverbComboBox.setSelectedId(_audioProcessor.getEngine().getReverbIR() + 1);
+
+    _reverbComboBox.onChange = [this]() {
+        _audioProcessor.getEngine().postReverbIR(_reverbComboBox.getSelectedId() - 1);
+    };
 
     _reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     addAndMakeVisible(_reverbSlider);
@@ -98,7 +117,8 @@ void AeolusAudioProcessorEditor::resized()
     _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 24, 20);
 
     _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 60, margin, 60, 20);
-    _reverbSlider.setBounds(_reverbLabel.getRight() + margin, margin, 100, 20);
+    _reverbComboBox.setBounds(_reverbLabel.getRight() + margin, margin, 220, 20);
+    _reverbSlider.setBounds(_reverbComboBox.getRight() + margin, margin, 100, 20);
 
     constexpr int W = 120;
     constexpr int H = 30;
