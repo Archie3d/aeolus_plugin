@@ -11,10 +11,12 @@ This project is my attempt to extract the systhesis part of the original Aeolus 
 
 ## Implementation notes
 
-From the original implementation I only ported `addsynth` and `rankwave` modules. These modules describe the 64-harmonics additive synth and organ pipes wavetables generation. Plus this repo includes the `ae0` files that contain the harmonics tables for various pipes (these are embedded into the plugin during compilation).
+From the original implementation I only ported `addsynth` and `rankwave` modules. These modules describe the 64-harmonics additive synth and organ pipes wavetables generation. Plus this repo includes the `ae0` files that contain the harmonics tables for various pipes (these are embedded into the plugin's resources).
+
+But the most of the code (including voicing, spatialisation, reverb, etc.) is all new, and it is not based on the original Aeolus.
 
 Convolution reverb uses IRs from the [Open AIR](https://www.openair.hosted.york.ac.uk/) project database.
 
 ## Current limitations
-- No links between manuals (but you can assign then to the same MIDI channel).
+- No links between manuals (but you can assign manuals to the same MIDI channel).
 - There is no swell control yet (but there is a gain control per division).
