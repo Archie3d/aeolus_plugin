@@ -16,5 +16,5 @@ From the original implementation I only ported `addsynth` and `rankwave` modules
 Convolution reverb uses IRs from the [Open AIR](https://www.openair.hosted.york.ac.uk/) project database.
 
 ## Current limitations
-- No links between manuals.
-- There is no swell control yet.
+- No links between manuals (but you can assign then to the same MIDI channel).
+- There is no swell control yet (but there is a gain control per division).
