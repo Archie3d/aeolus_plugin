@@ -22,6 +22,8 @@
 #include "aeolus/globals.h"
 #include "aeolus/division.h"
 
+#include "ui/ParameterSlider.h"
+
 namespace ui {
 
 class DivisionControlPanel : public juce::Component
@@ -40,6 +42,7 @@ private:
     juce::Label _midiChannelLabel;
     juce::ComboBox _midiChannelComboBox;
     juce::TextButton _tremulantButton;
+    ui::ParameterSlider _gainSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionControlPanel)
 };

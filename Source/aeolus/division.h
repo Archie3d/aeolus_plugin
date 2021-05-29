@@ -22,6 +22,7 @@
 #include "aeolus/globals.h"
 #include "aeolus/rankwave.h"
 #include "aeolus/voice.h"
+#include "aeolus/audioparam.h"
 
 #include <atomic>
 #include <vector>
@@ -39,6 +40,13 @@ class Engine;
 class Division
 {
 public:
+
+    enum Params
+    {
+        GAIN = 0,
+
+        NUM_PARAMS
+    };
 
     /// Single stop descriptor.
     struct Stop
@@ -64,6 +72,11 @@ public:
 
     void clear();
     void addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
+
+    juce::AudioParameterFloat* getParamGain() noexcept { return _paramGain; }
+    void setParamGain(juce::AudioParameterFloat* param) noexcept { _paramGain = param; }
+
+    AudioParameterPool& parameters() noexcept { return _params; }
 
     int getStopsCount() const noexcept { return (int)_rankwaves.size(); }
     void enableStop(int i, bool ena) { _rankwaves[i].enabled = ena; }
@@ -104,6 +117,10 @@ private:
     float _tremulantLevel;
     float _tremulantMaxLevel;
     std::atomic<float> _tremulantTargetLevel;
+
+    /// Stored gain parameter for easy access from the devision control UI component
+    juce::AudioParameterFloat* _paramGain;
+    AudioParameterPool _params;
 
     std::vector<Stop> _rankwaves;    ///< All the stops this division has.
 

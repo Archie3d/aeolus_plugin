@@ -17,14 +17,30 @@
 //
 // ----------------------------------------------------------------------------
 
+#include "PluginProcessor.h"
+
+#include "aeolus/division.h"
+
 #include "Parameters.h"
 
 using namespace juce;
 
-Parameters::Parameters(AudioProcessor& proc)
+Parameters::Parameters(AeolusAudioProcessor& proc)
     : processor(proc)
 {
     processor.addParameter(reverbWet = new AudioParameterFloat("reverb_wet", "Reverb", 0.0f, 1.0f, 0.25f));
+
+    auto& engine = proc.getEngine();
+
+    for (int i = 0; i < engine.getDivisionCount(); ++i) {
+        auto* division = engine.getDivisionByIndex(i);
+
+        auto param = std::make_unique<AudioParameterFloat>(String("gain_") + String(i), division->getName() + " gain", 0.0f, 1.0f, 0.5f);
+        auto* ptr = param.get();
+        processor.addParameter(param.release());
+        divisionsGain.push_back(ptr);
+        division->setParamGain(ptr);
+    }
 }
 
 var Parameters::toVar() const

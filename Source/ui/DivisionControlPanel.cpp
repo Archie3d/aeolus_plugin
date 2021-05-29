@@ -17,6 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
+#include "ui/CustomLookAndFeel.h"
 #include "ui/DivisionControlPanel.h"
 
 using namespace juce;
@@ -28,6 +29,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     , _midiChannelLabel{{}, "MIDI channel"}
     , _midiChannelComboBox{}
     , _tremulantButton{"Tremulant"}
+    , _gainSlider{*division->getParamGain()}
 {
     _midiChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
     auto f = _midiChannelLabel.getFont();
@@ -60,19 +62,27 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 
     addAndMakeVisible(_tremulantButton);
     _tremulantButton.setVisible(_division->hasTremulant());
+
+    _gainSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
+    addAndMakeVisible(_gainSlider);
 }
 
 void DivisionControlPanel::resized()
 {
     constexpr int margin = 5;
+    constexpr int gainWidth = 10;
 
     auto bounds = getLocalBounds();
-    const int itemWidth = bounds.getWidth() - 2 * margin;
+    const int itemWidth = bounds.getWidth() - 3 * margin - gainWidth;
 
-    _midiChannelLabel.setBounds(margin, margin, getWidth() - 2 * margin, 20);
-    _midiChannelComboBox.setBounds(margin, 2*margin + 20, getWidth() - 2 * margin, 20);
+    _gainSlider.setBounds(margin, margin, margin + gainWidth, 110);
+    int offset = _gainSlider.getRight() + margin;
 
-    _tremulantButton.setBounds((getWidth() - 80) / 2, 5*margin + 40, 80, 35);
+
+    _midiChannelLabel.setBounds(offset, margin, itemWidth, 20);
+    _midiChannelComboBox.setBounds(offset, 2*margin + 20, itemWidth - 2 * margin, 20);
+
+    _tremulantButton.setBounds(offset + margin, 5*margin + 40, bounds.getRight() - 3 * margin - offset, 35);
 }
 
 void DivisionControlPanel::paint(juce::Graphics& g)

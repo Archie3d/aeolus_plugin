@@ -34,6 +34,8 @@ Division::Division(Engine& engine, const String& name)
     , _tremulantLevel{0.0f}
     , _tremulantMaxLevel{1.0f}
     , _tremulantTargetLevel{0.0f}
+    , _paramGain{nullptr}
+    , _params{Division::NUM_PARAMS}
     , _rankwaves{}
 {
 }

@@ -21,13 +21,19 @@
 
 #include "aeolus/globals.h"
 
+#include <vector>
+
+class AeolusAudioProcessor;
+
 struct Parameters
 {
-    juce::AudioProcessor& processor;
+    AeolusAudioProcessor& processor;
 
     juce::AudioParameterFloat* reverbWet;
 
-    Parameters(juce::AudioProcessor& proc);
+    std::vector<juce::AudioParameterFloat*> divisionsGain;
+
+    Parameters(AeolusAudioProcessor& proc);
 
     juce::var toVar() const;
     void fromVar(const juce::var& v);

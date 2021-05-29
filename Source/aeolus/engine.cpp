@@ -478,8 +478,11 @@ void Engine::modulateDivision(Division* division)
 
     const float lvl = division->getTremulantLevel(true);
 
+    auto& paramGain = division->parameters()[Division::GAIN];
+    paramGain.setValue(division->getParamGain()->get());
+
     for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
-        float g = 1.0f + gain[i] * lvl;
+        float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
         outL[i] *= g;
         outR[i] *= g;
     }

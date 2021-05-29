@@ -38,7 +38,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _voiceCountValueLabel{}
     , _reverbLabel{{}, "Reverb:"}
     , _reverbComboBox{}
-    , _reverbSlider{*p.getParameters().reverbWet, juce::Slider::LinearHorizontal}
+    , _reverbSlider{*p.getParametersContainer().reverbWet, juce::Slider::LinearHorizontal}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 

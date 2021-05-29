@@ -38,7 +38,7 @@ public:
 
     aeolus::Engine& getEngine() noexcept { return _engine; }
 
-    Parameters& getParameters() noexcept { return _parameters; }
+    Parameters& getParametersContainer() noexcept { return _parameters; }
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
