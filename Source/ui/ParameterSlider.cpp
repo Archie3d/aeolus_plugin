@@ -103,7 +103,8 @@ ParameterSlider::ParameterSlider (AudioProcessorParameter &p, SliderStyle style,
     : Slider (style, textBoxPosition)
     , d (std::make_unique<Impl>(*this, p))
 {
-    setRange (0.0, 1.0, 0.0);
+    setRange(0.0, 1.0, 0.0);
+    setDoubleClickReturnValue(true, p.getDefaultValue());
 }
 
 ParameterSlider::~ParameterSlider() = default;

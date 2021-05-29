@@ -64,6 +64,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _tremulantButton.setVisible(_division->hasTremulant());
 
     _gainSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
+    _gainSlider.setSkewFactor(0.5f);
     addAndMakeVisible(_gainSlider);
 }
 
