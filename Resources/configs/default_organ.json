@@ -31,7 +31,6 @@
                 { "name": "Nasard\n2 2/3",      "pipe": "nasard" },
                 { "name": "Ottavina\n2",        "pipe": "ottavina2" },
                 { "name": "Tertia\n1 3/5",      "pipe": "tertia" },
-                { "name": "Sesqui-\naltera",    "pipe": "sesqualtera" },
                 { "name": "Septime",            "pipe": "septime" },
                 { "name": "None",               "pipe": "none" },
                 { "name": "Krumhorn",           "pipe": "cromhorne" },
@@ -52,6 +51,7 @@
                 { "name": "Flöte\n8",           "pipe": "flute8" },
                 { "name": "Flöte\n4",           "pipe": "flute4" },
                 { "name": "Flöte\n2",           "pipe": "flute2" },
+                { "name": "Sesqui-\naltera",    "pipe": "sesqualtera" },
                 { "name": "Cymbel\nVI",         "pipe": "I_cymbel" },
                 { "name": "Mixtur",             "pipe": "I_mixtur5fach" },
                 { "name": "Trumpet",            "pipe": "I_trumpet" }
