@@ -158,7 +158,7 @@ private:
     N_func  _n_ran;
     N_func  _n_ins;
     N_func  _n_att;
-    N_func  _n_atd;
+    N_func  _n_atd; ///< Attack detune.
     N_func  _n_dct;
     N_func  _n_dcd;
 

@@ -217,7 +217,10 @@ void Pipewave::genwave()
     _attackLength = (int)(_sampleRate * m + 0.5f);
     _attackLength = (_attackLength + SUB_FRAME_LENGTH - 1) & ~(SUB_FRAME_LENGTH - 1);
 
+    // Target frequency
     float f1 = (_freq + _model.getNoteOffset(_note) + _model.getNoteRandomisation(_note) * (2.0f * rnd.nextFloat() + 1.0f)) * sampleRate_r;
+
+    // Attack frequency (detuned)
     float f0 = f1 * math::exp2ap(_model.getNoteAtd(_note) / 1200.0f);
 
     float f = 0.0f;
@@ -263,17 +266,21 @@ void Pipewave::genwave()
 
     int k = (int)(_sampleRate * _model.getNoteAttack(_note) + 0.5);
 
+    // _arg[i] will contain phase steps along the generated wavetle
+
     {
         float t = 0.0f;
 
+        // Interpolate from frequency f1 to f0 during the attack
         for (int i = 0; i <= _attackLength; ++i) {
             _arg [i] = t - floorf (t + 0.5f);
             t += (i < k) ? (((k - i) * f0 + i * f1) / k) : f1;
         }
     }
 
+    // Generate phase steps of the sustained loop
     for (int i = 1; i < _loopLength; ++i) {
-        float t = _arg [_attackLength]+ (float) i * nc / _loopLength;
+        float t = _arg[_attackLength] + (float)i * nc / _loopLength;
         _arg [i + _attackLength] = t - floorf (t + 0.5f);
     }
 
@@ -300,6 +307,7 @@ void Pipewave::genwave()
 
             if (i < k)
                 m *= _att [i];
+
             _attackStartPtr [i] += m;
         }
     }
