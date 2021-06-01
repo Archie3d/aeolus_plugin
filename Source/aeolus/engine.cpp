@@ -169,7 +169,7 @@ Engine::Engine()
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
     , _tremulantPhase{0.0f}
     , _convolver{}
-    , _selectedIR{-1}
+    , _selectedIR{0}
     , _irSwitchEvents{}
     , _interpolator{1.0f}
     , _midiKeybaordState{}
@@ -184,7 +184,7 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
     g->updateStops(SAMPLE_RATE);
 
     // Select the first IR for reverb by default
-    setReverbIR(0);
+    setReverbIR(_selectedIR);
     _convolver.setDryWet(1.0f, 0.25f, true);
 
     _interpolator.setRatio(SAMPLE_RATE / sampleRate); // 44100 / sampleRate
@@ -195,11 +195,6 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
 
 void Engine::setReverbIR(int num)
 {
-    if (_selectedIR == num) {
-        // Already selected
-        return;
-    }
-
     auto* g = EngineGlobal::getInstance();
     const auto& irs = g->getIRs();
 

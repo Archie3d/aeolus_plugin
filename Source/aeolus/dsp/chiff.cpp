@@ -37,7 +37,7 @@ Chiff::Chiff()
     _filterSpec.type = BiquadFilter::BandPass;
     _filterSpec.sampleRate = SAMPLE_RATE;
     _filterSpec.dbGain = 0.0f;
-    _filterSpec.q = 0.7f;
+    _filterSpec.q = 0.7071f;
 
 }
 

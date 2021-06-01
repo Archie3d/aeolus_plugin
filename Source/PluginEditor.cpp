@@ -77,7 +77,11 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _reverbComboBox.setSelectedId(_audioProcessor.getEngine().getReverbIR() + 1);
 
     _reverbComboBox.onChange = [this]() {
-        _audioProcessor.getEngine().postReverbIR(_reverbComboBox.getSelectedId() - 1);
+        const auto irNum = _reverbComboBox.getSelectedId() - 1;
+        auto& engine = _audioProcessor.getEngine();
+
+        if (engine.getReverbIR() != irNum)
+            engine.postReverbIR(irNum);
     };
 
     _reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
@@ -112,9 +116,9 @@ void AeolusAudioProcessorEditor::resized()
     _versionLabel.setBounds(getWidth() - 60, margin, 60 - margin, 20);
 
     _cpuLoadLabel.setBounds(margin, margin, 70, 20);
-    _cpuLoadValueLabel.setBounds(_cpuLoadLabel.getRight() + margin, margin, 30, 20);
+    _cpuLoadValueLabel.setBounds(_cpuLoadLabel.getRight() + margin, margin, 36, 20);
     _voiceCountLabel.setBounds(150, margin, 50, 20);
-    _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 24, 20);
+    _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 30, 20);
 
     _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 60, margin, 60, 20);
     _reverbComboBox.setBounds(_reverbLabel.getRight() + margin, margin, 220, 20);
