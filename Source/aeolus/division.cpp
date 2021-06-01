@@ -58,6 +58,7 @@ void Division::initFromVar(const var& v)
             for (int i = 0; i < arr->size(); ++i) {
                 if (const auto* stopObj = arr->getUnchecked(i).getDynamicObject()) {
                     const String stopName = stopObj->getProperty("name");
+                    const float chiffGain = stopObj->getProperty("chiff");
                     const auto pipeObj = stopObj->getProperty("pipe");
 
                     if (const auto* pipes = pipeObj.getArray()) {
@@ -75,14 +76,18 @@ void Division::initFromVar(const var& v)
                             }
                         }
 
-                        addRankwaves(rankwaves, r, false, stopName);
+                        if (r > 0) {
+                            auto& s = addRankwaves(rankwaves, r, false, stopName);
+                            s.chiffGain = chiffGain;
+                        }
 
                     } else {
                         // Assume single pipe per stop
                         const String pipeName = stopObj->getProperty("pipe");
 
                         if (auto* rankwavePtr = g->getStopByName(pipeName)) {
-                            addRankwave(rankwavePtr, false, stopName);
+                            auto&s = addRankwave(rankwavePtr, false, stopName);
+                            s.chiffGain = chiffGain;
                         } else {
                             DBG("Stop pipe " + pipeName + " cannot be found.");
                         }
@@ -148,7 +153,7 @@ void Division::clear()
     _rankwaves.clear();
 }
 
-void Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
+Division::Stop& Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
 {
     jassert(ptr != nullptr);
 
@@ -161,9 +166,10 @@ void Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
         ref.name = ptr->getStopName();
 
     _rankwaves.push_back(ref);
+    return _rankwaves.back();
 }
 
-void Division::addRankwaves(Rankwave** ptr, int size, bool ena, const String& name)
+Division::Stop& Division::addRankwaves(Rankwave** ptr, int size, bool ena, const String& name)
 {
     jassert(ptr != nullptr);
     size = jmin(size, MAX_RANK);
@@ -183,6 +189,7 @@ void Division::addRankwaves(Rankwave** ptr, int size, bool ena, const String& na
         ref.name = ptr[0]->getStopName();
 
     _rankwaves.push_back(ref);
+    return _rankwaves.back();
 }
 
 void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
@@ -238,6 +245,7 @@ void Division::noteOn(int note, int midiChannel)
             if (auto* ptr = rw.rankwave[i]) {
                 if (rw.enabled && ptr->isForNote(note)) {
                     auto state = ptr->trigger(note);
+                    state.chiffGain = rw.chiffGain;
 
                     if (auto* voice = _engine.getVoicePool().trigger(state))
                         _activeVoices.append(voice);

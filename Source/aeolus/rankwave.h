@@ -60,6 +60,8 @@ public:
         float releaseGain = 0.0f;               // _g_r
         int releaseCount = 0;                   // _i_r
 
+        float chiffGain = 0.0f;
+
         void release() { if (pipewave != nullptr) pipewave->release(*this); }
         bool isIdle() const noexcept { return env == Idle; }
         bool isOver() const noexcept { return env == Over; }

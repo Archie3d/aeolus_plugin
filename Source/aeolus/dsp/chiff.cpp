@@ -106,6 +106,7 @@ void Chiff::process(float* out, int numFrames)
 
         out[i] += x;
     }
+
 }
 
 } // namespace dsp

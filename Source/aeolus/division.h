@@ -55,6 +55,8 @@ public:
         Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
         bool enabled = false;                       ///< Stop enablement flag.
         juce::String name = "";                     ///< Stop display name.
+
+        float chiffGain = 0.0f;
     };
 
     Division(Engine& engine, const juce::String& name = juce::String());
@@ -72,8 +74,8 @@ public:
     juce::String getName() const { return _name; }
 
     void clear();
-    void addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
-    void addRankwaves(Rankwave** ptr, int size, bool ena = false, const juce::String& name = juce::String());
+    Stop& addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
+    Stop& addRankwaves(Rankwave** ptr, int size, bool ena = false, const juce::String& name = juce::String());
 
     juce::AudioParameterFloat* getParamGain() noexcept { return _paramGain; }
     void setParamGain(juce::AudioParameterFloat* param) noexcept { _paramGain = param; }
