@@ -70,6 +70,7 @@ public:
     Pipewave(Addsynth& model, int note, float freq);
 
     int getNote() const noexcept { return _note + _model.getNoteMin(); }
+    float getFreqency() const noexcept { return _freq; }
 
     void prepateToPlay(float sampleRate);
 

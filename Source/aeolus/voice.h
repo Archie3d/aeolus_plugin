@@ -23,6 +23,8 @@
 #include "aeolus/list.h"
 #include "aeolus/rankwave.h"
 
+#include "aeolus/dsp/delay.h"
+#include "aeolus/dsp/chiff.h"
 #include "aeolus/dsp/spatial.h"
 
 #include <vector>
@@ -55,6 +57,14 @@ private:
     Pipewave::State _state; ///< Pipe state associated with this voice.
 
     float _buffer[SUB_FRAME_LENGTH];
+
+    /// Delay after chiff.
+    dsp::DelayLine _delayLine;
+    float _delay;
+
+
+    /// Attack chiff.
+    dsp::Chiff _chiff;
 
     /// Stereo spatial modeller.
     dsp::SpatialSource _spatialSource;

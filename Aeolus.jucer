@@ -9,6 +9,10 @@
     <GROUP id="{F5BD30ED-E053-46A6-92B3-3C91BCF2F283}" name="Source">
       <GROUP id="{23278877-F57C-DD4B-1CA0-6C0998101C82}" name="aeolus">
         <GROUP id="{ADEAE9AA-4D39-19AB-214C-AF591693BD50}" name="dsp">
+          <FILE id="dtpjlk" name="adsrenv.cpp" compile="1" resource="0" file="Source/aeolus/dsp/adsrenv.cpp"/>
+          <FILE id="kKp1q3" name="adsrenv.h" compile="0" resource="0" file="Source/aeolus/dsp/adsrenv.h"/>
+          <FILE id="G44D8w" name="chiff.cpp" compile="1" resource="0" file="Source/aeolus/dsp/chiff.cpp"/>
+          <FILE id="QBGe7a" name="chiff.h" compile="0" resource="0" file="Source/aeolus/dsp/chiff.h"/>
           <FILE id="Z3hcgq" name="convolve.h" compile="0" resource="0" file="Source/aeolus/dsp/convolve.h"/>
           <FILE id="VH9ZVZ" name="convolver.cpp" compile="1" resource="0" file="Source/aeolus/dsp/convolver.cpp"/>
           <FILE id="NuSK66" name="convolver.h" compile="0" resource="0" file="Source/aeolus/dsp/convolver.h"/>
@@ -16,6 +20,8 @@
           <FILE id="xJrpyb" name="delay.h" compile="0" resource="0" file="Source/aeolus/dsp/delay.h"/>
           <FILE id="ALLCXB" name="fft.cpp" compile="1" resource="0" file="Source/aeolus/dsp/fft.cpp"/>
           <FILE id="N5cUo2" name="fft.h" compile="0" resource="0" file="Source/aeolus/dsp/fft.h"/>
+          <FILE id="aoF9TZ" name="filter.cpp" compile="1" resource="0" file="Source/aeolus/dsp/filter.cpp"/>
+          <FILE id="gp3xMG" name="filter.h" compile="0" resource="0" file="Source/aeolus/dsp/filter.h"/>
           <FILE id="kpOTJW" name="interpolator.cpp" compile="1" resource="0"
                 file="Source/aeolus/dsp/interpolator.cpp"/>
           <FILE id="vN3ukI" name="interpolator.h" compile="0" resource="0" file="Source/aeolus/dsp/interpolator.h"/>

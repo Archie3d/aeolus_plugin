@@ -20,11 +20,17 @@
 #include "aeolus/voice.h"
 #include "aeolus/engine.h"
 
+using namespace juce;
+
 AEOLUS_NAMESPACE_BEGIN
 
 Voice::Voice(Engine& engine)
     : _engine(engine)
     , _state{}
+    , _buffer{0}
+    , _delayLine{SAMPLE_RATE}
+    , _delay{0.0f}
+    , _chiff{}
     , _spatialSource{}
 {
 }
@@ -34,6 +40,20 @@ void Voice::trigger(const Pipewave::State& state)
     jassert(_state.isIdle());
     _state = state;
 
+    // Chiff
+    const auto freq = _state.pipewave->getFreqency();
+    const auto dt = 1.0f / freq;
+
+    _delay = jmin((float)_delayLine.size(), 8.0f * dt * SAMPLE_RATE);
+
+    _chiff.setAttack(20.0f * dt);
+    _chiff.setDecay(50.0f * dt);
+    _chiff.setRelease(20.0f * dt);
+    _chiff.setGain(jmin(1.0f, 0.01f + 40.0f * dt));
+    _chiff.setFrequency(_state.pipewave->getFreqency());
+    _chiff.trigger();
+
+    // Spatialisation
     int note = _state.pipewave->getNote();
     float k = note % 2 != 0 ? 1.0f : -1.0f;
 
@@ -42,7 +62,7 @@ void Voice::trigger(const Pipewave::State& state)
     _spatialSource.setSampleRate(SAMPLE_RATE);
     _spatialSource.setSourcePosition(x, 5.0f);
     _spatialSource.recalculate();
-    _postReleaseCounter = _spatialSource.getPostFxSamplesCount();
+    _postReleaseCounter = _spatialSource.getPostFxSamplesCount() + int(_delay + 0.5f);
 }
 
 void Voice::release()
@@ -52,11 +72,18 @@ void Voice::release()
         return;
 
     _state.release();
+
+    _chiff.release();
 }
 
 void Voice::reset()
 {
     _state.reset();
+
+    memset(_buffer, 0, sizeof(float) * SUB_FRAME_LENGTH);
+
+    _delayLine.reset();
+    _chiff.reset();
     _spatialSource.reset();
 }
 
@@ -66,10 +93,23 @@ void Voice::process(float* outL, float* outR)
 
     if (_state.env == Pipewave::Over) {
         _postReleaseCounter -= std::min((int)_postReleaseCounter, SUB_FRAME_LENGTH);
+
+        for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+            _delayLine.write(0.0f);
+            _buffer[i] = _delayLine.read(_delay);
+        }
+
     } else {
         auto* pipe = _state.pipewave;
         pipe->play(_state, _buffer);
+
+        for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+            _delayLine.write(_buffer[i]);
+            _buffer[i] = _delayLine.read(_delay);
+        }
     }
+
+    _chiff.process(_buffer, SUB_FRAME_LENGTH);
 
     _spatialSource.process(_buffer, outL, outR, SUB_FRAME_LENGTH);
 }
