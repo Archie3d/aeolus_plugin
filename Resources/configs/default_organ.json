@@ -34,6 +34,7 @@
                 { "name": "Septime",            "pipe": "septime" },
                 { "name": "None",               "pipe": "none" },
                 { "name": "Krumhorn",           "pipe": "cromhorne" },
+                { "name": "Cornet",             "pipe": ["II_cornet1", "II_cornet2", "II_cornet3", "II_cornet4", "II_cornet5"] },
                 { "name": "Melodia",            "pipe": "I_melodia" }
             ]
         },
@@ -53,7 +54,7 @@
                 { "name": "Flöte\n2",           "pipe": "flute2" },
                 { "name": "Sesqui-\naltera",    "pipe": "sesqualtera" },
                 { "name": "Cymbel\nVI",         "pipe": "I_cymbel" },
-                { "name": "Mixtur",             "pipe": "I_mixtur5fach" },
+                { "name": "Mixtur",             "pipe": ["mixtur1", "mixtur2", "mixtur3", "mixtur4", "mixtur5"] },
                 { "name": "Trumpet",            "pipe": "I_trumpet" }
             ]
         },

@@ -58,12 +58,34 @@ void Division::initFromVar(const var& v)
             for (int i = 0; i < arr->size(); ++i) {
                 if (const auto* stopObj = arr->getUnchecked(i).getDynamicObject()) {
                     const String stopName = stopObj->getProperty("name");
-                    const String pipeName = stopObj->getProperty("pipe");
+                    const auto pipeObj = stopObj->getProperty("pipe");
 
-                    if (auto* rankwavePtr = g->getStopByName(pipeName)) {
-                        addRankwave(rankwavePtr, false, stopName);
+                    if (const auto* pipes = pipeObj.getArray()) {
+                        // Multiple pipes on single stop
+                        Rankwave* rankwaves[MAX_RANK] = {nullptr};
+                        int r = 0;
+
+                        for (int j = 0; j < pipes->size() && r < MAX_RANK; ++j) {
+                            const String pipeName = pipes->getUnchecked(j);
+
+                            if (auto* rankwavePtr = g->getStopByName(pipeName)) {
+                                rankwaves[r++] = rankwavePtr;
+                            } else {
+                                DBG("Stop pipe " + pipeName + " cannot be found.");
+                            }
+                        }
+
+                        addRankwaves(rankwaves, r, false, stopName);
+
                     } else {
-                        DBG("Stop pipe " + pipeName + " cannot be found.");
+                        // Assume single pipe per stop
+                        const String pipeName = stopObj->getProperty("pipe");
+
+                        if (auto* rankwavePtr = g->getStopByName(pipeName)) {
+                            addRankwave(rankwavePtr, false, stopName);
+                        } else {
+                            DBG("Stop pipe " + pipeName + " cannot be found.");
+                        }
                     }
                 }
             }
@@ -83,7 +105,7 @@ var Division::getPersistentState() const
 
     for (const auto& stop : _rankwaves) {
         auto* stopObj = new DynamicObject();
-        stopObj->setProperty("name", stop.rankwave->getStopName());
+        stopObj->setProperty("name", stop.name);
         stopObj->setProperty("enabled", stop.enabled);
 
         stops.add(var{stopObj});
@@ -109,7 +131,7 @@ void Division::setPersistentState(const juce::var& v)
 
                     // This is not optimal but meh...
                     for (auto& stop : _rankwaves) {
-                        if (stop.rankwave->getStopName() == stopName) {
+                        if (stop.name == stopName) {
                             stop.enabled = enabled;
                             break;
                         }
@@ -130,10 +152,35 @@ void Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
 {
     jassert(ptr != nullptr);
 
-    Stop ref { ptr, ena, name };
+    Stop ref{};
+    ref.rankwave[0] = ptr;
+    ref.enabled = ena;
+    ref.name = name;
 
     if (name.isEmpty())
         ref.name = ptr->getStopName();
+
+    _rankwaves.push_back(ref);
+}
+
+void Division::addRankwaves(Rankwave** ptr, int size, bool ena, const String& name)
+{
+    jassert(ptr != nullptr);
+    size = jmin(size, MAX_RANK);
+
+    Stop ref{};
+    ref.enabled = ena;
+    ref.name = name;
+
+    for (int i = 0; i < size; ++i) {
+        Rankwave* rwPtr = ptr[i];
+        jassert(rwPtr != nullptr);
+
+        ref.rankwave[i] = rwPtr;
+    }
+
+    if (name.isEmpty())
+        ref.name = ptr[0]->getStopName();
 
     _rankwaves.push_back(ref);
 }
@@ -145,10 +192,16 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
 
     for (const auto& ref : _rankwaves) {
         if (ref.enabled) {
-            if (minNote < 0 || minNote > ref.rankwave->getNoteMin())
-                minNote = ref.rankwave->getNoteMin();
-            if (maxNote < 0 || maxNote < ref.rankwave->getNoteMax())
-                maxNote = ref.rankwave->getNoteMax();
+            for (int i = 0; i < MAX_RANK; ++i) {
+                const auto* ptr = ref.rankwave[i];
+
+                if (ptr != nullptr) {
+                    if (minNote < 0 || minNote > ptr->getNoteMin())
+                        minNote = ptr->getNoteMin();
+                    if (maxNote < 0 || maxNote < ptr->getNoteMax())
+                        maxNote = ptr->getNoteMax();
+                }
+            }
         }
     }
 }
@@ -181,11 +234,15 @@ void Division::noteOn(int note, int midiChannel)
         return;
 
     for (auto& rw : _rankwaves) {
-        if (rw.enabled && rw.rankwave->isForNote(note)) {
-            auto state = rw.rankwave->trigger(note);
+        for (int i = 0; i < MAX_RANK; ++i) {
+            if (auto* ptr = rw.rankwave[i]) {
+                if (rw.enabled && ptr->isForNote(note)) {
+                    auto state = ptr->trigger(note);
 
-            if (auto* voice = _engine.getVoicePool().trigger(state))
-                _activeVoices.append(voice);
+                    if (auto* voice = _engine.getVoicePool().trigger(state))
+                        _activeVoices.append(voice);
+                }
+            }
         }
     }
 }

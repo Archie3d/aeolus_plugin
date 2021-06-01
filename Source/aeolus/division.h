@@ -51,9 +51,10 @@ public:
     /// Single stop descriptor.
     struct Stop
     {
-        Rankwave* rankwave = nullptr;   ///< Corresponding pipe model.
-        bool enabled = false;           ///< Stop enablement flag.
-        juce::String name = "";         ///< Stop display name.
+
+        Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
+        bool enabled = false;                       ///< Stop enablement flag.
+        juce::String name = "";                     ///< Stop display name.
     };
 
     Division(Engine& engine, const juce::String& name = juce::String());
@@ -72,6 +73,7 @@ public:
 
     void clear();
     void addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
+    void addRankwaves(Rankwave** ptr, int size, bool ena = false, const juce::String& name = juce::String());
 
     juce::AudioParameterFloat* getParamGain() noexcept { return _paramGain; }
     void setParamGain(juce::AudioParameterFloat* param) noexcept { _paramGain = param; }

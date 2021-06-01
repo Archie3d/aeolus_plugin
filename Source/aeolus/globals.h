@@ -50,6 +50,9 @@ constexpr static int NOTE_MIN = 36;
 /// Highest possible note.
 constexpr static int NOTE_MAX = 96;
 
+/// Maxumim number of pipes in combined stops (like mixtures)
+constexpr static int MAX_RANK = 5;
+
 /// Length of a processing frame (in samples).
 constexpr static int SUB_FRAME_LENGTH = 64;
 
@@ -59,6 +62,7 @@ constexpr static float TREMULANT_PHASE_INCREMENT = juce::MathConstants<float>::t
 
 /// Tremulant OSC wavetable amplitude.
 constexpr static float TREMULANT_LEVEL = 1.0f;
+
 
 //==============================================================================
 
