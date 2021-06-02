@@ -68,6 +68,8 @@ private:
     juce::Label _reverbLabel;
     juce::ComboBox _reverbComboBox;
     ui::ParameterSlider _reverbSlider;
+    juce::Label _volumeLabel;
+    ui::ParameterSlider _volumeSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

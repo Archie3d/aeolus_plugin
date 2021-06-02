@@ -30,6 +30,7 @@ struct Parameters
     AeolusAudioProcessor& processor;
 
     juce::AudioParameterFloat* reverbWet;
+    juce::AudioParameterFloat* volume;
 
     std::vector<juce::AudioParameterFloat*> divisionsGain;
 

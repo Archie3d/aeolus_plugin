@@ -161,6 +161,7 @@ JUCE_IMPLEMENT_SINGLETON(EngineGlobal)
 Engine::Engine()
     : _sampleRate{SAMPLE_RATE}
     , _voicePool(*this)
+    , _params{NUM_PARAMS}
     , _divisions{}
     , _subFrameBuffer{2, SUB_FRAME_LENGTH}
     , _divisionFrameBuffer{2, SUB_FRAME_LENGTH}
@@ -223,6 +224,11 @@ void Engine::setReverbWet(float v)
     _convolver.setDryWet(1.0f, v);
 }
 
+void Engine::setVolume(float v)
+{
+    _params[VOLUME].setValue(v);
+}
+
 void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime)
 {
     jassert(outL != nullptr);
@@ -271,6 +277,8 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
         _convolver.setNonRealtime(isNonRealtime);
         _convolver.process(origOutL, origOutR, origOutL, origOutR, origNumFrames);
     }
+
+    applyVolume(origOutL, origOutR, origNumFrames);
 }
 
 void Engine::noteOn(int note, int midiChannel)
@@ -486,6 +494,24 @@ void Engine::modulateDivision(Division* division)
         float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
         outL[i] *= g;
         outR[i] *= g;
+    }
+}
+
+void Engine::applyVolume(float* outL, float* outR, int numFrames)
+{
+    if (_params[VOLUME].isSmoothing()) {
+        for (int i = 0; i < numFrames; ++i) {
+            const float g = _params[VOLUME].nextValue();
+            outL[i] *= g;
+            outR[i] *= g;
+        }
+    } else {
+        const float g = _params[VOLUME].target();
+
+        for (int i = 0; i < numFrames; ++i) {
+            outL[i] *= g;
+            outR[i] *= g;
+        }
     }
 }
 

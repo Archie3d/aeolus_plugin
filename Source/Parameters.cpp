@@ -29,6 +29,7 @@ Parameters::Parameters(AeolusAudioProcessor& proc)
     : processor(proc)
 {
     processor.addParameter(reverbWet = new AudioParameterFloat("reverb_wet", "Reverb", 0.0f, 1.0f, 0.25f));
+    processor.addParameter(volume = new AudioParameterFloat("volume", "Volume", 0.0f, 1.0f, 0.5f));
 
     auto& engine = proc.getEngine();
 

@@ -39,6 +39,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _reverbLabel{{}, "Reverb:"}
     , _reverbComboBox{}
     , _reverbSlider{*p.getParametersContainer().reverbWet, juce::Slider::LinearHorizontal}
+    , _volumeLabel{{}, "Volume:"}
+    , _volumeSlider{*p.getParametersContainer().volume, juce::Slider::LinearHorizontal}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
@@ -87,6 +89,11 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     addAndMakeVisible(_reverbSlider);
 
+    addAndMakeVisible(_volumeLabel);
+    addAndMakeVisible(_volumeSlider);
+    _volumeSlider.setSkewFactor(0.5f);
+    _volumeSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
+
     populateDivisions();
 
     _midiKeyboard.setScrollButtonsVisible(false);
@@ -123,6 +130,9 @@ void AeolusAudioProcessorEditor::resized()
     _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 60, margin, 60, 20);
     _reverbComboBox.setBounds(_reverbLabel.getRight() + margin, margin, 220, 20);
     _reverbSlider.setBounds(_reverbComboBox.getRight() + margin, margin, 100, 20);
+
+    _volumeLabel.setBounds(_reverbSlider.getRight() + 60, margin, 60, 20);
+    _volumeSlider.setBounds(_volumeLabel.getRight() + margin, margin, 100, 20);
 
     constexpr int W = 120;
     constexpr int H = 30;

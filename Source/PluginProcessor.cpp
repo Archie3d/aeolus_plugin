@@ -170,6 +170,7 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
         outR = buffer.getWritePointer (1);
 
     _engine.setReverbWet(_parameters.reverbWet->get());
+    _engine.setVolume(_parameters.volume->get());
     _engine.process(outL, outR, (size_t) buffer.getNumSamples(), isNonRealtime());
 
     auto timestampStop = high_resolution_clock::now();

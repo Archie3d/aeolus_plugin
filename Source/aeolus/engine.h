@@ -25,6 +25,7 @@
 #include "aeolus/addsynth.h"
 #include "aeolus/rankwave.h"
 #include "aeolus/division.h"
+#include "aeolus/audioparam.h"
 #include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
 
@@ -98,6 +99,11 @@ public:
         int num;
     };
 
+    enum {
+        VOLUME = 0,
+
+        NUM_PARAMS
+    };
 
     Engine();
 
@@ -118,6 +124,8 @@ public:
 
     int getReverbIR() const noexcept { return _selectedIR; }
     void setReverbWet(float v);
+
+    void setVolume(float v);
 
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
@@ -149,12 +157,15 @@ private:
 
     void generateTremulant();
     void modulateDivision(Division* division);
+    void applyVolume(float* outL, float* outR, int numFrames);
 
     float _sampleRate;
 
     RingBuffer<NoteEvent, 1024> _pendingNoteEvents;
 
     VoicePool _voicePool;       ///< Voices.
+
+    AudioParameterPool _params;
 
     /// List of all divisions
     juce::OwnedArray<Division> _divisions;
