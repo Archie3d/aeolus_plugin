@@ -33,6 +33,8 @@ public:
 
     DivisionView(aeolus::Division* division = nullptr);
 
+    void cancelAllStops();
+
     int getEstimatedHeightForWidth(int width) const;
 
     // juce::Component
@@ -46,6 +48,7 @@ private:
     aeolus::Division* _division;
 
     juce::Label _nameLabel;
+    juce::TextButton _cancelButton; ///< Disable all stops.
     DivisionControlPanel _controlPanel;
     juce::OwnedArray<StopButton> _stopButtons;
 

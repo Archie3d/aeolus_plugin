@@ -35,6 +35,9 @@ constexpr static float SAMPLE_RATE = 44100.0f;
 
 constexpr static float SAMPLE_RATE_R = 1.0f / SAMPLE_RATE;
 
+/// Global volume gain.
+constexpr static float VOLUME_GAIN = 2.0f;
+
 /// Number of notes used in parameters look-up table.
 constexpr static int N_NOTES = 11;
 

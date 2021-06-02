@@ -514,12 +514,12 @@ void Engine::applyVolume(float* outL, float* outR, int numFrames)
 {
     if (_params[VOLUME].isSmoothing()) {
         for (int i = 0; i < numFrames; ++i) {
-            const float g = _params[VOLUME].nextValue();
+            const float g = _params[VOLUME].nextValue() * VOLUME_GAIN;
             outL[i] *= g;
             outR[i] *= g;
         }
     } else {
-        const float g = _params[VOLUME].target();
+        const float g = _params[VOLUME].target() * VOLUME_GAIN;
 
         for (int i = 0; i < numFrames; ++i) {
             outL[i] *= g;

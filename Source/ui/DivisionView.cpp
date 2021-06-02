@@ -30,16 +30,38 @@ constexpr int buttonSize = 80;
 DivisionView::DivisionView(aeolus::Division* division)
     : _division(division)
     , _nameLabel{{}, division->getName()}
+    , _cancelButton{"All OFF"}
     , _controlPanel(division)
     , _stopButtons{}
 {
     _nameLabel.setJustificationType(Justification::centred);
     _nameLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0x99));
     addAndMakeVisible(_nameLabel);
+    addAndMakeVisible(_cancelButton);
+    _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x33, 0x33));
+    _cancelButton.onClick = [this]() {
+        cancelAllStops();
+    };
 
     addAndMakeVisible(_controlPanel);
 
     populateStopButtons();
+}
+
+void DivisionView::cancelAllStops()
+{
+    if (_division == nullptr)
+        return;
+
+    for (int i = 0; i < _division->getStopsCount(); ++i) {
+        auto& stop = _division->getStopByIndex(i);
+
+        auto* button = _stopButtons.getUnchecked(i);
+
+        stop.enabled = false;
+        button->setToggleState(false, false);
+
+    }
 }
 
 constexpr int controlPanelWidth = 120;
@@ -54,6 +76,8 @@ int DivisionView::getEstimatedHeightForWidth(int width) const
 void DivisionView::resized()
 {
     _nameLabel.setBounds(0, 0, getWidth() - controlPanelWidth, paddingTop);
+
+    _cancelButton.setBounds(getWidth() - controlPanelWidth - 70, 10, 60, 15);
 
     FlexBox fbox;
     fbox.flexWrap = FlexBox::Wrap::wrap;
