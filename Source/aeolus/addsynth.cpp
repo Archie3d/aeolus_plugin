@@ -567,8 +567,6 @@ Model::Model()
             auto synth = std::make_unique<Addsynth>();
             auto res = synth->readFromResource(name);
 
-            DBG(String("Reading ") + name + " --> " + synth->getStopName());
-
             if (res.wasOk()) {
                 auto* ptr = synth.get();
                 ptr->setStopName(name.dropLastCharacters(4));

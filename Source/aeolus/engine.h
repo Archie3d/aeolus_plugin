@@ -149,6 +149,7 @@ public:
 private:
 
     void populateDivisions();
+    void loadDivisionsFromConfig(juce::InputStream& stream);
 
     void processSubFrame();
 

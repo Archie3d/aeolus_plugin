@@ -72,7 +72,7 @@ void Chiff::setGain(float v)
 
 void Chiff::setFrequency(float v)
 {
-    _bpSpec.freq = v;
+    _bpSpec.freq = jmin(SAMPLE_RATE * 0.45f, 2.0f * v);
     _lpSpec.freq = jmin(SAMPLE_RATE * 0.45f, 8.0f * v);
 }
 

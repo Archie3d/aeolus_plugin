@@ -363,8 +363,21 @@ void Engine::setPersistentState(const var& state)
 
 void Engine::populateDivisions()
 {
-    // Load organ config
-    MemoryInputStream stream(BinaryData::default_organ_json, BinaryData::default_organ_jsonSize, false);
+    auto wd = File::getCurrentWorkingDirectory();
+    auto configFile = wd.getChildFile("organ_config.json");
+
+    if (configFile.exists()) {
+        FileInputStream stream(configFile);
+        loadDivisionsFromConfig(stream);
+    } else {
+        MemoryInputStream stream(BinaryData::default_organ_json, BinaryData::default_organ_jsonSize, false);
+        loadDivisionsFromConfig(stream);
+    }
+}
+
+void Engine::loadDivisionsFromConfig(InputStream& stream)
+{
+    // Load organ config JSON
     auto config = JSON::parse(stream);
 
     if (auto* divisions = config.getProperty("divisions", {}).getArray()) {
