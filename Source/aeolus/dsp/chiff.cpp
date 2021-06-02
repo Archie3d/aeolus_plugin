@@ -26,19 +26,23 @@ using namespace juce;
 namespace dsp {
 
 Chiff::Chiff()
-    : _envelopeTrigger{}
+    : _envelopeTrigger{0.0f, 0.0f, 0.0f, 0.0f}
     , _envelope{}
     , _gain{1.0f}
-    , _filterSpec{}
-    , _filterState{}
+    , _bpSpec{}
+    , _bpState{}
+    , _lpSpec{}
+    , _lpState{}
 {
-    _envelopeTrigger.sustain = 0.0f;
+    _bpSpec.type = BiquadFilter::BandPass;
+    _bpSpec.sampleRate = SAMPLE_RATE;
+    _bpSpec.dbGain = 0.0f;
+    _bpSpec.q = 0.7071f;
 
-    _filterSpec.type = BiquadFilter::BandPass;
-    _filterSpec.sampleRate = SAMPLE_RATE;
-    _filterSpec.dbGain = 0.0f;
-    _filterSpec.q = 0.7071f;
-
+    _lpSpec.type = BiquadFilter::LowPass;
+    _lpSpec.sampleRate = SAMPLE_RATE;
+    _lpSpec.dbGain = 0.0f;
+    _lpSpec.q = 0.7071f;
 }
 
 void Chiff::setAttack(float v)
@@ -56,6 +60,11 @@ void Chiff::setDecay(float v)
     _envelopeTrigger.decay = v;
 }
 
+void Chiff::setSustain(float v)
+{
+    _envelopeTrigger.sustain = v;
+}
+
 void Chiff::setGain(float v)
 {
     _gain = v;
@@ -63,18 +72,23 @@ void Chiff::setGain(float v)
 
 void Chiff::setFrequency(float v)
 {
-    _filterSpec.freq = v;
+    _bpSpec.freq = v;
+    _lpSpec.freq = jmin(SAMPLE_RATE * 0.45f, 8.0f * v);
 }
 
 void Chiff::reset()
 {
-    BiquadFilter::resetState(_filterSpec, _filterState);
+    BiquadFilter::resetState(_bpSpec, _bpState);
+    BiquadFilter::resetState(_lpSpec, _lpState);
 }
 
 void Chiff::trigger()
 {
-    BiquadFilter::updateSpec(_filterSpec);
-    BiquadFilter::resetState(_filterSpec, _filterState);
+    BiquadFilter::updateSpec(_bpSpec);
+    BiquadFilter::resetState(_bpSpec, _bpState);
+
+    BiquadFilter::updateSpec(_lpSpec);
+    BiquadFilter::resetState(_lpSpec, _lpState);
 
     _envelope.trigger(_envelopeTrigger);
 }
@@ -101,7 +115,8 @@ void Chiff::process(float* out, int numFrames)
 
     for (int i = 0; i < numFrames; ++i) {
         float x = _gain * (2.0f * rnd.nextFloat() - 1.0f);
-        x = BiquadFilter::tick(_filterSpec, _filterState, x);
+        x = BiquadFilter::tick(_bpSpec, _bpState, x);
+        x = BiquadFilter::tick(_lpSpec, _lpState, x);
         x *= _envelope.next();
 
         out[i] += x;

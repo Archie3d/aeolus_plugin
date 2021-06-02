@@ -35,6 +35,7 @@ public:
 
     void setAttack(float v);
     void setDecay(float v);
+    void setSustain(float v);
     void setRelease(float v);
     void setGain(float v);
     void setFrequency(float v);
@@ -51,8 +52,13 @@ private:
     Envelope::Trigger _envelopeTrigger;
     Envelope _envelope;
     float _gain;
-    BiquadFilter::Spec _filterSpec;
-    BiquadFilter::State _filterState;
+
+    BiquadFilter::Spec _bpSpec;
+    BiquadFilter::State _bpState;
+
+    BiquadFilter::Spec _lpSpec;
+    BiquadFilter::State _lpState;
+
 };
 
 } // namespace dsp
