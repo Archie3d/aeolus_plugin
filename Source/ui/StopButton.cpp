@@ -30,9 +30,10 @@ static const Font& getButtonFont()
     return font;
 }
 
-StopButton::StopButton(const String& name)
+StopButton::StopButton(const String& name, bool isReed)
     : Button(name)
     , _margin{5}
+    , _isReed{isReed}
 {
     setClickingTogglesState(true);
 }
@@ -60,7 +61,11 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     g.fillEllipse(bounds.getX() + offset, bounds.getY() + offset,
                   bounds.getWidth() - 8, bounds.getHeight() - 8);
 
-    g.setColour(Colours::black);
+    Colour textColour = _isReed ? (getToggleState() ? Colour(240, 40, 0) : Colour(128, 20, 0))
+                                : Colour(0, 0, 0);
+
+    g.setColour(textColour);
+
     auto font = getButtonFont();
     font.setHeight(14);
     g.setFont(font);

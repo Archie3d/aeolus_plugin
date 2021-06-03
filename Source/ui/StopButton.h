@@ -26,7 +26,7 @@ namespace ui {
 class StopButton : public juce::Button
 {
 public:
-    StopButton(const juce::String& name);
+    StopButton(const juce::String& name, bool isReed = false);
     void setMargin(int m) noexcept { _margin = m; }
 
 protected:
@@ -35,7 +35,8 @@ protected:
 
 private:
 
-    int _margin = 0;
+    int _margin;
+    bool _isReed; 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StopButton)
 };

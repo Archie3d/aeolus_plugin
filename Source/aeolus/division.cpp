@@ -71,6 +71,7 @@ void Division::initFromVar(const var& v)
             for (int i = 0; i < arr->size(); ++i) {
                 if (const auto* stopObj = arr->getUnchecked(i).getDynamicObject()) {
                     const String stopName = stopObj->getProperty("name");
+                    const String stopType = stopObj->getProperty("type");
                     const float chiffGain = stopObj->getProperty("chiff");
                     const auto pipeObj = stopObj->getProperty("pipe");
 
@@ -91,6 +92,7 @@ void Division::initFromVar(const var& v)
 
                         if (r > 0) {
                             auto& s = addRankwaves(rankwaves, r, false, stopName);
+                            s.type = Division::stopTypeFromString(stopType);
                             s.chiffGain = chiffGain;
                         }
 
@@ -100,6 +102,7 @@ void Division::initFromVar(const var& v)
 
                         if (auto* rankwavePtr = g->getStopByName(pipeName)) {
                             auto&s = addRankwave(rankwavePtr, false, stopName);
+                            s.type = Division::stopTypeFromString(stopType);
                             s.chiffGain = chiffGain;
                         } else {
                             DBG("Stop pipe " + pipeName + " cannot be found.");
@@ -402,6 +405,25 @@ void Division::allNotesOff()
         voice->release();
         voice = voice->next();
     }
+}
+
+Division::Stop::Type Division::stopTypeFromString(const String& n)
+{
+    const static std::map<String, Stop::Type> nameToType {
+        { "principal", Stop::Principal },
+        { "flute",     Stop::Flute },
+        { "reed",      Stop::Reed },
+        { "string",    Stop::String }
+    };
+
+    auto type = Stop::Unknown;
+
+    const auto it = nameToType.find(n.toLowerCase());
+
+    if (it != nameToType.end())
+        type = it->second;
+
+    return type;
 }
 
 AEOLUS_NAMESPACE_END

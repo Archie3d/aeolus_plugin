@@ -52,9 +52,18 @@ public:
     /// Single stop descriptor.
     struct Stop
     {
+        enum Type {
+            Unknown,
+            Principal,
+            Flute,
+            Reed,
+            String
+        };
+
         Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
         bool enabled = false;                       ///< Stop enablement flag.
         juce::String name = "";                     ///< Stop display name.
+        Type type = Unknown;                    ///< Stop type.
 
         float chiffGain = 0.0f;
     };
@@ -141,6 +150,9 @@ public:
 
     bool hasBeenTriggered() const noexcept { return _triggerFlag; }
     void clearTriggerFlag() noexcept { _triggerFlag = false; }
+
+    static Stop::Type stopTypeFromString(const juce::String& n);
+
 
 private:
 
