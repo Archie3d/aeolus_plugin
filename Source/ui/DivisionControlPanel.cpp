@@ -55,7 +55,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 
     _tremulantButton.setClickingTogglesState(true);
     _tremulantButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
-    _tremulantButton.setColour(TextButton::buttonOnColourId, Colours::green);
+    _tremulantButton.setColour(TextButton::buttonOnColourId, Colour(0x00, 0x66, 0x33));
     _tremulantButton.setToggleState(_division->isTremulantEnabled(), false);
 
     _tremulantButton.onClick = [this]() {

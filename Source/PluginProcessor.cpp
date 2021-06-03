@@ -32,6 +32,7 @@ AeolusAudioProcessor::AeolusAudioProcessor()
     , _engine{}
     , _parameters(*this)
     , _processLoad{0.0f}
+    , _panicRequest{false}
 {
     _engine.getMidiKeyboardState().addListener(this);
 }
@@ -181,6 +182,10 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
     _processLoad = jmin (1.0f, 0.99f * _processLoad + 0.01f * load);
 
+    if (_panicRequest) {
+        _engine.allNotesOff();
+        _panicRequest = false;
+    }
 }
 
 void AeolusAudioProcessor::processMidi (juce::MidiBuffer& midiMessages)

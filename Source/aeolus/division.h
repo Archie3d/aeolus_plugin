@@ -135,6 +135,7 @@ public:
 
     void noteOn(int note, int midiChannel);
     void noteOff(int note, int midiChannel);
+    void allNotesOff();
 
     List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
 

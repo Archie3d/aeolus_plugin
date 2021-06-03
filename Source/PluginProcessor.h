@@ -40,6 +40,8 @@ public:
 
     Parameters& getParametersContainer() noexcept { return _parameters; }
 
+    void panic() noexcept { _panicRequest = true; }
+
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -88,6 +90,7 @@ private:
     Parameters _parameters;
 
     std::atomic<float> _processLoad;
+    std::atomic<bool> _panicRequest;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessor)

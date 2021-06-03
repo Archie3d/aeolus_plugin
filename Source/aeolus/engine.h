@@ -141,7 +141,12 @@ public:
     void noteOn(int note, int midiChannel);
     void noteOff(int note, int midiChannel);
 
-    juce::MidiKeyboardState& getMidiKeyboardState() noexcept { return _midiKeybaordState; }
+    /**
+     * Release all the active voices immediately.
+     */
+    void allNotesOff();
+
+    juce::MidiKeyboardState& getMidiKeyboardState() noexcept { return _midiKeyboardState; }
 
     juce::Range<int> getMidiKeyboardRange() const;
 
@@ -198,7 +203,7 @@ private:
 
     dsp::Interpolator _interpolator;
 
-    juce::MidiKeyboardState _midiKeybaordState;
+    juce::MidiKeyboardState _midiKeyboardState;
 
     Level _volumeLevel;
 

@@ -394,4 +394,14 @@ void Division::noteOff(int note, int midiChannel)
     }
 }
 
+void Division::allNotesOff()
+{
+    auto* voice = _activeVoices.first();
+
+    while (voice != nullptr) {
+        voice->release();
+        voice = voice->next();
+    }
+}
+
 AEOLUS_NAMESPACE_END

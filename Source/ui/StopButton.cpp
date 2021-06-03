@@ -65,8 +65,6 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     font.setHeight(14);
     g.setFont(font);
 
-    //g.drawText(getName(), offset, offset, getWidth() - 8, getHeight() - 8, Justification::centred);
-
     g.drawMultiLineText(getName(), bounds.getX() + offset,
                         bounds.getY() + bounds.getHeight()/2 + offset - 2,
                         bounds.getWidth() - 10,

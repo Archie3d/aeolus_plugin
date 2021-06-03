@@ -39,7 +39,7 @@ DivisionView::DivisionView(aeolus::Division* division)
     _nameLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0x99));
     addAndMakeVisible(_nameLabel);
     addAndMakeVisible(_cancelButton);
-    _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x33, 0x33));
+    _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _cancelButton.onClick = [this]() {
         cancelAllStops();
     };

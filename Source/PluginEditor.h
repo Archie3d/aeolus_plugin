@@ -75,5 +75,7 @@ private:
     ui::LevelIndicator _volumeLevelL;
     ui::LevelIndicator _volumeLevelR;
 
+    juce::TextButton _panicButton;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

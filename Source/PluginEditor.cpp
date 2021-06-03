@@ -43,11 +43,12 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeSlider{*p.getParametersContainer().volume, juce::Slider::LinearHorizontal}
     , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
+    , _panicButton{"PANIC"}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
     setSize (1180, 600);
-    setResizeLimits(740, 480, 2048, 1920);
+    setResizeLimits(1050, 600, 4096, 4096);
 
     addAndMakeVisible(_versionLabel);
     _versionLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 10, Font::plain));
@@ -101,6 +102,12 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _volumeSlider.setSkewFactor(0.5f);
     _volumeSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
+    _panicButton.setColour(TextButton::buttonColourId, Colour(0xCC, 0x33, 0x00));
+    addAndMakeVisible(_panicButton);
+    _panicButton.onClick = [this] {
+        _audioProcessor.panic();
+    };
+
     populateDivisions();
 
     _midiKeyboard.setScrollButtonsVisible(false);
@@ -134,15 +141,17 @@ void AeolusAudioProcessorEditor::resized()
     _voiceCountLabel.setBounds(150, margin, 50, 20);
     _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 30, 20);
 
-    _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 60, margin, 60, 20);
+    _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 40, margin, 60, 20);
     _reverbComboBox.setBounds(_reverbLabel.getRight() + margin, margin, 220, 20);
     _reverbSlider.setBounds(_reverbComboBox.getRight() + margin, margin, 100, 20);
 
-    _volumeLabel.setBounds(_reverbSlider.getRight() + 60, margin, 60, 20);
+    _volumeLabel.setBounds(_reverbSlider.getRight() + 40, margin, 60, 20);
     _volumeSlider.setBounds(_volumeLabel.getRight() + margin, margin, 100, 20);
 
     _volumeLevelL.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + 2, _volumeSlider.getWidth() - 10, 2);
     _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
+
+    _panicButton.setBounds(_volumeSlider.getRight() + 40, margin, 50, 20);
 
     constexpr int W = 120;
     constexpr int H = 30;

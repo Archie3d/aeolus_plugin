@@ -173,7 +173,7 @@ Engine::Engine()
     , _selectedIR{0}
     , _irSwitchEvents{}
     , _interpolator{1.0f}
-    , _midiKeybaordState{}
+    , _midiKeyboardState{}
     , _volumeLevel{}
 {
     populateDivisions();
@@ -300,6 +300,14 @@ void Engine::noteOff(int note, int midiChannel)
     for (auto* division : _divisions) {
         division->noteOff(note, midiChannel);
     }
+}
+
+void Engine::allNotesOff()
+{
+    for (auto* division : _divisions)
+        division->allNotesOff();
+
+    _midiKeyboardState.allNotesOff(0);
 }
 
 Range<int> Engine::getMidiKeyboardRange() const
