@@ -140,6 +140,7 @@ public:
 
     int getDivisionCount() const noexcept { return _divisions.size(); }
     Division* getDivisionByIndex(int i) { return _divisions[i]; }
+    Division* getDivisionByName(const juce::String& name);
 
     juce::var getPersistentState() const;
     void setPersistentState(const juce::var& state);
@@ -150,6 +151,8 @@ private:
 
     void populateDivisions();
     void loadDivisionsFromConfig(juce::InputStream& stream);
+
+    void clearDivisionsTriggerFlag();
 
     void processSubFrame();
 

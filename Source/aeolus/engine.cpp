@@ -283,13 +283,16 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
 
 void Engine::noteOn(int note, int midiChannel)
 {
-    for (auto* division : _divisions) {
+    clearDivisionsTriggerFlag();
+
+    for (auto* division : _divisions)
         division->noteOn(note, midiChannel);
-    }
 }
 
 void Engine::noteOff(int note, int midiChannel)
 {
+    clearDivisionsTriggerFlag();
+
     for (auto* division : _divisions) {
         division->noteOff(note, midiChannel);
     }
@@ -314,6 +317,16 @@ Range<int> Engine::getMidiKeyboardRange() const
     }
     
     return Range<int>(minNote, maxNote);
+}
+
+Division* Engine::getDivisionByName(const String& name)
+{
+    for (auto* division : _divisions) {
+        if (division->getName() == name)
+            return division;
+    }
+
+    return nullptr;
 }
 
 var Engine::getPersistentState() const
@@ -373,6 +386,11 @@ void Engine::populateDivisions()
         MemoryInputStream stream(BinaryData::default_organ_json, BinaryData::default_organ_jsonSize, false);
         loadDivisionsFromConfig(stream);
     }
+
+    // Update division links after they've been loaded.
+    for (auto* division : _divisions) {
+        division->populateLinkedDivisions();
+    }
 }
 
 void Engine::loadDivisionsFromConfig(InputStream& stream)
@@ -391,6 +409,12 @@ void Engine::loadDivisionsFromConfig(InputStream& stream)
             }
         }
     }
+}
+
+void Engine::clearDivisionsTriggerFlag()
+{
+    for (auto* division : _divisions)
+        division->clearTriggerFlag();
 }
 
 void Engine::postNoteEvent(bool onOff, int note, int midiChannel)

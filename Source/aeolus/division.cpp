@@ -27,6 +27,9 @@ AEOLUS_NAMESPACE_BEGIN
 Division::Division(Engine& engine, const String& name)
     : _engine{engine}
     , _name{name}
+    , _mnemonic{name}
+    , _linkedDivisionNames{}
+    , _linkedDivisions{}
     , _hasSwell{false}
     , _hasTremulant{false}
     , _midiChannel{0}
@@ -37,6 +40,8 @@ Division::Division(Engine& engine, const String& name)
     , _paramGain{nullptr}
     , _params{Division::NUM_PARAMS}
     , _rankwaves{}
+    , _activeVoices{}
+    , _triggerFlag{}
 {
 }
 
@@ -44,6 +49,13 @@ void Division::initFromVar(const var& v)
 {
     if (const auto* obj = v.getDynamicObject()) {
         _name = obj->getProperty("name");
+        _mnemonic = obj->getProperty("mnemonic");
+
+        if (const auto* link = obj->getProperty("link").getArray()) {
+            for (const auto& item : *link)
+                _linkedDivisionNames.add(item.toString());
+        }
+
         _hasSwell = obj->getProperty("swell");
         _hasTremulant = obj->getProperty("tremulant");
 
@@ -145,7 +157,41 @@ void Division::setPersistentState(const juce::var& v)
             }
         }
     }
+}
 
+void Division::populateLinkedDivisions()
+{
+    _linkedDivisions.clear();
+
+    for (const auto& name : _linkedDivisionNames) {
+        if (auto* division = _engine.getDivisionByName(name)) {
+            Link link{division, false};
+            _linkedDivisions.push_back(link);
+        }
+    }
+}
+
+int Division::getLinksCount() const noexcept
+{
+    return (int)_linkedDivisions.size();
+}
+
+void Division::enableLink(int i, bool ena)
+{
+    jassert(isPositiveAndBelow(i, _linkedDivisions.size()));
+    _linkedDivisions[i].enabled = ena;
+}
+
+bool Division::isLinkEnabled(int i)
+{
+    jassert(isPositiveAndBelow(i, _linkedDivisions.size()));
+    return _linkedDivisions[i].enabled;
+}
+
+Division::Link& Division::getLinkByIndex(int i)
+{
+    jassert(isPositiveAndBelow(i, _linkedDivisions.size()));
+    return _linkedDivisions[i];
 }
 
 void Division::clear()
@@ -192,6 +238,29 @@ Division::Stop& Division::addRankwaves(Rankwave** ptr, int size, bool ena, const
     return _rankwaves.back();
 }
 
+int Division::getStopsCount() const noexcept
+{
+    return (int)_rankwaves.size();
+}
+
+void Division::enableStop(int i, bool ena)
+{
+    jassert(isPositiveAndBelow(i, _rankwaves.size()));
+    _rankwaves[i].enabled = ena;
+}
+
+bool Division::isStopEnabled(int i) const
+{
+    jassert(isPositiveAndBelow(i, _rankwaves.size()));
+    return _rankwaves[i].enabled;
+}
+
+Division::Stop& Division::getStopByIndex(int i)
+{
+    jassert(isPositiveAndBelow(i, _rankwaves.size()));
+    return _rankwaves[i];
+}
+
 void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
 {
     minNote = -1;
@@ -215,7 +284,8 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
 
 bool Division::isForMIDIChannel(int channel) const noexcept
 {
-    return _midiChannel == 0        // any channel
+    return _midiChannel == 0        // accept any channel
+        || channel == 0             // broadcast message
         || _midiChannel == channel;
 }
 
@@ -237,8 +307,13 @@ float Division::getTremulantLevel(bool update)
 
 void Division::noteOn(int note, int midiChannel)
 {
+    if (hasBeenTriggered())
+        return;
+
     if (!isForMIDIChannel(midiChannel))
         return;
+
+    _triggerFlag = true;
 
     for (auto& rw : _rankwaves) {
         for (int i = 0; i < MAX_RANK; ++i) {
@@ -253,12 +328,24 @@ void Division::noteOn(int note, int midiChannel)
             }
         }
     }
+
+    // Forward to the linked divisions
+    for (auto& link : _linkedDivisions) {
+        if (link.enabled) {
+            link.division->noteOn(note, 0);
+        }
+    }
 }
 
 void Division::noteOff(int note, int midiChannel)
 {
+    if (hasBeenTriggered())
+        return;
+
     if (!isForMIDIChannel(midiChannel))
         return;
+
+    _triggerFlag = true;
 
     auto* voice = _activeVoices.first();
 
@@ -267,6 +354,13 @@ void Division::noteOff(int note, int midiChannel)
             voice->release();
 
         voice = voice->next();
+    }
+
+    // Forward to the linked divisions
+    for (auto& link : _linkedDivisions) {
+        if (link.enabled) {
+            link.division->noteOff(note, 0);
+        }
     }
 }
 

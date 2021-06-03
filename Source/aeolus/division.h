@@ -51,12 +51,18 @@ public:
     /// Single stop descriptor.
     struct Stop
     {
-
         Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
         bool enabled = false;                       ///< Stop enablement flag.
         juce::String name = "";                     ///< Stop display name.
 
         float chiffGain = 0.0f;
+    };
+
+    /// Link with another division.
+    struct Link
+    {
+        Division* division;
+        bool enabled = false;
     };
 
     Division(Engine& engine, const juce::String& name = juce::String());
@@ -71,7 +77,23 @@ public:
     juce::var getPersistentState() const;
     void setPersistentState(const juce::var& v);
 
+    Engine& getEngine() noexcept { return _engine; }
+
     juce::String getName() const { return _name; }
+    juce::String getMnemonic() const { return _mnemonic; }
+
+    /**
+     * Populate linked divisions from the division names.
+     * This method must be called by the engine when all the divisions
+     * have been loaded and initialized.
+     */
+    void populateLinkedDivisions();
+
+    int getLinksCount() const noexcept;
+    void enableLink(int i, bool ena);
+    bool isLinkEnabled(int i);
+    Link& getLinkByIndex(int i);
+
 
     void clear();
     Stop& addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
@@ -82,10 +104,10 @@ public:
 
     AudioParameterPool& parameters() noexcept { return _params; }
 
-    int getStopsCount() const noexcept { return (int)_rankwaves.size(); }
-    void enableStop(int i, bool ena) { _rankwaves[i].enabled = ena; }
-    bool isStopEnabled(int i) const { return _rankwaves[i].enabled; }
-    Stop& getStopByIndex(int i) { return _rankwaves[i]; }
+    int getStopsCount() const noexcept;
+    void enableStop(int i, bool ena);
+    bool isStopEnabled(int i) const;
+    Stop& getStopByIndex(int i);
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
 
@@ -107,11 +129,20 @@ public:
 
     List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
 
+    bool hasBeenTriggered() const noexcept { return _triggerFlag; }
+    void clearTriggerFlag() noexcept { _triggerFlag = false; }
+
 private:
 
     Engine& _engine;
 
     juce::String _name;     ///< The division name.
+    juce::String _mnemonic; ///< Short mnemonic name.
+
+    /// List of linked divisions names.
+    juce::StringArray _linkedDivisionNames;
+    std::vector<Link> _linkedDivisions;
+
     bool _hasSwell;         ///< Whetehr this division has a swell control.
     bool _hasTremulant;     ///< Whether this division has a remulant control.
 
@@ -129,6 +160,12 @@ private:
     std::vector<Stop> _rankwaves;    ///< All the stops this division has.
 
     List<Voice> _activeVoices;  ///< Active voices on this division.
+
+    /// Tells whether this division has been triggered.
+    /// This is used to avoid a division to be triggered multiple
+    /// times by the same not on/off even, which is the case
+    /// for linked divisions.
+    bool _triggerFlag;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Division)
 };

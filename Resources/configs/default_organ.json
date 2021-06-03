@@ -2,6 +2,7 @@
     "divisions": [
         {
             "name": "Manual III",
+            "mnemonic": "III",
             "swell": true,
             "tremulant": true,
             "tremulant_level": 0.2,
@@ -22,6 +23,8 @@
         },
         {
             "name": "Manual II",
+            "mnemonic": "II",
+            "link": ["Manual III"],
             "swell": true,
             "tremulant": true,
             "tremulant_level": 0.2,
@@ -41,6 +44,8 @@
         },
         {
             "name": "Manual I",
+            "mnemonic": "I",
+            "link": ["Manual II", "Manual III"],
             "swell": false,
             "tremulant": false,
             "stops": [
@@ -60,6 +65,8 @@
         },
         {
             "name": "Pedals",
+            "mnemonic": "P",
+            "link": ["Manual I", "Manual II", "Manual III"],
             "swell": false,
             "tremulant": false,
             "stops": [

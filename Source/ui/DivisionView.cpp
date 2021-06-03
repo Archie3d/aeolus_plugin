@@ -17,6 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
+#include "aeolus/engine.h"
 #include "ui/DivisionView.h"
 
 using namespace juce;
@@ -46,6 +47,7 @@ DivisionView::DivisionView(aeolus::Division* division)
     addAndMakeVisible(_controlPanel);
 
     populateStopButtons();
+    populateLinkButtons();
 }
 
 void DivisionView::cancelAllStops()
@@ -59,8 +61,7 @@ void DivisionView::cancelAllStops()
         auto* button = _stopButtons.getUnchecked(i);
 
         stop.enabled = false;
-        button->setToggleState(false, false);
-
+        button->setToggleState(false, dontSendNotification);
     }
 }
 
@@ -77,7 +78,14 @@ void DivisionView::resized()
 {
     _nameLabel.setBounds(0, 0, getWidth() - controlPanelWidth, paddingTop);
 
-    _cancelButton.setBounds(getWidth() - controlPanelWidth - 70, 10, 60, 15);
+    _cancelButton.setBounds(getWidth() - controlPanelWidth - 50, 10, 40, 15);
+
+    int x = 10;
+
+    for (auto* linkButton : _linkButtons) {
+        linkButton->setBounds(x, 10, 40, 15);
+        x += 50;
+    }
 
     FlexBox fbox;
     fbox.flexWrap = FlexBox::Wrap::wrap;
@@ -108,7 +116,7 @@ void DivisionView::resized()
 
 void DivisionView::paint(Graphics& g)
 {
-    ColourGradient grad = ColourGradient::vertical(Colour(0x31, 0x2F, 0x2F), 0, Colour(0x1F, 0x1F, 0x1F), getHeight());
+    ColourGradient grad = ColourGradient::vertical(Colour(0x31, 0x2F, 0x2F), 0, Colour(0x1F, 0x1F, 0x1F), (float)getHeight());
     g.setGradientFill(grad);
     g.fillRect(getLocalBounds());
 }
@@ -129,11 +137,45 @@ void DivisionView::populateStopButtons()
         auto* ptr = button.get();
 
         button->onClick = [division=_division, i, ptr]() {
-            division->getStopByIndex(i).enabled = ptr->getToggleState();
+            division->enableStop(i, ptr->getToggleState());
         };
 
         _stopButtons.add(button.release());
         addAndMakeVisible(ptr);
+    }
+}
+
+void DivisionView::populateLinkButtons()
+{
+    jassert(_division != nullptr);
+    
+    for (int i = 0; i < _division->getLinksCount(); ++i) {
+        auto& link = _division->getLinkByIndex(i);
+
+        const String caption = _division->getMnemonic() + " + " + link.division->getMnemonic();
+        auto button = std::make_unique<TextButton>(caption);
+        auto* ptr = button.get();
+        ptr->setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
+        ptr->setColour(TextButton::buttonOnColourId, Colours::darkgreen);
+
+        ptr->setClickingTogglesState(true);
+        ptr->setToggleState(link.enabled, juce::dontSendNotification);
+
+        button->onClick = [division=_division, i, ptr] {
+            division->enableLink(i, ptr->getToggleState());
+        };
+
+        _linkButtons.add(button.release());
+        addAndMakeVisible(ptr);
+    }
+
+    auto& engine = _division->getEngine();
+
+    for (int i = 0; i < engine.getDivisionCount(); ++i) {
+        auto* div = engine.getDivisionByIndex(i);
+
+        if (div == _division)
+            break;
     }
 }
 

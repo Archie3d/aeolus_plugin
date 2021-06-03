@@ -44,11 +44,13 @@ public:
 private:
 
     void populateStopButtons();
+    void populateLinkButtons();
 
     aeolus::Division* _division;
 
     juce::Label _nameLabel;
-    juce::TextButton _cancelButton; ///< Disable all stops.
+    juce::TextButton _cancelButton;         ///< Disable all stops.
+    juce::OwnedArray<juce::TextButton> _linkButtons;
     DivisionControlPanel _controlPanel;
     juce::OwnedArray<StopButton> _stopButtons;
 
