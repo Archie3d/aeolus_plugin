@@ -18,5 +18,4 @@ But the most of the code (including voicing, spatialisation, reverb, etc.) is al
 Convolution reverb uses IRs from the [Open AIR](https://www.openair.hosted.york.ac.uk/) project database.
 
 ## Current limitations
-- No links between manuals (but you can assign manuals to the same MIDI channel).
 - There is no swell control yet (but there is a gain control per division).
