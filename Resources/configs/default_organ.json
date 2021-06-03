@@ -8,6 +8,7 @@
             "tremulant_level": 0.2,
             "stops": [
                 { "name": "Principal\n8",       "pipe": "III_principal_8",  "chiff": 0.6 },
+                { "name": "Oboe\n8",            "pipe": "new_oboe_fa",      "chiff": 0.8 },
                 { "name": "Gemshorn\n8",        "pipe": "gemshorn8",        "chiff": 0.6 },
                 { "name": "Quinta-dena\n8",     "pipe": "quintadena",       "chiff": 0.6 },
                 { "name": "Celeste\n8",         "pipe": "celesta",          "chiff": 0.4 },
@@ -17,8 +18,7 @@
                 { "name": "Quint flute\n2 2/3", "pipe": "quintflute",       "chiff": 0.4 },
                 { "name": "Super octave 2",     "pipe": "superoctave2",     "chiff": 0.3 },
                 { "name": "Sifflet\n1",         "pipe": "sifflet1",         "chiff": 0.2 },
-                { "name": "Cymbel\nVI",         "pipe": "III_cymbel",       "chiff": 0.6 },
-                { "name": "Oboe",               "pipe": "new_oboe_fa",      "chiff": 0.8 }
+                { "name": "Cymbel\nVI",         "pipe": "III_cymbel",       "chiff": 0.6 }
             ]
         },
         {
@@ -70,19 +70,19 @@
             "swell": false,
             "tremulant": false,
             "stops": [
+                { "name": "Bombarde\n32",       "pipe": "bombarde",         "chiff": 1.0 },
+                { "name": "Trombone\n16",       "pipe": "trombone",         "chiff": 1.0 },
+                { "name": "Fagott\n16",         "pipe": "bassoon",          "chiff": 1.0 },
                 { "name": "Subbass\n16",        "pipe": "bourdon16",        "chiff": 0.8 },
                 { "name": "Principal\n16",      "pipe": "P_principal_16",   "chiff": 1.0 },
                 { "name": "Principal\n8",       "pipe": "P_principal_8",    "chiff": 1.0 },
+                { "name": "Trumpet\n8",         "pipe": "P_trumpet",        "chiff": 0.8 },
                 { "name": "Principal\n4",       "pipe": "P_principal_4",    "chiff": 1.0 },
                 { "name": "Octave\n2",          "pipe": "P_octave_2",       "chiff": 1.0 },
                 { "name": "Octave\n1",          "pipe": "P_octave_1",       "chiff": 0.6 },
                 { "name": "Quint\n5 1/3",       "pipe": "P_quinte_513",     "chiff": 0.4 },
                 { "name": "Quint\n2 2/3",       "pipe": "P_quinte_223",     "chiff": 0.3 },
-                { "name": "Mixture\nV",         "pipe": "P_mixtur5fach",    "chiff": 0.8 },
-                { "name": "Fagott\n16",         "pipe": "bassoon",          "chiff": 1.0 },
-                { "name": "Trombone\n16",       "pipe": "trombone",         "chiff": 1.0 },
-                { "name": "Bombarde\n32",       "pipe": "bombarde",         "chiff": 1.0 },
-                { "name": "Trumpet",            "pipe": "P_trumpet",        "chiff": 0.8 }
+                { "name": "Mixture\nV",         "pipe": "P_mixtur5fach",    "chiff": 0.8 }
             ]
         }
     ]
