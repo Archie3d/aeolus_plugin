@@ -155,7 +155,9 @@ void DivisionView::populateLinkButtons()
         const String caption = _division->getMnemonic() + " + " + link.division->getMnemonic();
         auto button = std::make_unique<TextButton>(caption);
         auto* ptr = button.get();
-        ptr->setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
+        ptr->setColour(TextButton::textColourOffId, Colour(0x99, 0x99, 0x99));
+        ptr->setColour(TextButton::textColourOnId, Colour(0xFF, 0xFF, 0xFF));
+        ptr->setColour(TextButton::buttonColourId, Colour(0x33, 0x33, 0x33));
         ptr->setColour(TextButton::buttonOnColourId, Colours::darkgreen);
 
         ptr->setClickingTogglesState(true);

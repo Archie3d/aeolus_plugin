@@ -45,7 +45,7 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     g.setColour(Colours::black);
     g.fillEllipse(bounds.toFloat());
 
-    auto color = getToggleState() ? Colour(0xFF, 0xFF, 0x00) : Colour(0x99, 0x99, 0x99);
+    auto color = getToggleState() ? Colour(0xFF, 0xF0, 0x00) : Colour(0x99, 0x99, 0x99);
 
     int offset = 2;
 

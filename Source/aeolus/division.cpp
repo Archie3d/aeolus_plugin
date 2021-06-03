@@ -118,17 +118,33 @@ var Division::getPersistentState() const
     divisionObj->setProperty("midi_channel", getMIDIChannel());
     divisionObj->setProperty("tremulant_enabled", isTremulantEnabled());
 
-    Array<var> stops;
+    {
+        Array<var> stops;
 
-    for (const auto& stop : _rankwaves) {
-        auto* stopObj = new DynamicObject();
-        stopObj->setProperty("name", stop.name);
-        stopObj->setProperty("enabled", stop.enabled);
+        for (const auto& stop : _rankwaves) {
+            auto* stopObj = new DynamicObject();
+            stopObj->setProperty("name", stop.name);
+            stopObj->setProperty("enabled", stop.enabled);
 
-        stops.add(var{stopObj});
+            stops.add(var{stopObj});
+        }
+
+        divisionObj->setProperty("stops", stops);
     }
 
-    divisionObj->setProperty("stops", stops);
+    {
+        Array<var> links;
+
+        for (const auto& link : _linkedDivisions) {
+            auto* linkObj = new DynamicObject();
+            linkObj->setProperty("division", link.division->getName());
+            linkObj->setProperty("enabled", link.enabled);
+
+            links.add(var{linkObj});
+        }
+
+        divisionObj->setProperty("links", links);
+    }
 
     return var{divisionObj};
 }
@@ -146,12 +162,25 @@ void Division::setPersistentState(const juce::var& v)
                     const String stopName = stopObj->getProperty("name");
                     const bool enabled = stopObj->getProperty("enabled");
 
-                    // This is not optimal but meh...
                     for (auto& stop : _rankwaves) {
                         if (stop.name == stopName) {
                             stop.enabled = enabled;
                             break;
                         }
+                    }
+                }
+            }
+        }
+
+        if (const auto* links = divisionObj->getProperty("links").getArray()) {
+            for (int i = 0; i < links->size(); ++i) {
+                if (const auto* linkObj = links->getReference(i).getDynamicObject()) {
+                    const String divisionName = linkObj->getProperty("division");
+                    const bool enabled = linkObj->getProperty("enabled");
+
+                    for (auto& link : _linkedDivisions) {
+                        if (link.division->getName() == divisionName)
+                            link.enabled = enabled;
                     }
                 }
             }
