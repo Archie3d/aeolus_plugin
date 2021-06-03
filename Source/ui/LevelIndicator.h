@@ -24,6 +24,12 @@
 
 namespace ui {
 
+/**
+ * @brief Level indicator.
+ * 
+ * This widget is coupled with a LevelMeter to display
+ * the level as a horizontal or vertical bar.
+ */
 class LevelIndicator : public juce::Component,
                        public juce::Timer
 {

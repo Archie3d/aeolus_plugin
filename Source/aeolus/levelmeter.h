@@ -25,6 +25,9 @@
 
 AEOLUS_NAMESPACE_BEGIN
 
+/**
+ * @brief Capture volume levels from an audio buffer (mono).
+ */
 class LevelMeter
 {
 public:
