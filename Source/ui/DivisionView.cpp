@@ -65,7 +65,7 @@ void DivisionView::cancelAllStops()
     }
 }
 
-constexpr int controlPanelWidth = 120;
+constexpr int controlPanelWidth = 130;
 
 int DivisionView::getEstimatedHeightForWidth(int width) const
 {

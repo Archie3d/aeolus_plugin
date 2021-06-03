@@ -41,10 +41,12 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _reverbSlider{*p.getParametersContainer().reverbWet, juce::Slider::LinearHorizontal}
     , _volumeLabel{{}, "Volume:"}
     , _volumeSlider{*p.getParametersContainer().volume, juce::Slider::LinearHorizontal}
+    , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
+    , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
-    setSize (1160, 600);
+    setSize (1180, 600);
     setResizeLimits(740, 480, 2048, 1920);
 
     addAndMakeVisible(_versionLabel);
@@ -88,6 +90,11 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     _reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     addAndMakeVisible(_reverbSlider);
+
+    _volumeLevelL.setSkew(0.5f);
+    addAndMakeVisible(_volumeLevelL);
+    _volumeLevelR.setSkew(0.5f);
+    addAndMakeVisible(_volumeLevelR);
 
     addAndMakeVisible(_volumeLabel);
     addAndMakeVisible(_volumeSlider);
@@ -133,6 +140,9 @@ void AeolusAudioProcessorEditor::resized()
 
     _volumeLabel.setBounds(_reverbSlider.getRight() + 60, margin, 60, 20);
     _volumeSlider.setBounds(_volumeLabel.getRight() + margin, margin, 100, 20);
+
+    _volumeLevelL.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + 2, _volumeSlider.getWidth() - 10, 2);
+    _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
 
     constexpr int W = 120;
     constexpr int H = 30;

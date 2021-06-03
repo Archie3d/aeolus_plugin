@@ -30,6 +30,8 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     , _midiChannelComboBox{}
     , _tremulantButton{"Tremulant"}
     , _gainSlider{*division->getParamGain()}
+    , _volumeLevelL{division->volumeLevel().left, LevelIndicator::Orientation::Vertical}
+    , _volumeLevelR{division->volumeLevel().right, LevelIndicator::Orientation::Vertical}
 {
     _midiChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
     auto f = _midiChannelLabel.getFont();
@@ -63,6 +65,11 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     addAndMakeVisible(_tremulantButton);
     _tremulantButton.setVisible(_division->hasTremulant());
 
+    _volumeLevelL.setSkew(0.5f);
+    addAndMakeVisible(_volumeLevelL);
+    _volumeLevelR.setSkew(0.5f);
+    addAndMakeVisible(_volumeLevelR);
+
     _gainSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     _gainSlider.setSkewFactor(0.5f);
     addAndMakeVisible(_gainSlider);
@@ -71,17 +78,20 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 void DivisionControlPanel::resized()
 {
     constexpr int margin = 5;
-    constexpr int gainWidth = 10;
+    constexpr int gainWidth = 20;
 
     auto bounds = getLocalBounds();
     const int itemWidth = bounds.getWidth() - 3 * margin - gainWidth;
 
     _gainSlider.setBounds(margin, margin, margin + gainWidth, 110);
+
+    _volumeLevelL.setBounds(_gainSlider.getX() + 3, margin + 5, 2, _gainSlider.getHeight() - 10);
+    _volumeLevelR.setBounds(_gainSlider.getX() + _gainSlider.getWidth() - 5, margin + 5, 2, _gainSlider.getHeight() - 10);
+
     int offset = _gainSlider.getRight() + margin;
 
-
     _midiChannelLabel.setBounds(offset, margin, itemWidth, 20);
-    _midiChannelComboBox.setBounds(offset, 2*margin + 20, itemWidth - 2 * margin, 20);
+    _midiChannelComboBox.setBounds(offset, 2 * margin + 20, itemWidth - 2 * margin, 20);
 
     _tremulantButton.setBounds(offset + margin, 5*margin + 40, bounds.getRight() - 3 * margin - offset, 35);
 }

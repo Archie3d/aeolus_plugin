@@ -20,33 +20,46 @@
 #pragma once
 
 #include "aeolus/globals.h"
-#include "aeolus/division.h"
-#include "ui/ParameterSlider.h"
-#include "ui/LevelIndicator.h"
+#include "aeolus/levelmeter.h"
 
 namespace ui {
 
-class DivisionControlPanel : public juce::Component
+class LevelIndicator : public juce::Component,
+                       public juce::Timer
 {
 public:
-    DivisionControlPanel(aeolus::Division* division = nullptr);
+
+    enum class Orientation
+    {
+        Horizontal,
+        Vertical
+    };
+
+    LevelIndicator() = delete;
+    LevelIndicator(aeolus::LevelMeter& meter, Orientation orientation);
+
+    void setSkew(float s) noexcept { _skew = s; }
 
     // juce::Component
-    void resized() override;
     void paint(juce::Graphics& g) override;
+
+    // juce::Timer
+    void timerCallback() override;
 
 private:
 
-    aeolus::Division* _division;
+    void paintHorizontal(juce::Graphics& g);
+    void paintVertical(juce::Graphics& g);
 
-    juce::Label _midiChannelLabel;
-    juce::ComboBox _midiChannelComboBox;
-    juce::TextButton _tremulantButton;
-    ui::ParameterSlider _gainSlider;
-    ui::LevelIndicator _volumeLevelL;
-    ui::LevelIndicator _volumeLevelR;
+    juce::ColourGradient getColourGradient();
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionControlPanel)
+    aeolus::LevelMeter& _levelMeter;
+    Orientation _orientation;
+    float _skew;
+
+    float _peakLevel;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelIndicator)
 };
 
 } // namespace ui

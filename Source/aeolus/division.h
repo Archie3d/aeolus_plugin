@@ -23,6 +23,7 @@
 #include "aeolus/rankwave.h"
 #include "aeolus/voice.h"
 #include "aeolus/audioparam.h"
+#include "aeolus/levelmeter.h"
 
 #include <atomic>
 #include <vector>
@@ -65,6 +66,12 @@ public:
         bool enabled = false;
     };
 
+    struct Level
+    {
+        LevelMeter left;
+        LevelMeter right;
+    };
+
     Division(Engine& engine, const juce::String& name = juce::String());
 
     /**
@@ -103,6 +110,8 @@ public:
     void setParamGain(juce::AudioParameterFloat* param) noexcept { _paramGain = param; }
 
     AudioParameterPool& parameters() noexcept { return _params; }
+
+    Level& volumeLevel() noexcept { return _volumeLevel; }
 
     int getStopsCount() const noexcept;
     void enableStop(int i, bool ena);
@@ -166,6 +175,8 @@ private:
     /// times by the same not on/off even, which is the case
     /// for linked divisions.
     bool _triggerFlag;
+
+    Level _volumeLevel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Division)
 };

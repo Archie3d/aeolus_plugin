@@ -42,6 +42,7 @@ Division::Division(Engine& engine, const String& name)
     , _rankwaves{}
     , _activeVoices{}
     , _triggerFlag{}
+    , _volumeLevel{}
 {
 }
 

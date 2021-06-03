@@ -49,7 +49,7 @@ void Voice::trigger(const Pipewave::State& state)
 
     _chiff.setAttack(20.0f * dt);
     _chiff.setDecay(300.0f * dt);
-    _chiff.setSustain(0.2f);
+    _chiff.setSustain(0.1f);
     _chiff.setRelease(50.0f * dt);
 
     // Chiff attenuation (quieter for higher frequencies)

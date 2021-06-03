@@ -174,6 +174,7 @@ Engine::Engine()
     , _irSwitchEvents{}
     , _interpolator{1.0f}
     , _midiKeybaordState{}
+    , _volumeLevel{}
 {
     populateDivisions();
 }
@@ -279,6 +280,9 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
     }
 
     applyVolume(origOutL, origOutR, origNumFrames);
+
+    _volumeLevel.left.process(origOutL, origNumFrames);
+    _volumeLevel.right.process(origOutR, origNumFrames);
 }
 
 void Engine::noteOn(int note, int midiChannel)
@@ -462,6 +466,9 @@ void Engine::processSubFrame()
             _subFrameBuffer.addFrom(0, 0, _divisionFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
             _subFrameBuffer.addFrom(1, 0, _divisionFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
         }
+
+        division->volumeLevel().left.process(_divisionFrameBuffer, 0);
+        division->volumeLevel().right.process(_divisionFrameBuffer, 1);
 
     }
 

@@ -26,6 +26,7 @@
 #include "aeolus/rankwave.h"
 #include "aeolus/division.h"
 #include "aeolus/audioparam.h"
+#include "aeolus/levelmeter.h"
 #include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
 
@@ -99,6 +100,12 @@ public:
         int num;
     };
 
+    struct Level
+    {
+        LevelMeter left;
+        LevelMeter right;
+    };
+
     enum {
         VOLUME = 0,
 
@@ -126,6 +133,8 @@ public:
     void setReverbWet(float v);
 
     void setVolume(float v);
+
+    Level& getVolumeLevel() noexcept { return _volumeLevel; }
 
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
@@ -190,6 +199,8 @@ private:
     dsp::Interpolator _interpolator;
 
     juce::MidiKeyboardState _midiKeybaordState;
+
+    Level _volumeLevel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Engine)
 };

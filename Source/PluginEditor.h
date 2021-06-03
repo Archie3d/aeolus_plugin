@@ -23,6 +23,7 @@
 #include "PluginProcessor.h"
 #include "CustomMidiKeyboard.h"
 
+#include "ui/LevelIndicator.h"
 #include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"
 
@@ -70,6 +71,9 @@ private:
     ui::ParameterSlider _reverbSlider;
     juce::Label _volumeLabel;
     ui::ParameterSlider _volumeSlider;
+
+    ui::LevelIndicator _volumeLevelL;
+    ui::LevelIndicator _volumeLevelR;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

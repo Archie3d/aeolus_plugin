@@ -20,33 +20,26 @@
 #pragma once
 
 #include "aeolus/globals.h"
-#include "aeolus/division.h"
-#include "ui/ParameterSlider.h"
-#include "ui/LevelIndicator.h"
 
-namespace ui {
+#include <atomic>
 
-class DivisionControlPanel : public juce::Component
+AEOLUS_NAMESPACE_BEGIN
+
+class LevelMeter
 {
 public:
-    DivisionControlPanel(aeolus::Division* division = nullptr);
 
-    // juce::Component
-    void resized() override;
-    void paint(juce::Graphics& g) override;
+    LevelMeter();
+
+    float getPeakLevel() const noexcept { return _peak; }
+    float getRMSLevel() const noexcept { return _rms; }
+
+    void process(const juce::AudioBuffer<float>& buffer, int channel);
+    void process(float* const buffer, int size);
 
 private:
-
-    aeolus::Division* _division;
-
-    juce::Label _midiChannelLabel;
-    juce::ComboBox _midiChannelComboBox;
-    juce::TextButton _tremulantButton;
-    ui::ParameterSlider _gainSlider;
-    ui::LevelIndicator _volumeLevelL;
-    ui::LevelIndicator _volumeLevelR;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionControlPanel)
+    std::atomic<float> _peak;
+    std::atomic<float> _rms;
 };
 
-} // namespace ui
+AEOLUS_NAMESPACE_END

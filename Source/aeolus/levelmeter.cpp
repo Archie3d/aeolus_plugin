@@ -17,36 +17,30 @@
 //
 // ----------------------------------------------------------------------------
 
-#pragma once
+#include "aeolus/levelmeter.h"
 
-#include "aeolus/globals.h"
-#include "aeolus/division.h"
-#include "ui/ParameterSlider.h"
-#include "ui/LevelIndicator.h"
+using namespace juce;
 
-namespace ui {
+AEOLUS_NAMESPACE_BEGIN
 
-class DivisionControlPanel : public juce::Component
+LevelMeter::LevelMeter()
+    : _peak{0.0f}
+    , _rms{0.0f}
 {
-public:
-    DivisionControlPanel(aeolus::Division* division = nullptr);
+}
 
-    // juce::Component
-    void resized() override;
-    void paint(juce::Graphics& g) override;
+void LevelMeter::process(const AudioBuffer<float>& buffer, int channel)
+{
+    _peak = buffer.getMagnitude(channel, 0, buffer.getNumSamples());
+    _rms = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+}
 
-private:
+void LevelMeter::process(float* const buffer, int size)
+{
+    float* const layout[1] = {buffer};
+    AudioBuffer<float> ab(layout, 1, size);
+    _peak = ab.getMagnitude(0, 0, size);
+    _rms = ab.getRMSLevel(0, 0, size);
+}
 
-    aeolus::Division* _division;
-
-    juce::Label _midiChannelLabel;
-    juce::ComboBox _midiChannelComboBox;
-    juce::TextButton _tremulantButton;
-    ui::ParameterSlider _gainSlider;
-    ui::LevelIndicator _volumeLevelL;
-    ui::LevelIndicator _volumeLevelR;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionControlPanel)
-};
-
-} // namespace ui
+AEOLUS_NAMESPACE_END
