@@ -63,7 +63,7 @@ public:
         Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
         bool enabled = false;                       ///< Stop enablement flag.
         juce::String name = "";                     ///< Stop display name.
-        Type type = Unknown;                    ///< Stop type.
+        Type type = Unknown;                        ///< Stop type.
 
         float chiffGain = 0.0f;
     };
