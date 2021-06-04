@@ -53,8 +53,6 @@ private:
     void updateMeters();
     void updateMidiKeyboardRange();
 
-    using StopButton = juce::TextButton;
-
     AeolusAudioProcessor& _audioProcessor;
 
     juce::OwnedArray<ui::DivisionView> _divisionViews;
@@ -75,7 +73,11 @@ private:
     ui::LevelIndicator _volumeLevelL;
     ui::LevelIndicator _volumeLevelR;
 
+    /// Kill all active voices button
     juce::TextButton _panicButton;
+
+    /// Organ cancel button
+    juce::TextButton _cancelButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

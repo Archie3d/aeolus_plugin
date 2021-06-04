@@ -231,6 +231,12 @@ Division::Link& Division::getLinkByIndex(int i)
     return _linkedDivisions[i];
 }
 
+void Division::cancelAllLinks()
+{
+    for (auto& link : _linkedDivisions)
+        link.enabled = false;
+}
+
 void Division::clear()
 {
     _rankwaves.clear();

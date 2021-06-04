@@ -44,6 +44,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
     , _panicButton{"PANIC"}
+    , _cancelButton{"Cancel"}
 {
     getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
 
@@ -108,6 +109,14 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
         _audioProcessor.panic();
     };
 
+    _cancelButton.onClick = [this]() {
+        for (auto* divisionView : _divisionViews) {
+            divisionView->cancelAllStops();
+            divisionView->cancelAllLinks();
+        }
+    };
+    addAndMakeVisible(_cancelButton);
+
     populateDivisions();
 
     _midiKeyboard.setScrollButtonsVisible(false);
@@ -169,6 +178,9 @@ void AeolusAudioProcessorEditor::resized()
     int keyboardWidth = jmin((int)_midiKeyboard.getTotalKeyboardWidth(), getWidth());
 
     _midiKeyboard.setBounds((getWidth() - keyboardWidth) / 2, getHeight() - 70, keyboardWidth, 70);
+
+    _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
+    _cancelButton.setBounds((_midiKeyboard.getX() - 60)/2, getHeight() - 60, 60, 35);
 }
 
 void AeolusAudioProcessorEditor::timerCallback()

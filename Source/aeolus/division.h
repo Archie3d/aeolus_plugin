@@ -110,6 +110,7 @@ public:
     void enableLink(int i, bool ena);
     bool isLinkEnabled(int i);
     Link& getLinkByIndex(int i);
+    void cancelAllLinks();
 
 
     void clear();

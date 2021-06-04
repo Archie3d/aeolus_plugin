@@ -65,6 +65,17 @@ void DivisionView::cancelAllStops()
     }
 }
 
+void DivisionView::cancelAllLinks()
+{
+    if (_division == nullptr)
+        return;
+
+    _division->cancelAllLinks();
+
+    for (auto& button : _linkButtons)
+        button->setToggleState(false, dontSendNotification);
+}
+
 constexpr int controlPanelWidth = 130;
 
 int DivisionView::getEstimatedHeightForWidth(int width) const

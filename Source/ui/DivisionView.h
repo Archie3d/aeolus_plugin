@@ -34,6 +34,7 @@ public:
     DivisionView(aeolus::Division* division = nullptr);
 
     void cancelAllStops();
+    void cancelAllLinks();
 
     int getEstimatedHeightForWidth(int width) const;
 
