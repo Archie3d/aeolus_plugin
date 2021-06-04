@@ -49,7 +49,7 @@
             "swell": false,
             "tremulant": false,
             "stops": [
-                { "name": "Principal\n8",       "type": "principal",    "pipe": "I_principal_8",    "chiff": 1.0 },
+                { "name": "Principal\n8",       "type": "principal",    "pipe": "I_principal_8",    "chiff": 0.6 },
                 { "name": "Flute\n8",           "type": "flute",        "pipe": "flute8",           "chiff": 0.4 },
                 { "name": "Tibia\n8",           "type": "flute",        "pipe": "tibia8",           "chiff": 0.8 },
                 { "name": "Principal\n4",       "type": "principal",    "pipe": "I_principal_4",    "chiff": 0.9 },

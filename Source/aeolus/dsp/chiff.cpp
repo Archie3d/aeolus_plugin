@@ -25,24 +25,48 @@ using namespace juce;
 
 namespace dsp {
 
-Chiff::Chiff()
-    : _envelopeTrigger{0.0f, 0.0f, 0.0f, 0.0f}
-    , _envelope{}
-    , _gain{1.0f}
-    , _bpSpec{}
-    , _bpState{}
-    , _lpSpec{}
-    , _lpState{}
+Chiff::Harmonic::Harmonic()
 {
-    _bpSpec.type = BiquadFilter::BandPass;
-    _bpSpec.sampleRate = SAMPLE_RATE;
-    _bpSpec.dbGain = 0.0f;
-    _bpSpec.q = 0.7071f;
+    spec.type = BiquadFilter::BandPass;
+    spec.sampleRate = SAMPLE_RATE;
+    spec.dbGain = 0.0f;
+    spec.q = 0.7071f;
+}
 
-    _lpSpec.type = BiquadFilter::LowPass;
-    _lpSpec.sampleRate = SAMPLE_RATE;
-    _lpSpec.dbGain = 0.0f;
-    _lpSpec.q = 0.7071f;
+void Chiff::Harmonic::reset()
+{
+    BiquadFilter::resetState(spec, state);
+}
+
+void Chiff::Harmonic::setFrequency(float f)
+{
+    spec.freq = jmin(SAMPLE_RATE * 0.45f, f);
+}
+
+void Chiff::Harmonic::setGain(float g)
+{
+    gain = g;
+}
+
+void Chiff::Harmonic::trigger(const Envelope::Trigger& env)
+{
+    BiquadFilter::updateSpec(spec);
+    BiquadFilter::resetState(spec, state);
+
+    envelope.trigger(env);
+}
+
+float Chiff::Harmonic::tick(float x)
+{
+    return gain * envelope.next() * BiquadFilter::tick(spec, state, x);
+}
+
+//==============================================================================
+
+Chiff::Chiff()
+    : _harmonics{}
+    , _envelopeTrigger{0.0f, 0.0f, 0.0f, 0.0f}
+{
 }
 
 void Chiff::setAttack(float v)
@@ -67,41 +91,60 @@ void Chiff::setSustain(float v)
 
 void Chiff::setGain(float v)
 {
-    _gain = v;
+    float g = v;
+
+    for (auto& h : _harmonics) {
+        h.setGain(g);
+        g *= harmonicGain;
+    }
 }
 
 void Chiff::setFrequency(float v)
 {
-    _bpSpec.freq = jmin(SAMPLE_RATE * 0.45f, 2.0f * v);
-    _lpSpec.freq = jmin(SAMPLE_RATE * 0.45f, 8.0f * v);
+    float f = v;
+
+    for (auto& h : _harmonics) {
+        h.setFrequency(f);
+        f *= 2.0f;
+    }
 }
 
 void Chiff::reset()
 {
-    BiquadFilter::resetState(_bpSpec, _bpState);
-    BiquadFilter::resetState(_lpSpec, _lpState);
+    for (auto& h : _harmonics)
+        h.reset();
 }
 
 void Chiff::trigger()
 {
-    BiquadFilter::updateSpec(_bpSpec);
-    BiquadFilter::resetState(_bpSpec, _bpState);
+    auto env = _envelopeTrigger;
 
-    BiquadFilter::updateSpec(_lpSpec);
-    BiquadFilter::resetState(_lpSpec, _lpState);
+    for (auto& h : _harmonics) {
+        h.trigger(env);
+        env.attack *= harmonicAttack;
+        env.decay *= harmonicDecay;
+        env.sustain *= harmonicSustain;
+        env.release *= harmonicRelease;
+    }
 
-    _envelope.trigger(_envelopeTrigger);
 }
 
 void Chiff::release()
 {
-    if (isActive())
-        _envelope.release();
+    for (auto& h : _harmonics) {
+        if (h.envelope.state() != Envelope::Off)
+            h.envelope.release();
+    }
 }
 
 bool Chiff::isActive() const noexcept
 {
-    return _envelope.state() != Envelope::Off;
+    for (const auto& h : _harmonics) {
+        if (h.envelope.state() != Envelope::Off)
+            return true;
+    }
+
+    return false;
 }
 
 void Chiff::process(float* out, int numFrames)
@@ -114,10 +157,12 @@ void Chiff::process(float* out, int numFrames)
         return;
 
     for (int i = 0; i < numFrames; ++i) {
-        float x = _gain * (2.0f * rnd.nextFloat() - 1.0f);
-        x = BiquadFilter::tick(_bpSpec, _bpState, x);
-        x = BiquadFilter::tick(_lpSpec, _lpState, x);
-        x *= _envelope.next();
+        float x0 = 2.0f * rnd.nextFloat() - 1.0f;
+        float x = 0.0f;
+
+        for (auto& h : _harmonics) {
+            x += h.tick(x0);
+        }
 
         out[i] += x;
     }
