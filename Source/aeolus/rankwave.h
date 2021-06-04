@@ -60,6 +60,7 @@ public:
         float releaseGain = 0.0f;               // _g_r
         int releaseCount = 0;                   // _i_r
 
+        float gain = 1.0f;
         float chiffGain = 0.0f;
 
         void release() { if (pipewave != nullptr) pipewave->release(*this); }

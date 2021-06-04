@@ -62,7 +62,6 @@ private:
     dsp::DelayLine _delayLine;
     float _delay;
 
-
     /// Attack chiff.
     dsp::Chiff _chiff;
 

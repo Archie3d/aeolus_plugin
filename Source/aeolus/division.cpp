@@ -72,7 +72,9 @@ void Division::initFromVar(const var& v)
                 if (const auto* stopObj = arr->getUnchecked(i).getDynamicObject()) {
                     const String stopName = stopObj->getProperty("name");
                     const String stopType = stopObj->getProperty("type");
+                    const float gain = stopObj->hasProperty("gain") ? (float)stopObj->getProperty("gain") : 1.0f;
                     const float chiffGain = stopObj->getProperty("chiff");
+
                     const auto pipeObj = stopObj->getProperty("pipe");
 
                     if (const auto* pipes = pipeObj.getArray()) {
@@ -93,6 +95,7 @@ void Division::initFromVar(const var& v)
                         if (r > 0) {
                             auto& s = addRankwaves(rankwaves, r, false, stopName);
                             s.type = Division::stopTypeFromString(stopType);
+                            s.gain = gain;
                             s.chiffGain = chiffGain;
                         }
 
@@ -103,6 +106,7 @@ void Division::initFromVar(const var& v)
                         if (auto* rankwavePtr = g->getStopByName(pipeName)) {
                             auto&s = addRankwave(rankwavePtr, false, stopName);
                             s.type = Division::stopTypeFromString(stopType);
+                            s.gain = gain;
                             s.chiffGain = chiffGain;
                         } else {
                             DBG("Stop pipe " + pipeName + " cannot be found.");
@@ -353,6 +357,7 @@ void Division::noteOn(int note, int midiChannel)
             if (auto* ptr = rw.rankwave[i]) {
                 if (rw.enabled && ptr->isForNote(note)) {
                     auto state = ptr->trigger(note);
+                    state.gain = rw.gain;
                     state.chiffGain = rw.chiffGain;
 
                     if (auto* voice = _engine.getVoicePool().trigger(state))

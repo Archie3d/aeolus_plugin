@@ -65,6 +65,7 @@ public:
         juce::String name = "";                     ///< Stop display name.
         Type type = Unknown;                        ///< Stop type.
 
+        float gain = 1.0f;
         float chiffGain = 0.0f;
     };
 

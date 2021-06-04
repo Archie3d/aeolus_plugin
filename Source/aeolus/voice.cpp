@@ -96,12 +96,14 @@ void Voice::process(float* outL, float* outR)
 {
     memset(_buffer, 0, sizeof(float) * SUB_FRAME_LENGTH);
 
+    const auto gain = _state.gain;
+
     if (_state.env == Pipewave::Over) {
         _postReleaseCounter -= std::min((int)_postReleaseCounter, SUB_FRAME_LENGTH);
 
         for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
             _delayLine.write(0.0f);
-            _buffer[i] = _delayLine.read(_delay);
+            _buffer[i] = _delayLine.read(_delay) * gain;
         }
 
     } else {
@@ -110,7 +112,7 @@ void Voice::process(float* outL, float* outR)
 
         for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
             _delayLine.write(_buffer[i]);
-            _buffer[i] = _delayLine.read(_delay);
+            _buffer[i] = _delayLine.read(_delay) * gain;
         }
     }
 
