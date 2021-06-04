@@ -62,7 +62,7 @@ void Voice::trigger(const Pipewave::State& state)
     int note = _state.pipewave->getNote();
     float k = note % 2 != 0 ? 1.0f : -1.0f;
 
-    float x = 0.15f * (float) abs(note - 65) * k + 0.3f;
+    float x = 0.15f * k * ((float) abs(note - 65) + 1.0f);
 
     _spatialSource.setSampleRate(SAMPLE_RATE);
     _spatialSource.setSourcePosition(x, 5.0f);
