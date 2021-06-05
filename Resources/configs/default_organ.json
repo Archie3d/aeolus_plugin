@@ -39,7 +39,6 @@
                 { "name": "Octavin\n2",         "type": "flute",     "pipe": "ottavina2",        "chiff": 0.4 },
                 { "name": "Tertia\n1 3/5",      "type": "flute",     "pipe": "tertia",           "gain": 2.6, "chiff": 0.2 },
                 { "name": "Septime",            "type": "flute",     "pipe": "septime",          "gain": 2.4, "chiff": 0.2 },
-                { "name": "Octave\n1",          "type": "principal", "pipe": "I_octave_1",       "gain": 1.8, "chiff": 0.3 },
                 { "name": "None",               "type": "flute",     "pipe": "none",             "gain": 3.0, "chiff": 0.2 },
                 { "name": "Mixture\nV",         "type": "principal", "pipe": "I_mixtur5fach",    "gain": 2.1, "chiff": 0.3 }
             ]
