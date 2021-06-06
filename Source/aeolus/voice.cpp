@@ -28,7 +28,7 @@ Voice::Voice(Engine& engine)
     : _engine(engine)
     , _state{}
     , _buffer{0}
-    , _delayLine{SAMPLE_RATE}
+    , _delayLine{(int)SAMPLE_RATE}
     , _delay{0.0f}
     , _chiff{}
     , _spatialSource{}
@@ -41,28 +41,21 @@ void Voice::trigger(const Pipewave::State& state)
     _state = state;
 
     // Chiff
-    const auto freq = _state.pipewave->getFreqency();
+    const auto freq = _state.pipewave->getPipeFrequency();
     const auto dt = 1.0f / freq;
 
     // Delay pipe harmonic signal so that chiff noise builds up first
-    _delay = jmin((float)_delayLine.size(), 1.0f * dt * SAMPLE_RATE);
+    _delay = jmin((float)_delayLine.size(), 0.5f * dt * SAMPLE_RATE);
 
     _chiff.setAttack(2.0f * dt);
     _chiff.setDecay(10.0f * dt);
-    _chiff.setSustain(0.1f);
+    _chiff.setSustain(0.01f);
     _chiff.setRelease(2.0f * dt);
-    /*
-    _chiff.setAttack(0.01f);
-    _chiff.setDecay(0.06f);
-    _chiff.setSustain(0.1f);
-    _chiff.setRelease(0.05f);
-    */
 
-    // Chiff attenuation (quieter for higher frequencies)
-    //float att = expf(-freq / 1000.0f);
-    float att = 1.0f - expf(-freq / 400.0f);
-    _chiff.setGain(jmin(1.0f, 0.001f + 0.01f * _state.chiffGain * att));
-    _chiff.setFrequency(_state.pipewave->getFreqency());
+    // Frequency-dependant chiff attenuation
+    float att = 1.0f - expf(-freq / 3000.0f);
+    _chiff.setGain(jmin(1.0f, 0.01f * _state.chiffGain * att));
+    _chiff.setFrequency(freq);
     _chiff.trigger();
 
     // Spatialisation
@@ -74,7 +67,7 @@ void Voice::trigger(const Pipewave::State& state)
     _spatialSource.setSampleRate(SAMPLE_RATE);
     _spatialSource.setSourcePosition(x, 5.0f);
     _spatialSource.recalculate();
-    _postReleaseCounter = _spatialSource.getPostFxSamplesCount() + int(_delay + 0.5f);
+    _postReleaseCounter = _spatialSource.getPostFxSamplesCount() + int(2*_delay + 0.5f);
 }
 
 void Voice::release()

@@ -35,6 +35,11 @@ Pipewave::Pipewave(Addsynth& model, int note, float freq)
 
 }
 
+float Pipewave::getPipeFrequency() const noexcept
+{
+    return _freq * _model.getFn() / _model.getFd();
+}
+
 void Pipewave::prepateToPlay(float sampleRate)
 {
     if (_wavetable.size() == 0 || _sampleRate != sampleRate) {

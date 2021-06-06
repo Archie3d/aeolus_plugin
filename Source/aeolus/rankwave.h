@@ -74,6 +74,7 @@ public:
 
     int getNote() const noexcept { return _note + _model.getNoteMin(); }
     float getFreqency() const noexcept { return _freq; }
+    float getPipeFrequency() const noexcept;
 
     void prepateToPlay(float sampleRate);
 
