@@ -47,10 +47,10 @@ void Voice::trigger(const Pipewave::State& state)
     // Delay pipe harmonic signal so that chiff noise builds up first
     _delay = jmin((float)_delayLine.size(), 0.5f * dt * SAMPLE_RATE);
 
-    _chiff.setAttack(2.0f * dt);
-    _chiff.setDecay(10.0f * dt);
+    _chiff.setAttack(5.0f * dt);
+    _chiff.setDecay(100.0f * dt);
     _chiff.setSustain(0.01f);
-    _chiff.setRelease(2.0f * dt);
+    _chiff.setRelease(100.0f * dt);
 
     // Frequency-dependant chiff attenuation
     float att = 1.0f - expf(-freq / 3000.0f);
