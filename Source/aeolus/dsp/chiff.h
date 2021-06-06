@@ -21,6 +21,7 @@
 
 #include "aeolus/globals.h"
 #include "aeolus/dsp/filter.h"
+#include "aeolus/dsp/delay.h"
 #include "aeolus/dsp/adsrenv.h"
 
 #include <array>
@@ -29,24 +30,12 @@ AEOLUS_NAMESPACE_BEGIN
 
 namespace dsp {
 
+/**
+ * @brief Pipe wind attack chiff model.
+ */
 class Chiff
 {
 public:
-
-    struct Harmonic
-    {
-        BiquadFilter::Spec spec;
-        BiquadFilter::State state;
-        Envelope envelope;
-        float gain;
-
-        Harmonic();
-        void reset();
-        void setFrequency(float f);
-        void setGain(float g);
-        void trigger(const Envelope::Trigger& env);
-        float tick(float x);
-    };
 
     Chiff();
 
@@ -55,7 +44,7 @@ public:
     void setSustain(float v);
     void setRelease(float v);
     void setGain(float v);
-    void setFrequency(float v);
+    void setFrequency(float f);
 
     void reset();
 
@@ -67,16 +56,19 @@ public:
 
 private:
 
-    constexpr static size_t NUM_HARMONICS = 4;
-    constexpr static float harmonicGain = 0.85f;
-    constexpr static float harmonicAttack = 0.75f;
-    constexpr static float harmonicDecay = 0.6f;
-    constexpr static float harmonicSustain = 0.98f;
-    constexpr static float harmonicRelease = 0.6f;
+    Envelope _noiseEnvelope;
 
-    std::array<Harmonic, NUM_HARMONICS> _harmonics;
-
+    Envelope _envelope; ///< Noise envelope
     Envelope::Trigger _envelopeTrigger;
+
+    DelayLine _pipeResonator;
+    float _pipeDelay;
+
+    // Feedback low-pass filter;
+    BiquadFilter::Spec _lpSpec;
+    BiquadFilter::State _lpState;
+
+    float _gain;
 };
 
 } // namespace dsp

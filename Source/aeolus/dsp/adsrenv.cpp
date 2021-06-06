@@ -67,7 +67,8 @@ void Envelope::trigger (const Envelope::Trigger& trigger, float sampleRate)
 
 void Envelope::release()
 {
-    currentState = Release;
+    if (currentState != Off)
+        currentState = Release;
 }
 
 void Envelope::release (float t, float sampleRate)
