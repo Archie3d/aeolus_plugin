@@ -57,7 +57,7 @@
                 { "name": "Octave\n4",          "type": "principal",    "pipe": "I_principal_4",    "chiff": 0.9 },
                 { "name": "Flute\n4",           "type": "flute",        "pipe": "flute4",           "gain": 1.6, "chiff": 0.4 },
                 { "name": "Quint\n2 2/3",       "type": "flute",        "pipe": "I_quinte_223",     "gain": 1.5, "chiff": 0.4 },
-                { "name": "Super Octave 2",   "type": "principal",    "pipe": "I_octave_2",       "gain": 1.8, "chiff": 0.9 },
+                { "name": "Super Octave 2",     "type": "principal",    "pipe": "I_octave_2",       "gain": 1.8, "chiff": 0.9 },
                 { "name": "Flute\n2",           "type": "flute",        "pipe": "flute2",           "gain": 2.0, "chiff": 0.4 },
                 { "name": "Sesqui-\naltera",    "type": "flute",        "pipe": "sesqualtera",      "gain": 2.3, "chiff": 0.5 },
                 { "name": "Cornet\nV",          "type": "flute",        "pipe": ["II_cornet1", "II_cornet2", "II_cornet3", "II_cornet4", "II_cornet5"], "chiff": 0.2 },
@@ -72,7 +72,7 @@
             "swell": false,
             "tremulant": false,
             "stops": [
-                { "name": "Bombarde\n32",       "type": "reed",         "pipe": "bombarde",         "chiff": 1.0 },
+                { "name": "Bombarde\n32",       "type": "reed",         "pipe": "bombarde",         "chiff": 0.8 },
                 { "name": "Trombone\n16",       "type": "reed",         "pipe": "trombone",         "chiff": 1.0 },
                 { "name": "Bassoon\n16",        "type": "reed",         "pipe": "bassoon",          "chiff": 1.0 },
                 { "name": "Bourdon\n16",        "type": "flute",        "pipe": "bourdon16",        "chiff": 0.8 },
@@ -82,9 +82,9 @@
                 { "name": "Quint\n5 1/3",       "type": "flute",        "pipe": "P_quinte_513",     "chiff": 0.4 },
                 { "name": "Principal\n4",       "type": "principal",    "pipe": "P_principal_4",    "chiff": 1.0 },
                 { "name": "Quint\n2 2/3",       "type": "flute",        "pipe": "P_quinte_223",     "chiff": 0.3 },
-                { "name": "Octave\n2",          "type": "principal",    "pipe": "P_octave_2",       "chiff": 1.0 },
-                { "name": "Octave\n1",          "type": "principal",    "pipe": "P_octave_1",       "chiff": 0.6 },
-                { "name": "Mixture\nV",         "type": "principal",    "pipe": "P_mixtur5fach",    "chiff": 0.8 }
+                { "name": "Octave\n2",          "type": "principal",    "pipe": "P_octave_2",       "chiff": 0.5 },
+                { "name": "Octave\n1",          "type": "principal",    "pipe": "P_octave_1",       "chiff": 0.4 },
+                { "name": "Mixture\nV",         "type": "principal",    "pipe": "P_mixtur5fach",    "gain": 1.8, "chiff": 0.8 }
             ]
         }
     ]
