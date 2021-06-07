@@ -226,7 +226,7 @@ void Pipewave::genwave()
     float f1 = (_freq + _model.getNoteOffset(_note) + _model.getNoteRandomisation(_note) * (2.0f * rnd.nextFloat() + 1.0f)) * sampleRate_r;
 
     // Attack frequency (detuned)
-    float f0 = f1 * math::exp2ap(_model.getNoteAtd(_note) / 1200.0f);
+    float f0 = f1 * math::exp2ap(_model.getNoteAttackDetune(_note) / 1200.0f);
 
     float f = 0.0f;
 
@@ -266,7 +266,7 @@ void Pipewave::genwave()
 
     _releaseLength = (int)(ceilf (_model.getNoteDetune(_note) * _sampleRate / SUB_FRAME_LENGTH) + 1);
     _releaseMultiplier = 1.0f - powf (0.1f, 1.0f / _releaseLength); 
-    _releaseDetune = _sampleStep * (math::exp2ap (_model.getNoteDetune(_note) / 1200.0f) - 1.0f);
+    _releaseDetune = _sampleStep * (math::exp2ap (_model.getNoteReleaseDetune(_note) / 1200.0f) - 1.0f);
     _instability = _model.getNoteInstability(_note);
 
     int k = (int)(_sampleRate * _model.getNoteAttack(_note) + 0.5);

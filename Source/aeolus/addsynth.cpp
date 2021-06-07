@@ -561,19 +561,40 @@ Model::Model()
     for (int i = 0; i < BinaryData::namedResourceListSize; ++i) {
         String filename(BinaryData::originalFilenames[i]);
 
+        auto synth = std::make_unique<Addsynth>();
+        String stopName;
+        bool ok = false;
+
         if (filename.endsWith(".ae0")) {
             String name(BinaryData::namedResourceList[i]);
-
-            auto synth = std::make_unique<Addsynth>();
             auto res = synth->readFromResource(name);
 
             if (res.wasOk()) {
-                auto* ptr = synth.get();
-                ptr->setStopName(name.dropLastCharacters(4));
-
-                _synths.add(synth.release());
-                _nameToSynthMap[name.dropLastCharacters(4)] = ptr;
+                ok = true;
+                stopName = name.dropLastCharacters(4);
             }
+        } else if (filename.endsWith("_ae0.json")) {
+            String name(BinaryData::namedResourceList[i]);
+
+            int size = 0;
+            const char* data = BinaryData::getNamedResource(name.toRawUTF8(), size);
+
+            if (data != nullptr) {
+                MemoryInputStream stream(data, size, false);
+                auto stop = JSON::parse(stream);
+                synth->fromVar(stop);
+
+                ok = true;
+                stopName = name.dropLastCharacters(9);
+            }
+        }
+
+        if (ok) {
+            auto* ptr = synth.get();
+            ptr->setStopName(stopName);
+
+            _synths.add(synth.release());
+            _nameToSynthMap[stopName] = ptr;
         }
     }
 }

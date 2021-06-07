@@ -120,16 +120,21 @@ public:
     float getNoteOffset(int n) const noexcept { return _n_off[n]; }
     float getNoteRandomisation(int n) const noexcept { return _n_ran[n]; }
     float getNoteInstability(int n) const noexcept { return _n_ins[n]; }
-    float getNoteAtd(int n) const noexcept { return _n_atd[n]; }
+    float getNoteAttackDetune(int n) const noexcept { return _n_atd[n]; }
     /// Returns note detune in cents.
     float getNoteDetune(int n) const noexcept { return _n_dct[n]; }
+
+    float getNoteReleaseDetune(int n) const noexcept { return _n_dcd[n]; }
 
     float getHarmonicLevel(int h, int n) const noexcept { return _h_lev[h][n]; }
     float getHarmonicAttack(int h, int n) const noexcept { return _h_att[h][n]; }
     float getHarmonicRandomisation(int h, int n) const noexcept { return _h_ran[h][n]; }
     float getHarmonicAtp(int h, int n) const noexcept { return _h_atp[h][n]; }
 
+    /// Frequency ration nominator.
     int getFn() const noexcept { return _fn; }
+
+    ///  Frequency ratio denominator.
     int getFd() const noexcept { return _fd; }
 
 private:
@@ -159,8 +164,8 @@ private:
     N_func  _n_ins;
     N_func  _n_att;
     N_func  _n_atd; ///< Attack detune.
-    N_func  _n_dct;
-    N_func  _n_dcd;
+    N_func  _n_dct; ///< Sustain detune.
+    N_func  _n_dcd; ///< Release detune.
 
     HN_func _h_lev;
     HN_func _h_ran;
