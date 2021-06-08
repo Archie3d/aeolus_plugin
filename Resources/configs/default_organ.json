@@ -66,7 +66,7 @@
             ]
         },
         {
-            "name": "Pedals",
+            "name": "Pedal",
             "mnemonic": "P",
             "link": ["Manual I", "Manual II", "Manual III"],
             "swell": false,

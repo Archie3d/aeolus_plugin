@@ -23,6 +23,20 @@ using namespace juce;
 
 namespace ui {
 
+const Font& CustomLookAndFeel::getStopButtonFont()
+{
+    static Font font(Typeface::createSystemTypefaceFor(BinaryData::WignersFriendRoman1GY8e_ttf,
+                                                       BinaryData::WignersFriendRoman1GY8e_ttfSize));
+    return font;
+}
+
+const Font& CustomLookAndFeel::getManualLabelFont()
+{
+    static Font font(Typeface::createSystemTypefaceFor(BinaryData::BalgrufJRye7_ttf,
+                                                       BinaryData::BalgrufJRye7_ttfSize));
+    return font;
+}
+
 CustomLookAndFeel::CustomLookAndFeel()
 {
     setColour(ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));

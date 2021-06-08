@@ -18,17 +18,11 @@
 // ----------------------------------------------------------------------------
 
 #include "ui/StopButton.h"
+#include "ui/CustomLookAndFeel.h";
 
 using namespace juce;
 
 namespace ui {
-
-static const Font& getButtonFont()
-{
-    static Font font(Typeface::createSystemTypefaceFor(BinaryData::WignersFriendRoman1GY8e_ttf,
-                                                       BinaryData::WignersFriendRoman1GY8e_ttfSize));
-    return font;
-}
 
 StopButton::StopButton(const String& name, bool isReed)
     : Button(name)
@@ -46,7 +40,7 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     g.setColour(Colours::black);
     g.fillEllipse(bounds.toFloat());
 
-    auto color = getToggleState() ? Colour(0xFF, 0xF0, 0x00) : Colour(0x99, 0x99, 0x99);
+    auto color = getToggleState() ? Colour(0xFF, 0xF0, 0x00) : Colour(0x90, 0x90, 0x90);
 
     int offset = 2;
 
@@ -66,7 +60,7 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
 
     g.setColour(textColour);
 
-    auto font = getButtonFont();
+    auto font = CustomLookAndFeel::getStopButtonFont();
     font.setHeight(14);
     g.setFont(font);
 

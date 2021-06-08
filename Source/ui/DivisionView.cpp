@@ -18,6 +18,7 @@
 // ----------------------------------------------------------------------------
 
 #include "aeolus/engine.h"
+#include "ui/CustomLookAndFeel.h"
 #include "ui/DivisionView.h"
 
 using namespace juce;
@@ -37,6 +38,10 @@ DivisionView::DivisionView(aeolus::Division* division)
 {
     _nameLabel.setJustificationType(Justification::centred);
     _nameLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0x99));
+    auto font = CustomLookAndFeel::getManualLabelFont();
+    font.setHeight(22);
+    _nameLabel.setFont(font);
+
     addAndMakeVisible(_nameLabel);
     addAndMakeVisible(_cancelButton);
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));

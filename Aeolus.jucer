@@ -115,6 +115,8 @@
               file="Resources/configs/default_organ.json"/>
       </GROUP>
       <GROUP id="{0413AA97-E944-9A69-44BE-92CC02A4DFE5}" name="fonts">
+        <FILE id="Ff72ff" name="Balgruf-JRye7.ttf" compile="0" resource="1"
+              file="Resources/fonts/Balgruf-JRye7.ttf"/>
         <FILE id="A1ZG0U" name="WignersFriendRoman-1GY8e.ttf" compile="0" resource="1"
               file="Resources/fonts/WignersFriendRoman-1GY8e.ttf"/>
       </GROUP>

@@ -45,6 +45,11 @@ public:
 
     int getSliderThumbRadius(juce::Slider&) override { return 6; }
 
+
+    static const juce::Font& getStopButtonFont();
+
+    static const juce::Font& getManualLabelFont();
+
     static CustomLookAndFeel& getInstance() {
         static CustomLookAndFeel instance;
         return instance;
