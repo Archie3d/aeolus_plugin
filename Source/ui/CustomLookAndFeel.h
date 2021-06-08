@@ -29,24 +29,23 @@ public:
 
     CustomLookAndFeel();
 
-    void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
-                           float sliderPos, float minSliderPos, float maxSliderPos,
-                           const juce::Slider::SliderStyle style, juce::Slider& slider) override;
+    void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
+                          float sliderPos, float minSliderPos, float maxSliderPos,
+                          const juce::Slider::SliderStyle style, juce::Slider& slider) override;
 
-    void drawLinearSliderThumb (juce::Graphics& g, int x, int y, int width, int height,
-                                float sliderPos, float minSliderPos, float maxSliderPos,
-                                const juce::Slider::SliderStyle style, juce::Slider& slider) override;
+    void drawLinearSliderThumb(juce::Graphics& g, int x, int y, int width, int height,
+                               float sliderPos, float minSliderPos, float maxSliderPos,
+                               const juce::Slider::SliderStyle style, juce::Slider& slider) override;
 
-    void drawLinearSliderBackground (juce::Graphics& g, int x, int y, int width, int height,
-                                     float sliderPos,
-                                     float minSliderPos,
-                                     float maxSliderPos,
-                                     const juce::Slider::SliderStyle style, juce::Slider& slider) override;
+    void drawLinearSliderBackground(juce::Graphics& g, int x, int y, int width, int height,
+                                    float sliderPos,
+                                    float minSliderPos,
+                                    float maxSliderPos,
+                                    const juce::Slider::SliderStyle style, juce::Slider& slider) override;
 
-    int getSliderThumbRadius (juce::Slider&) override { return 6; }
+    int getSliderThumbRadius(juce::Slider&) override { return 6; }
 
-    static CustomLookAndFeel& getInstance()
-    {
+    static CustomLookAndFeel& getInstance() {
         static CustomLookAndFeel instance;
         return instance;
     }

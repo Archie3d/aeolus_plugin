@@ -55,6 +55,8 @@ private:
 
     AeolusAudioProcessor& _audioProcessor;
 
+    juce::Viewport _divisionsViewport;
+    juce::Component _divisionsComponent;
     juce::OwnedArray<ui::DivisionView> _divisionViews;
 
     CustomMidiKeyboard _midiKeyboard;

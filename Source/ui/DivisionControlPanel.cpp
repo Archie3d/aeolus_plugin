@@ -39,8 +39,6 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _midiChannelLabel.setFont(f);
     addAndMakeVisible(_midiChannelLabel);
 
-    _midiChannelComboBox.setColour(ComboBox::backgroundColourId, Colour(0x33, 0x33, 0x33));
-    _midiChannelComboBox.setColour(ComboBox::arrowColourId, Colour(0x66, 0x66, 0x66));
     _midiChannelComboBox.addItem("All", 1);
     for (int i = 1; i <= 16; ++i) {
         _midiChannelComboBox.addItem(String(i), i + 1);
@@ -70,7 +68,6 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _volumeLevelR.setSkew(0.5f);
     addAndMakeVisible(_volumeLevelR);
 
-    _gainSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     _gainSlider.setSkewFactor(0.5f);
     addAndMakeVisible(_gainSlider);
 }

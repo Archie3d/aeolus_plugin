@@ -29,6 +29,8 @@ using namespace juce;
 AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     : AudioProcessorEditor (&p)
     , _audioProcessor(p)
+    , _divisionsViewport{}
+    , _divisionsComponent{}
     , _divisionViews{}
     , _midiKeyboard(p.getEngine().getMidiKeyboardState(), MidiKeyboardComponent::horizontalKeyboard)
     , _versionLabel{{}, JucePlugin_VersionString}
@@ -46,10 +48,10 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
 {
-    getLookAndFeel().setColour(juce::ResizableWindow::backgroundColourId, Colour(0x1F, 0x1F, 0x1F));
+    setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
     setSize (1180, 600);
-    setResizeLimits(1050, 600, 4096, 4096);
+    setResizeLimits(1024, 600, 4096, 4096);
 
     addAndMakeVisible(_versionLabel);
     _versionLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 10, Font::plain));
@@ -70,8 +72,6 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     addAndMakeVisible(_reverbLabel);
 
     addAndMakeVisible(_reverbComboBox);
-    _reverbComboBox.setColour(ComboBox::backgroundColourId, Colour(0x33, 0x33, 0x33));    
-    _reverbComboBox.setColour(ComboBox::arrowColourId, Colour(0x66, 0x66, 0x66));
 
     auto* g = aeolus::EngineGlobal::getInstance();
 
@@ -90,7 +90,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
             engine.postReverbIR(irNum);
     };
 
-    _reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
+    //_reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     addAndMakeVisible(_reverbSlider);
 
     _volumeLevelL.setSkew(0.5f);
@@ -103,6 +103,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _volumeSlider.setSkewFactor(0.5f);
     _volumeSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
+    _panicButton.setColour(TextButton::textColourOffId, Colour(0xFF, 0xFF, 0xFF));
     _panicButton.setColour(TextButton::buttonColourId, Colour(0xCC, 0x33, 0x00));
     addAndMakeVisible(_panicButton);
     _panicButton.onClick = [this] {
@@ -116,6 +117,10 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
         }
     };
     addAndMakeVisible(_cancelButton);
+
+    addAndMakeVisible(_divisionsViewport);
+    _divisionsViewport.setViewedComponent(&_divisionsComponent, false /* don't delete */);
+    _divisionsViewport.setScrollBarsShown(true, false);
 
     populateDivisions();
 
@@ -166,8 +171,9 @@ void AeolusAudioProcessorEditor::resized()
     constexpr int H = 30;
     constexpr int S = 5;
     constexpr int T = margin * 2 + 20;
+    constexpr int keyboardHeight = 70;
 
-    int y = T;
+    int y = 0;;
 
     for (auto* divisionView : _divisionViews) {
         const auto h = divisionView->getEstimatedHeightForWidth(getWidth());
@@ -175,9 +181,12 @@ void AeolusAudioProcessorEditor::resized()
         y += h;
     }
 
+    _divisionsComponent.setBounds(0, 0, getWidth(), y);
+    _divisionsViewport.setBounds(0, T, getWidth(), getHeight() - T - keyboardHeight);
+
     int keyboardWidth = jmin((int)_midiKeyboard.getTotalKeyboardWidth(), getWidth());
 
-    _midiKeyboard.setBounds((getWidth() - keyboardWidth) / 2, getHeight() - 70, keyboardWidth, 70);
+    _midiKeyboard.setBounds((getWidth() - keyboardWidth) / 2, getHeight() - keyboardHeight, keyboardWidth, keyboardHeight);
 
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _cancelButton.setBounds((_midiKeyboard.getX() - 60)/2, getHeight() - 60, 60, 35);
@@ -194,7 +203,7 @@ void AeolusAudioProcessorEditor::populateDivisions()
         auto* div = _audioProcessor.getEngine().getDivisionByIndex(i);
 
         auto view = std::make_unique<ui::DivisionView>(div);
-        addAndMakeVisible(view.get());
+        _divisionsComponent.addAndMakeVisible(view.get());
         _divisionViews.add(view.release());
     }
 }
