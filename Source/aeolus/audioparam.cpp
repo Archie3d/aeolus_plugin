@@ -59,7 +59,7 @@ void AudioParameter::setValue(float v, bool force)
         _smoothing = false;
     } else {
         updateSmoothing();
-    }   
+    }
 }
 
 void AudioParameter::setSmoothing(float s) noexcept

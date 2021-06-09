@@ -43,6 +43,9 @@ class EngineGlobal : public juce::DeletedAtShutdown
 {
 public:
 
+    /**
+     * Impulse response descriptor for IRs embedded as binary resources.
+     */
     struct IR
     {
         juce::String name;
@@ -84,9 +87,16 @@ private:
 
 //==============================================================================
 
+/**
+ * @brief Organ engine.
+ * This class defines the top-level organ engine that performs MIDI events processing
+ * and audio generation.
+ */
 class Engine
 {
 public:
+
+    //--------------------------------------------------------------------------
 
     struct NoteEvent
     {
@@ -112,33 +122,74 @@ public:
         NUM_PARAMS
     };
 
+    //--------------------------------------------------------------------------
+
     Engine();
 
+    /**
+     * This method returns external processing sample rate as mandated
+     * by the plugin host. Internally the organ engine performs processing
+     * with a fixed SAMPLE_RATE.
+     */
     float getSampleRate() const noexcept { return _sampleRate; }
+
+    /**
+     * Returns the number of active (playing) voices.
+     */
     int getVoiceCount() const noexcept { return _voicePool.getNumberOfActiveVoices(); }
 
+    /**
+     * Called by the host pefore starting requesting the audio blocks.
+     */
     void prepareToPlay(float sampleRate, int frameSize);
 
     /**
-     * This can be called upon initialisation or on the audio thread.
+     * Set the reverb IR bu its number.
+     * @note This can be called upon initialisation or on the audio thread.
      */
     void setReverbIR(int num);
 
     /**
+     * Set the reverb IR by its number asynchronously.
      * This to be called on the main (UI) thread.
      */
     void postReverbIR(int num);
 
+    /**
+     * Returns currently set reverb IR number.
+     */
     int getReverbIR() const noexcept { return _selectedIR; }
+
+    /**
+     * Set reverb wet output level (linear).
+     * @note This must be called on the audio thread.
+     */
     void setReverbWet(float v);
 
+    /**
+     * Set global output volume level (linear).
+     * @note This must be called on the audio thread.
+     */
     void setVolume(float v);
 
+    /**
+     * Returns volume levels.
+     */
     Level& getVolumeLevel() noexcept { return _volumeLevel; }
 
+    /**
+     * Generate audio.
+     */
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
+    /**
+     * Handle note-on events.
+     */
     void noteOn(int note, int midiChannel);
+
+    /**
+     * Handle note-off events.
+     */
     void noteOff(int note, int midiChannel);
 
     /**
@@ -181,9 +232,9 @@ private:
 
     RingBuffer<NoteEvent, 1024> _pendingNoteEvents;
 
-    VoicePool _voicePool;       ///< Voices.
+    VoicePool _voicePool;           ///< All the voices.
 
-    AudioParameterPool _params;
+    AudioParameterPool _params;     ///< Internal parameters.
 
     /// List of all divisions
     juce::OwnedArray<Division> _divisions;
