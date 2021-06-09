@@ -121,6 +121,16 @@
               file="Resources/fonts/WignersFriendRoman-1GY8e.ttf"/>
       </GROUP>
       <GROUP id="{10CE4C3F-2423-3369-B5E6-AAE7423AED1D}" name="stops">
+        <GROUP id="{6C1D6465-DF5F-6265-8CFA-5EEE4A77A84D}" name="custom">
+          <FILE id="hPHIEP" name="I_trumpet4_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/I_trumpet4_ae0.json"/>
+          <FILE id="DKnyC9" name="III_bassoon_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/III_bassoon_ae0.json"/>
+          <FILE id="VpHr1G" name="P_flute8_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/P_flute8_ae0.json"/>
+          <FILE id="pObwT7" name="vox_humana_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/vox_humana_ae0.json"/>
+        </GROUP>
         <FILE id="j678xH" name="bassoon.ae0" compile="0" resource="1" file="Resources/stops/bassoon.ae0"/>
         <FILE id="q5XJO4" name="bombarde.ae0" compile="0" resource="1" file="Resources/stops/bombarde.ae0"/>
         <FILE id="T2fXCt" name="bourdon16.ae0" compile="0" resource="1" file="Resources/stops/bourdon16.ae0"/>

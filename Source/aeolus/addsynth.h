@@ -121,9 +121,7 @@ public:
     float getNoteRandomisation(int n) const noexcept { return _n_ran[n]; }
     float getNoteInstability(int n) const noexcept { return _n_ins[n]; }
     float getNoteAttackDetune(int n) const noexcept { return _n_atd[n]; }
-    /// Returns note detune in cents.
-    float getNoteDetune(int n) const noexcept { return _n_dct[n]; }
-
+    float getNoteRelease(int n) const noexcept { return _n_dct[n]; }
     float getNoteReleaseDetune(int n) const noexcept { return _n_dcd[n]; }
 
     float getHarmonicLevel(int h, int n) const noexcept { return _h_lev[h][n]; }
@@ -162,9 +160,9 @@ private:
     N_func  _n_off;
     N_func  _n_ran;
     N_func  _n_ins;
-    N_func  _n_att;
+    N_func  _n_att; ///< Attack time.
     N_func  _n_atd; ///< Attack detune.
-    N_func  _n_dct; ///< Sustain detune.
+    N_func  _n_dct; ///< Releate time.
     N_func  _n_dcd; ///< Release detune.
 
     HN_func _h_lev;

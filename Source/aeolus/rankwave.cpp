@@ -264,7 +264,7 @@ void Pipewave::genwave()
 
     memset(_attackStartPtr, 0, sizeof(float) * _wavetable.size());
 
-    _releaseLength = (int)(ceilf (_model.getNoteDetune(_note) * _sampleRate / SUB_FRAME_LENGTH) + 1);
+    _releaseLength = (int)(ceilf (_model.getNoteRelease(_note) * _sampleRate / SUB_FRAME_LENGTH) + 1);
     _releaseMultiplier = 1.0f - powf (0.1f, 1.0f / _releaseLength); 
     _releaseDetune = _sampleStep * (math::exp2ap (_model.getNoteReleaseDetune(_note) / 1200.0f) - 1.0f);
     _instability = _model.getNoteInstability(_note);
@@ -278,7 +278,7 @@ void Pipewave::genwave()
 
         // Interpolate from frequency f1 to f0 during the attack
         for (int i = 0; i <= _attackLength; ++i) {
-            _arg [i] = t - floorf (t + 0.5f);
+            _arg [i] = t - floorf(t + 0.5f);
             t += (i < k) ? (((k - i) * f0 + i * f1) / k) : f1;
         }
     }
@@ -286,10 +286,10 @@ void Pipewave::genwave()
     // Generate phase steps of the sustained loop
     for (int i = 1; i < _loopLength; ++i) {
         float t = _arg[_attackLength] + (float)i * nc / _loopLength;
-        _arg [i + _attackLength] = t - floorf (t + 0.5f);
+        _arg[i + _attackLength] = t - floorf(t + 0.5f);
     }
 
-    float v0 = math::exp2ap (0.1661f * _model.getNoteVolume(_note));
+    float v0 = math::exp2ap(0.1661f * _model.getNoteVolume(_note));
 
     for (int h = 0; h < N_HARM; ++h) {
         if ((h + 1) * f1 > 0.45f)
@@ -300,45 +300,45 @@ void Pipewave::genwave()
         if (v < -80.0f)
             continue;
 
-        v = v0 * math::exp2ap (0.1661f * (v + _model.getHarmonicRandomisation(h, _note) * (2.0f * rnd.nextFloat() - 1.0f)));
+        v = v0 * math::exp2ap(0.1661f * (v + _model.getHarmonicRandomisation(h, _note) * (2.0f * rnd.nextFloat() - 1.0f)));
         k = (int)(_sampleRate * _model.getHarmonicAttack(h, _note) + 0.5f);
 
-        attgain (k, _model.getHarmonicAtp(h, _note));
+        attgain(k, _model.getHarmonicAtp(h, _note));
 
         for (int i = 0; i < _attackLength + _loopLength; ++i) {
-            float t = _arg [i] * (h + 1);
-            t -= floorf (t);
-            m = v * sinf (MathConstants<float>::twoPi * t);
+            float t = _arg[i] * (h + 1);
+            t -= floorf(t);
+            m = v * sinf(MathConstants<float>::twoPi * t);
 
             if (i < k)
-                m *= _att [i];
+                m *= _att[i];
 
-            _attackStartPtr [i] += m;
+            _attackStartPtr[i] += m;
         }
     }
 
     for (int i = 0; i < _sampleStep * (SUB_FRAME_LENGTH + 4); ++i)
-        _attackStartPtr [i + _attackLength + _loopLength] = _attackStartPtr[i + _attackLength];
+        _attackStartPtr[i + _attackLength + _loopLength] = _attackStartPtr[i + _attackLength];
 }
 
 void Pipewave::looplen(float f, float sampleRate, int lmax, int& aa, int& bb)
 {
     constexpr int N = 8;
-    int z [N];
+    int z[N];
     int a, b;
     float d;
 
     float g = sampleRate / f;
 
     for (int i = 0; i < N; ++i) {
-        a = z [i] = (int)(floor (g + 0.5));
+        a = z[i] = (int)(floor (g + 0.5));
         g -= a;
         b = 1;
         int j = i;
 
         while (j > 0) {
             int t = a;
-            a = z [--j] * a + b;
+            a = z[--j] * a + b;
             b = t;
         }
 
@@ -350,10 +350,10 @@ void Pipewave::looplen(float f, float sampleRate, int lmax, int& aa, int& bb)
         if (a <= lmax) {
             d = sampleRate * b / a - f;
 
-            if (fabs (d) < 0.1f && fabs (d) < 3e-4f * f)
+            if (fabs(d) < 0.1f && fabs(d) < 3e-4f * f)
                 break;
 
-            g = (fabs (g) < 1e-6f) ? 1e6f : 1.0f / g;
+            g = (fabs(g) < 1e-6f) ? 1e6f : 1.0f / g;
         } else  {
             b = (int)(lmax * f / sampleRate);
             a = (int)(b * sampleRate / f + 0.5f);
@@ -386,7 +386,7 @@ void Pipewave::attgain(int n, float p)
 
         while (j < k) {
             float m = (float) j / n;
-            _att [j++] = (1.0f - m) * z + m;
+            _att[j++] = (1.0f - m) * z + m;
             z += d;
         }
     }

@@ -8,6 +8,7 @@
             "tremulant_level": 0.2,
             "stops": [
                 { "name": "Oboe\n8",            "type": "reed",      "pipe": "new_oboe_fa",      "chiff": 0.8 },
+                { "name": "Vox\nHumana",        "type": "reed",      "pipe": "vox_humana",       "gain": 1.0, "chiff": 0.4 },
                 { "name": "Principal\n8",       "type": "principal", "pipe": "III_principal_8",  "chiff": 0.6 },
                 { "name": "Gemshorn\n8",        "type": "flute",     "pipe": "gemshorn8",        "chiff": 0.6 },
                 { "name": "Quintadena\n8",      "type": "flute",     "pipe": "quintadena",       "chiff": 0.6 },
@@ -19,6 +20,7 @@
                 { "name": "Octavin\n2",         "type": "flute",     "pipe": "ottavina2",        "chiff": 0.4 },
                 { "name": "Sifflet\n1",         "type": "flute",     "pipe": "sifflet1",         "gain": 2.7, "chiff": 0.2 },
                 { "name": "Cymbale\nVI",        "type": "principal", "pipe": "III_cymbel",       "gain": 2.5, "chiff": 0.6 }
+
             ]
         },
         {
