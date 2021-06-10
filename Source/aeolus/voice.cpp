@@ -54,7 +54,7 @@ void Voice::trigger(const Pipewave::State& state)
 
     // Frequency-dependant chiff attenuation
     float att = 1.0f - expf(-freq / 3000.0f);
-    _chiff.setGain(jmin(1.0f, 0.01f * _state.chiffGain * att));
+    _chiff.setGain(jmin(1.0f, 0.02f * _state.chiffGain * att));
     _chiff.setFrequency(freq);
     _chiff.trigger();
 
