@@ -72,6 +72,8 @@ public:
     Pipewave() = delete;
     Pipewave(Addsynth& model, int note, float freq);
 
+    const Addsynth& getModel() const noexcept { return _model; }
+
     int getNote() const noexcept { return _note + _model.getNoteMin(); }
     float getFreqency() const noexcept { return _freq; }
     float getPipeFrequency() const noexcept;

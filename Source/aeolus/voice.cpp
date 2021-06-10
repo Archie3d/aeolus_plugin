@@ -62,7 +62,11 @@ void Voice::trigger(const Pipewave::State& state)
     int note = _state.pipewave->getNote();
     float k = note % 2 != 0 ? 1.0f : -1.0f;
 
-    float x = 0.15f * k * ((float) abs(note - 65) + 1.0f);
+    // Wider spread for low-pitched pipes
+    const auto& model = _state.pipewave->getModel();
+    const float width = 0.15f * model.getFd() / model.getFn();
+
+    float x = width * k * ((float) abs(note - 65) + 1.0f);
 
     _spatialSource.setSampleRate(SAMPLE_RATE);
     _spatialSource.setSourcePosition(x, 5.0f);
