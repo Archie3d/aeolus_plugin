@@ -21,6 +21,7 @@
 
 #include "aeolus/globals.h"
 #include "aeolus/dsp/delay.h"
+#include "aeolus/dsp/filter.h"
 
 AEOLUS_NAMESPACE_BEGIN
 
@@ -93,6 +94,10 @@ private:
     float _rightDelay;
     float _leftAttenuation;
     float _rightAttenuation;
+
+    // Attenuation filters
+    BiquadFilter::Spec _filterSpec[2];
+    BiquadFilter::State _filterState[2];
 };
 
 } // namespace dsp

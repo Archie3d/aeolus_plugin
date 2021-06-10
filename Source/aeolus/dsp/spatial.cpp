@@ -21,6 +21,8 @@
 
 AEOLUS_NAMESPACE_BEGIN
 
+using namespace juce;
+
 namespace dsp {
 
 SpatialSource::SpatialSource()
@@ -30,6 +32,8 @@ SpatialSource::SpatialSource()
     , _listenerOrientation{0.0f}
     , _listenerLeftRightDistance{0.3f}
     , _delayLine{}
+    , _filterSpec{}
+    , _filterState{}
 {
     recalculate();
 }
@@ -37,14 +41,17 @@ SpatialSource::SpatialSource()
 void SpatialSource::reset()
 {
     _delayLine.reset();
+
+    BiquadFilter::resetState(_filterSpec[0], _filterState[0]);
+    BiquadFilter::resetState(_filterSpec[1], _filterState[1]);
 }
 
 void SpatialSource::tick(float x, float& l, float& r)
 {
     _delayLine.write(x);
 
-    l = _delayLine.read(_leftDelay) * _leftAttenuation;
-    r = _delayLine.read(_rightDelay) * _rightAttenuation;
+    l = BiquadFilter::tick(_filterSpec[0], _filterState[0], _delayLine.read(_leftDelay) * _leftAttenuation);
+    r = BiquadFilter::tick(_filterSpec[1], _filterState[1], _delayLine.read(_rightDelay) * _rightAttenuation);
 }
 
 void SpatialSource::process(float* in, float* outL, float* outR, int numFrames)
@@ -52,6 +59,11 @@ void SpatialSource::process(float* in, float* outL, float* outR, int numFrames)
     for (int i = 0; i < numFrames; ++i) {
         tick(in[i], outL[i], outR[i]);
     }
+}
+
+static float distanceToCutOffFrequency(float d)
+{
+    return 22.0e3f * expf(-0.09f * d);
 }
 
 void SpatialSource::recalculate()
@@ -72,10 +84,10 @@ void SpatialSource::recalculate()
     right.x += _listenerPosition.x;
     right.y += _listenerPosition.y;
 
-    float leftDistance = _sourcePosition.distanceTo(left);
-    float rightDistance = _sourcePosition.distanceTo(right);
-    float maxDistance = std::max(leftDistance, rightDistance);
-    float maxT = maxDistance / speedOfSound;
+    const float leftDistance = _sourcePosition.distanceTo(left);
+    const float rightDistance = _sourcePosition.distanceTo(right);
+    const float maxDistance = std::max(leftDistance, rightDistance);
+    const float maxT = maxDistance / speedOfSound;
     size_t delayLengthInSamples = (size_t)(_sampleRate * maxT + 0.5f);
 
     _delayLine.resize(delayLengthInSamples);
@@ -88,6 +100,19 @@ void SpatialSource::recalculate()
     // Angular attenuation
     _leftAttenuation = 0.5f * att * (cosf(leftAngle) + 1.0f) + 1.0f - att;
     _rightAttenuation = 0.5f * att * (cosf(rightAngle) + 1.0f) + 1.0f - att;
+
+    _filterSpec[0].type = BiquadFilter::LowPass;
+    _filterSpec[0].dbGain = 0.0f;
+    _filterSpec[0].q = 0.7071f;
+    _filterSpec[0].sampleRate = SAMPLE_RATE;
+
+    _filterSpec[1] = _filterSpec[0];
+
+    _filterSpec[0].freq = distanceToCutOffFrequency(leftDistance);
+    _filterSpec[1].freq = distanceToCutOffFrequency(rightDistance);
+
+    BiquadFilter::updateSpec(_filterSpec[0]);
+    BiquadFilter::updateSpec(_filterSpec[1]);
 }
 
 } // namespace dsp
