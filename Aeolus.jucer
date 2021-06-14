@@ -107,6 +107,8 @@
               file="Resources/irs/st_andrews_church.wav"/>
         <FILE id="a7NOA9" name="st_georges_far.wav" compile="0" resource="1"
               file="Resources/irs/st_georges_far.wav"/>
+        <FILE id="dlaSd2" name="st_laurentius_molenbeek.wav" compile="0" resource="1"
+              file="Resources/irs/st_laurentius_molenbeek.wav"/>
         <FILE id="froLF1" name="york_council_chamber.wav" compile="0" resource="1"
               file="Resources/irs/york_council_chamber.wav"/>
         <FILE id="f4O5QF" name="york_minster.wav" compile="0" resource="1"

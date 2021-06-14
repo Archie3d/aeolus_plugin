@@ -119,6 +119,15 @@ void EngineGlobal::loadIRs()
     });
 
     _irs.push_back({
+        "St. Laurentius, Molenbeek",
+        BinaryData::st_laurentius_molenbeek_wav,
+        BinaryData::st_laurentius_molenbeek_wavSize,
+        0.4f,
+        true,
+        {}
+    });
+
+    _irs.push_back({
         "Elveden Hall, Suffolk",
         BinaryData::elveden_hall_suffolk_england_wav,
         BinaryData::elveden_hall_suffolk_england_wavSize,
@@ -190,6 +199,7 @@ Engine::Engine()
     , _convolver{}
     , _selectedIR{0}
     , _irSwitchEvents{}
+    , _reverbTailCounter{0}
     , _interpolator{1.0f}
     , _midiKeyboardState{}
     , _volumeLevel{}
@@ -220,10 +230,12 @@ void Engine::setReverbIR(int num)
 
     if (num >= 0 && num < irs.size()) {
         const auto& ir = irs[num];
-        _convolver.setLength(int(ir.waveform.getNumSamples()/ 4096 + 1) * 4096);
+        _convolver.setLength(int(ir.waveform.getNumSamples() / 4096 + 1) * 4096);
         _convolver.prepareToPlay(SAMPLE_RATE, SUB_FRAME_LENGTH); // these parameters are irrelevant
         _convolver.setZeroDelay(ir.zeroDelay);
         _convolver.setIR(ir.waveform);
+
+        _reverbTailCounter = _convolver.length();
 
         _selectedIR = num;
     }
@@ -260,6 +272,8 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
     processPendingIRSwitchEvents();
     processPendingNoteEvents();
 
+    bool wasAudioGenerated = false;
+
     while (numFrames > 0)
     {
         if (_remainedSamples > 0)
@@ -287,12 +301,19 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
 
         if (_remainedSamples == 0 && numFrames > 0)
         {
-            processSubFrame();
+            wasAudioGenerated |= processSubFrame();
             jassert(_remainedSamples > 0);
         }
     }
 
-    if (_convolver.isAudible()) {
+    // When there is no audio generated we let the reverb tail to
+    // sound and stop the reverb processing to avoid convolving with silence.
+    if (wasAudioGenerated)
+        _reverbTailCounter = _convolver.length();
+    else
+        _reverbTailCounter = jmax(0, _reverbTailCounter - origNumFrames);
+
+    if (_reverbTailCounter > 0 && _convolver.isAudible()) {
         _convolver.setNonRealtime(isNonRealtime);
         _convolver.process(origOutL, origOutR, origOutL, origOutR, origNumFrames);
     }
@@ -452,11 +473,13 @@ void Engine::postNoteEvent(bool onOff, int note, int midiChannel)
     _pendingNoteEvents.send({onOff, note, midiChannel});
 }
 
-void Engine::processSubFrame()
+bool Engine::processSubFrame()
 {
     generateTremulant();
 
     _subFrameBuffer.clear();
+
+    bool wasAudioGenerated = false;
 
     for (auto* division : _divisions) {
 
@@ -465,7 +488,8 @@ void Engine::processSubFrame()
         auto& activeVoices = division->getActiveVoices();
         
         auto* voice = activeVoices.first();
-        bool hasVoices = (voice != nullptr);
+        const bool hasVoices = (voice != nullptr);
+        wasAudioGenerated |= hasVoices;
 
         while (voice != nullptr) {
             _voiceFrameBuffer.clear();
@@ -499,6 +523,8 @@ void Engine::processSubFrame()
     }
 
     _remainedSamples = SUB_FRAME_LENGTH;
+
+    return wasAudioGenerated;
 }
 
 void Engine::processPendingNoteEvents()

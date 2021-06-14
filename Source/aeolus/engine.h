@@ -219,7 +219,7 @@ private:
 
     void clearDivisionsTriggerFlag();
 
-    void processSubFrame();
+    bool processSubFrame();
 
     void processPendingNoteEvents();
     void processPendingIRSwitchEvents();
@@ -251,6 +251,7 @@ private:
     dsp::Convolver _convolver;
     std::atomic<int> _selectedIR;
     RingBuffer<IRSwithEvent, 1024> _irSwitchEvents;
+    int _reverbTailCounter;
 
     dsp::Interpolator _interpolator;
 
