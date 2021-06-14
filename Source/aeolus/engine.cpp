@@ -83,6 +83,15 @@ void EngineGlobal::loadIRs()
     });
 
     _irs.push_back({
+        "St. Laurentius, Molenbeek",
+        BinaryData::st_laurentius_molenbeek_wav,
+        BinaryData::st_laurentius_molenbeek_wavSize,
+        0.8f,
+        true,
+        {}
+    });
+
+    _irs.push_back({
         "St Andrew's Church",
         BinaryData::st_andrews_church_wav,
         BinaryData::st_andrews_church_wavSize,
@@ -114,15 +123,6 @@ void EngineGlobal::loadIRs()
         BinaryData::_1st_baptist_nashville_balcony_wav,
         BinaryData::_1st_baptist_nashville_balcony_wavSize,
         1.0f,
-        true,
-        {}
-    });
-
-    _irs.push_back({
-        "St. Laurentius, Molenbeek",
-        BinaryData::st_laurentius_molenbeek_wav,
-        BinaryData::st_laurentius_molenbeek_wavSize,
-        0.4f,
         true,
         {}
     });
