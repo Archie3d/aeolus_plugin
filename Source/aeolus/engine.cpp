@@ -74,67 +74,85 @@ void EngineGlobal::loadIRs()
     _irs.clear();
 
     _irs.push_back({
-            "1st Baptist Church Nashville",
-            BinaryData::_1st_baptist_nashville_balcony_wav,
-            BinaryData::_1st_baptist_nashville_balcony_wavSize,
-            1.0f,
-            true,
-            {}
-        });
+        "York Guildhall Council Chamber",
+        BinaryData::york_council_chamber_wav,
+        BinaryData::york_council_chamber_wavSize,
+        0.25f,
+        true,
+        {}
+    });
 
     _irs.push_back({
-            "Elveden Hall (Suffolk England)",
-            BinaryData::elveden_hall_suffolk_england_wav,
-            BinaryData::elveden_hall_suffolk_england_wavSize,
-            0.1f,
-            false,
-            {}
-        });
-    
-    _irs.push_back({
-            "Lady Chapel, St Albans Cathedral",
-            BinaryData::lady_chapel_stalbans_wav,
-            BinaryData::lady_chapel_stalbans_wavSize,
-            1.0f,
-            true,
-            {}
-        });
+        "St Andrew's Church",
+        BinaryData::st_andrews_church_wav,
+        BinaryData::st_andrews_church_wavSize,
+        1.0f,
+        true,
+        {}
+    });
 
     _irs.push_back({
-            "St Andrew's Church",
-            BinaryData::st_andrews_church_wav,
-            BinaryData::st_andrews_church_wavSize,
-            1.0f,
-            true,
-            {}
-        });
+        "St. George's Episcopal Church",
+        BinaryData::st_georges_far_wav,
+        BinaryData::st_georges_far_wavSize,
+        1.0f,
+        true,
+        {}
+    });
 
     _irs.push_back({
-            "St. George's Episcopal Church",
-            BinaryData::st_georges_far_wav,
-            BinaryData::st_georges_far_wavSize,
-            1.0f,
-            true,
-            {}
-        });
+        "Lady Chapel, St Albans Cathedral",
+        BinaryData::lady_chapel_stalbans_wav,
+        BinaryData::lady_chapel_stalbans_wavSize,
+        1.0f,
+        true,
+        {}
+    });
 
     _irs.push_back({
-            "York Minster",
-            BinaryData::york_minster_wav,
-            BinaryData::york_minster_wavSize,
-            0.3f,
-            true,
-            {}
-        });
+        "1st Baptist Church, Nashville",
+        BinaryData::_1st_baptist_nashville_balcony_wav,
+        BinaryData::_1st_baptist_nashville_balcony_wavSize,
+        1.0f,
+        true,
+        {}
+    });
 
     _irs.push_back({
-            "R1 Nuclear Reactor Hall",
-            BinaryData::r1_nuclear_reactor_hall_wav,
-            BinaryData::r1_nuclear_reactor_hall_wavSize,
-            0.4f,
-            true,
-            {}
-        });
+        "Elveden Hall, Suffolk",
+        BinaryData::elveden_hall_suffolk_england_wav,
+        BinaryData::elveden_hall_suffolk_england_wavSize,
+        0.1f,
+        false,
+        {}
+    });
+
+    _irs.push_back({
+        "R1 Nuclear Reactor Hall",
+        BinaryData::r1_nuclear_reactor_hall_wav,
+        BinaryData::r1_nuclear_reactor_hall_wavSize,
+        0.4f,
+        true,
+        {}
+    });
+
+    _irs.push_back({
+        "Sports Centre, University of York",
+        BinaryData::york_uni_sportscentre_wav,
+        BinaryData::york_uni_sportscentre_wavSize,
+        0.4f,
+        true,
+        {}
+    });
+
+    _irs.push_back({
+        "York Minster",
+        BinaryData::york_minster_wav,
+        BinaryData::york_minster_wavSize,
+        0.3f,
+        true,
+        {}
+    });
 
     AudioFormatManager manager;
     manager.registerBasicFormats();

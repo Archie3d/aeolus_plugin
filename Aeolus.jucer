@@ -107,8 +107,12 @@
               file="Resources/irs/st_andrews_church.wav"/>
         <FILE id="a7NOA9" name="st_georges_far.wav" compile="0" resource="1"
               file="Resources/irs/st_georges_far.wav"/>
+        <FILE id="froLF1" name="york_council_chamber.wav" compile="0" resource="1"
+              file="Resources/irs/york_council_chamber.wav"/>
         <FILE id="f4O5QF" name="york_minster.wav" compile="0" resource="1"
               file="Resources/irs/york_minster.wav"/>
+        <FILE id="MzCcuo" name="york_uni_sportscentre.wav" compile="0" resource="1"
+              file="Resources/irs/york_uni_sportscentre.wav"/>
       </GROUP>
       <GROUP id="{8A578D86-D9AC-1580-B55B-572CCF77D103}" name="configs">
         <FILE id="VieJCy" name="default_organ.json" compile="0" resource="1"

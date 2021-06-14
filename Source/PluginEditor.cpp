@@ -90,7 +90,6 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
             engine.postReverbIR(irNum);
     };
 
-    //_reverbSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
     addAndMakeVisible(_reverbSlider);
 
     _volumeLevelL.setSkew(0.5f);
