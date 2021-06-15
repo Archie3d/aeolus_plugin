@@ -83,7 +83,7 @@ void EngineGlobal::loadIRs()
     });
 
     _irs.push_back({
-        "St. Laurentius, Molenbeek",
+        "St Laurentius, Molenbeek",
         BinaryData::st_laurentius_molenbeek_wav,
         BinaryData::st_laurentius_molenbeek_wavSize,
         0.8f,
@@ -101,7 +101,7 @@ void EngineGlobal::loadIRs()
     });
 
     _irs.push_back({
-        "St. George's Episcopal Church",
+        "St George's Episcopal Church",
         BinaryData::st_georges_far_wav,
         BinaryData::st_georges_far_wavSize,
         1.0f,
