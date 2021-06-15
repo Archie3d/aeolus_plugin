@@ -485,33 +485,11 @@ bool Engine::processSubFrame()
 
         _divisionFrameBuffer.clear();
 
-        auto& activeVoices = division->getActiveVoices();
-        
-        auto* voice = activeVoices.first();
-        const bool hasVoices = (voice != nullptr);
+        const bool hasVoices = division->process(_divisionFrameBuffer, _voiceFrameBuffer);
         wasAudioGenerated |= hasVoices;
 
-        while (voice != nullptr) {
-            _voiceFrameBuffer.clear();
-            float* outL = _voiceFrameBuffer.getWritePointer(0);
-            float* outR = _voiceFrameBuffer.getWritePointer(1);
-
-            voice->process(outL, outR);
-
-            _divisionFrameBuffer.addFrom(0, 0, _voiceFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
-            _divisionFrameBuffer.addFrom(1, 0, _voiceFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
-
-            if (voice->isOver()) {
-                auto* nextVoice = activeVoices.removeAndReturnNext(voice);
-                voice->resetAndReturnToPool();
-                voice = nextVoice;
-            } else {
-                voice = voice->next();
-            }
-        }
-
         if (hasVoices) {
-            modulateDivision(division);
+            division->modulate(_divisionFrameBuffer, _tremulantBuffer);
 
             _subFrameBuffer.addFrom(0, 0, _divisionFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
             _subFrameBuffer.addFrom(1, 0, _divisionFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
@@ -565,31 +543,6 @@ void Engine::generateTremulant()
 
         if (_tremulantPhase >= juce::MathConstants<float>::twoPi)
             _tremulantPhase -= juce::MathConstants<float>::twoPi;
-    }
-}
-
-void Engine::modulateDivision(Division* division)
-{
-    jassert(division != nullptr);
-
-    float* outL = _divisionFrameBuffer.getWritePointer(0);
-    float* outR = _divisionFrameBuffer.getWritePointer(1);
-
-    jassert(outL != nullptr);
-    jassert(outR != nullptr);
-
-    const float* gain = _tremulantBuffer.getReadPointer(0);
-    jassert(gain != nullptr);
-
-    const float lvl = division->getTremulantLevel(true);
-
-    auto& paramGain = division->parameters()[Division::GAIN];
-    paramGain.setValue(division->getParamGain()->get());
-
-    for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
-        float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
-        outL[i] *= g;
-        outR[i] *= g;
     }
 }
 

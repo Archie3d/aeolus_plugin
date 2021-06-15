@@ -39,11 +39,23 @@ Division::Division(Engine& engine, const String& name)
     , _tremulantTargetLevel{0.0f}
     , _paramGain{nullptr}
     , _params{Division::NUM_PARAMS}
+    , _swellFilterSpec{}
+    , _swellFilterStateL{}
+    , _swellFilterStateR{}
     , _rankwaves{}
     , _activeVoices{}
     , _triggerFlag{}
     , _volumeLevel{}
 {
+    _swellFilterSpec.type = dsp::BiquadFilter::LowPass;
+    _swellFilterSpec.sampleRate = SAMPLE_RATE;
+    _swellFilterSpec.dbGain = 0.0f;
+    _swellFilterSpec.q = 0.7071f;
+    _swellFilterSpec.freq = 0.4f * SAMPLE_RATE;
+
+    dsp::BiquadFilter::updateSpec(_swellFilterSpec);
+    dsp::BiquadFilter::resetState(_swellFilterSpec, _swellFilterStateL);
+    dsp::BiquadFilter::resetState(_swellFilterSpec, _swellFilterStateR);
 }
 
 void Division::initFromVar(const var& v)
@@ -415,6 +427,75 @@ void Division::allNotesOff()
     while (voice != nullptr) {
         voice->release();
         voice = voice->next();
+    }
+}
+
+bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voiceBuffer)
+{
+    jassert(targetBuffer.getNumSamples() == SUB_FRAME_LENGTH);
+    jassert(voiceBuffer.getNumSamples() == SUB_FRAME_LENGTH);
+
+    auto* voice = _activeVoices.first();
+
+    if (voice == nullptr)
+        return false;
+
+    while (voice != nullptr) {
+        voiceBuffer.clear();
+        float* outL = voiceBuffer.getWritePointer(0);
+        float* outR = voiceBuffer.getWritePointer(1);
+
+        voice->process(outL, outR);
+
+        targetBuffer.addFrom(0, 0, voiceBuffer, 0, 0, SUB_FRAME_LENGTH);
+        targetBuffer.addFrom(1, 0, voiceBuffer, 1, 0, SUB_FRAME_LENGTH);
+
+        if (voice->isOver()) {
+            auto* nextVoice = _activeVoices.removeAndReturnNext(voice);
+            voice->resetAndReturnToPool();
+            voice = nextVoice;
+        } else {
+            voice = voice->next();
+        }
+    }
+
+    return true;
+}
+
+void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::AudioBuffer<float>& tremulantBuffer)
+{
+    jassert(targetBuffer.getNumSamples() == SUB_FRAME_LENGTH);
+    jassert(tremulantBuffer.getNumSamples() == SUB_FRAME_LENGTH);
+
+    float* outL = targetBuffer.getWritePointer(0);
+    float* outR = targetBuffer.getWritePointer(1);
+
+    jassert(outL != nullptr);
+    jassert(outR != nullptr);
+
+    const float* gain = tremulantBuffer.getReadPointer(0);
+    jassert(gain != nullptr);
+
+    const float lvl = getTremulantLevel(true);
+
+    // Update gain smoothly
+    auto& paramGain = _params[Division::GAIN];
+    paramGain.setValue(_paramGain->get());
+
+    for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+        float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
+        outL[i] *= g;
+        outR[i] *= g;
+    }
+
+    // Apply swell filter
+    if (hasSwell()) {
+        // Close the filter along with the gain
+        const float k = powf(jlimit(0.0f, 1.0f, paramGain.target()), 1.3f);
+        _swellFilterSpec.freq = jmap(k, 400.0f, 18000.0f);
+        dsp::BiquadFilter::updateSpec(_swellFilterSpec);
+        dsp::BiquadFilter::process(_swellFilterSpec, _swellFilterStateL, outL, outL, SUB_FRAME_LENGTH);
+        dsp::BiquadFilter::process(_swellFilterSpec, _swellFilterStateR, outR, outR, SUB_FRAME_LENGTH);
     }
 }
 

@@ -224,8 +224,10 @@ private:
     void processPendingNoteEvents();
     void processPendingIRSwitchEvents();
 
+    /// Generate tremulant osc waveform for a subframe.
     void generateTremulant();
-    void modulateDivision(Division* division);
+
+    /// Apply the gloval volume.
     void applyVolume(float* outL, float* outR, int numFrames);
 
     float _sampleRate;

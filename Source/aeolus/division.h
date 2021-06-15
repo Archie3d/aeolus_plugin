@@ -24,6 +24,7 @@
 #include "aeolus/voice.h"
 #include "aeolus/audioparam.h"
 #include "aeolus/levelmeter.h"
+#include "aeolus/dsp/filter.h"
 
 #include <atomic>
 #include <vector>
@@ -148,6 +149,9 @@ public:
     void noteOff(int note, int midiChannel);
     void allNotesOff();
 
+    bool process(juce::AudioBuffer<float>& targetBuffer, juce::AudioBuffer<float>& voiceBuffer);
+    void modulate(juce::AudioBuffer<float>& targetBuffer, const juce::AudioBuffer<float>& tremulantBuffer);
+
     List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
 
     bool hasBeenTriggered() const noexcept { return _triggerFlag; }
@@ -180,6 +184,11 @@ private:
     /// Stored gain parameter for easy access from the devision control UI component
     juce::AudioParameterFloat* _paramGain;
     AudioParameterPool _params;
+
+    /// Swell low-pass filter.
+    dsp::BiquadFilter::Spec _swellFilterSpec;
+    dsp::BiquadFilter::State _swellFilterStateL;
+    dsp::BiquadFilter::State _swellFilterStateR;
 
     std::vector<Stop> _rankwaves;    ///< All the stops this division has.
 
