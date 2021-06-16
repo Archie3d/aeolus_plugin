@@ -151,7 +151,7 @@ void AeolusAudioProcessorEditor::resized()
 
     _cpuLoadLabel.setBounds(margin, margin, 70, 20);
     _cpuLoadValueLabel.setBounds(_cpuLoadLabel.getRight() + margin, margin, 36, 20);
-    _voiceCountLabel.setBounds(150, margin, 50, 20);
+    _voiceCountLabel.setBounds(150, margin, 56, 20);
     _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 30, 20);
 
     _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 40, margin, 60, 20);

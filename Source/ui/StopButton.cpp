@@ -61,11 +61,11 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     g.setColour(textColour);
 
     auto font = CustomLookAndFeel::getStopButtonFont();
-    font.setHeight(14);
+    font.setHeight(13);
     g.setFont(font);
 
     g.drawMultiLineText(getName(), bounds.getX() + offset,
-                        bounds.getY() + bounds.getHeight()/2 + offset - 2,
+                        bounds.getY() + bounds.getHeight()/2 + offset - 4,
                         bounds.getWidth() - 10,
                         Justification::centred);
 }
