@@ -145,16 +145,8 @@ void DivisionView::populateStopButtons()
         return;
 
     for (int i = 0; i < _division->getStopsCount(); ++i) {
-        auto& stop = _division->getStopByIndex(i);
-
-        auto button = std::make_unique<StopButton>(stop.name, stop.type == aeolus::Division::Stop::Reed);
-
-        button->setToggleState(stop.enabled, juce::dontSendNotification);
+        auto button = std::make_unique<StopButton>(*_division, i);
         auto* ptr = button.get();
-
-        button->onClick = [division=_division, i, ptr]() {
-            division->enableStop(i, ptr->getToggleState());
-        };
 
         _stopButtons.add(button.release());
         addAndMakeVisible(ptr);

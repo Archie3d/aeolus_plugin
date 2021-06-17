@@ -24,12 +24,35 @@ using namespace juce;
 
 namespace ui {
 
-StopButton::StopButton(const String& name, bool isReed)
-    : Button(name)
+StopButton::StopButton(aeolus::Division& division, int stopIndex)
+    : Button{division.getStopByIndex(stopIndex).name}
+    , _division{division}
+    , _stopIndex{stopIndex}
+    , _stop{division.getStopByIndex(stopIndex)}
     , _margin{5}
-    , _isReed{isReed}
 {
     setClickingTogglesState(true);
+
+    setToggleState(_stop.enabled, juce::dontSendNotification);
+
+    this->onClick = [this]() {
+        _division.enableStop(_stopIndex, getToggleState());
+    };
+
+    _division.addListener(this);
+}
+
+StopButton::~StopButton()
+{
+    _division.removeListener(this);
+}
+
+void StopButton::stopEnablementChanged(int stopIndex)
+{
+    // Update button state to reflect the stop state.
+    if (stopIndex == _stopIndex && getToggleState() != _stop.enabled) {
+        setToggleState(_stop.enabled, juce::dontSendNotification);
+    }
 }
 
 void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
@@ -55,8 +78,9 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     g.fillEllipse(bounds.getX() + offset, bounds.getY() + offset,
                   bounds.getWidth() - 8, bounds.getHeight() - 8);
 
-    Colour textColour = _isReed ? (getToggleState() ? Colour(240, 40, 0) : Colour(128, 20, 0))
-                                : Colour(0, 0, 0);
+    Colour textColour = _stop.type == aeolus::Division::Stop::Reed
+                                    ? (getToggleState() ? Colour(240, 40, 0) : Colour(128, 20, 0))
+                                    : Colour(0, 0, 0);
 
     g.setColour(textColour);
 
@@ -69,5 +93,7 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
                         bounds.getWidth() - 10,
                         Justification::centred);
 }
+
+
 
 } // namespace ui

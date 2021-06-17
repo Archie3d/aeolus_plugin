@@ -46,6 +46,7 @@ Division::Division(Engine& engine, const String& name)
     , _activeVoices{}
     , _triggerFlag{}
     , _volumeLevel{}
+    , _listeners{}
 {
     _swellFilterSpec.type = dsp::BiquadFilter::LowPass;
     _swellFilterSpec.sampleRate = SAMPLE_RATE;
@@ -208,6 +209,17 @@ void Division::setPersistentState(const juce::var& v)
     }
 }
 
+void Division::addListener(Listener* listener)
+{
+    jassert(listener != nullptr);
+    _listeners.add(listener);
+}
+
+void Division::removeListener(Listener* listener)
+{
+    _listeners.remove(listener);
+}
+
 void Division::populateLinkedDivisions()
 {
     _linkedDivisions.clear();
@@ -301,7 +313,14 @@ int Division::getStopsCount() const noexcept
 void Division::enableStop(int i, bool ena)
 {
     jassert(isPositiveAndBelow(i, _rankwaves.size()));
-    _rankwaves[i].enabled = ena;
+
+    if (_rankwaves[i].enabled != ena) {
+        _rankwaves[i].enabled = ena;
+
+        _listeners.call([i](Listener& listener) {
+                listener.stopEnablementChanged(i);
+            });
+    }
 }
 
 bool Division::isStopEnabled(int i) const

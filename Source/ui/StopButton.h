@@ -20,14 +20,23 @@
 #pragma once
 
 #include "aeolus/globals.h"
+#include "aeolus/division.h"
 
 namespace ui {
 
-class StopButton : public juce::Button
+/**
+ * @brief Toggle button associated with a particular stop on a division.
+ */
+class StopButton final : public juce::Button,
+                         public aeolus::Division::Listener
 {
 public:
-    StopButton(const juce::String& name, bool isReed = false);
+    StopButton(aeolus::Division& division, int stopIndex);
+    ~StopButton();
     void setMargin(int m) noexcept { _margin = m; }
+
+    // aeolus::Division::Listener
+    void stopEnablementChanged(int stopIndex) override;
 
 protected:
     // juce::Button
@@ -35,8 +44,11 @@ protected:
 
 private:
 
+    aeolus::Division& _division;
+    int _stopIndex;
+    aeolus::Division::Stop& _stop;
+
     int _margin;
-    bool _isReed; 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StopButton)
 };
