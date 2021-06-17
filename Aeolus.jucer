@@ -49,6 +49,8 @@
         <FILE id="uUyrX4" name="scale.h" compile="0" resource="0" file="Source/aeolus/scale.h"/>
         <FILE id="Mkp0Z3" name="sema.cpp" compile="1" resource="0" file="Source/aeolus/sema.cpp"/>
         <FILE id="h3XlZ1" name="sema.h" compile="0" resource="0" file="Source/aeolus/sema.h"/>
+        <FILE id="n6TXOm" name="sequencer.cpp" compile="1" resource="0" file="Source/aeolus/sequencer.cpp"/>
+        <FILE id="hwHRC6" name="sequencer.h" compile="0" resource="0" file="Source/aeolus/sequencer.h"/>
         <FILE id="r5AvHj" name="simd.cpp" compile="1" resource="0" file="Source/aeolus/simd.cpp"/>
         <FILE id="kfppw1" name="simd.h" compile="0" resource="0" file="Source/aeolus/simd.h"/>
         <FILE id="n6Wjna" name="voice.cpp" compile="1" resource="0" file="Source/aeolus/voice.cpp"/>

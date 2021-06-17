@@ -25,6 +25,7 @@
 #include "aeolus/addsynth.h"
 #include "aeolus/rankwave.h"
 #include "aeolus/division.h"
+#include "aeolus/sequencer.h"
 #include "aeolus/audioparam.h"
 #include "aeolus/levelmeter.h"
 #include "aeolus/dsp/convolver.h"
@@ -207,6 +208,8 @@ public:
     Division* getDivisionByIndex(int i) { return _divisions[i]; }
     Division* getDivisionByName(const juce::String& name);
 
+    Sequencer* getSequencer() noexcept { return _sequencer.get(); }
+
     juce::var getPersistentState() const;
     void setPersistentState(const juce::var& state);
 
@@ -240,6 +243,8 @@ private:
 
     /// List of all divisions
     juce::OwnedArray<Division> _divisions;
+
+    std::unique_ptr<Sequencer> _sequencer;
 
     juce::AudioBuffer<float> _subFrameBuffer;
     juce::AudioBuffer<float> _divisionFrameBuffer;

@@ -66,6 +66,8 @@ constexpr static float TREMULANT_PHASE_INCREMENT = juce::MathConstants<float>::t
 /// Tremulant OSC wavetable amplitude.
 constexpr static float TREMULANT_LEVEL = 1.0f;
 
+/// Number of steps in the sequencer.
+constexpr static int SEQUENCER_N_STEPS = 16;
 
 //==============================================================================
 

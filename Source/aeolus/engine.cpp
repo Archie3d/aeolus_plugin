@@ -190,6 +190,7 @@ Engine::Engine()
     , _voicePool(*this)
     , _params{NUM_PARAMS}
     , _divisions{}
+    , _sequencer{}
     , _subFrameBuffer{2, SUB_FRAME_LENGTH}
     , _divisionFrameBuffer{2, SUB_FRAME_LENGTH}
     , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
@@ -205,6 +206,9 @@ Engine::Engine()
     , _volumeLevel{}
 {
     populateDivisions();
+
+    // Sequencer can be created only after the divisions have been populated.
+    _sequencer = std::make_unique<Sequencer>(*this, SEQUENCER_N_STEPS);
 }
 
 void Engine::prepareToPlay(float sampleRate, int frameSize)

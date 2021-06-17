@@ -144,6 +144,7 @@ public:
     void enableStop(int i, bool ena);
     bool isStopEnabled(int i) const;
     Stop& getStopByIndex(int i);
+    void disableAllStops();
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
 

@@ -335,6 +335,12 @@ Division::Stop& Division::getStopByIndex(int i)
     return _rankwaves[i];
 }
 
+void Division::disableAllStops()
+{
+    for (int i = 0; i < getStopsCount(); ++i)
+        enableStop(i, false);
+}
+
 void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
 {
     minNote = -1;
