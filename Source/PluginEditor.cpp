@@ -33,6 +33,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _divisionsComponent{}
     , _divisionViews{}
     , _midiKeyboard(p.getEngine().getMidiKeyboardState(), MidiKeyboardComponent::horizontalKeyboard)
+    , _sequencerView(p.getEngine().getSequencer())
     , _versionLabel{{}, JucePlugin_VersionString}
     , _cpuLoadLabel{{}, "CPU Load:"}
     , _cpuLoadValueLabel{}
@@ -127,6 +128,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _midiKeyboard.setAvailableRange(24, 108);
     addAndMakeVisible(_midiKeyboard);
 
+    addAndMakeVisible(_sequencerView);
+
     resized();
 
     startTimerHz(10);
@@ -170,6 +173,7 @@ void AeolusAudioProcessorEditor::resized()
     constexpr int H = 30;
     constexpr int S = 5;
     constexpr int T = margin * 2 + 20;
+    constexpr int sequencerHeight = 26;
     constexpr int keyboardHeight = 70;
 
     int y = 0;;
@@ -181,11 +185,12 @@ void AeolusAudioProcessorEditor::resized()
     }
 
     _divisionsComponent.setBounds(0, 0, getWidth(), y);
-    _divisionsViewport.setBounds(0, T, getWidth(), getHeight() - T - keyboardHeight);
+    _divisionsViewport.setBounds(0, T, getWidth(), getHeight() - T - keyboardHeight - sequencerHeight);
 
     int keyboardWidth = jmin((int)_midiKeyboard.getTotalKeyboardWidth(), getWidth());
-
     _midiKeyboard.setBounds((getWidth() - keyboardWidth) / 2, getHeight() - keyboardHeight, keyboardWidth, keyboardHeight);
+
+    _sequencerView.setBounds(_midiKeyboard.getX(), _midiKeyboard.getY() - sequencerHeight, _midiKeyboard.getWidth(), sequencerHeight);
 
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _cancelButton.setBounds((_midiKeyboard.getX() - 60)/2, getHeight() - 60, 60, 35);

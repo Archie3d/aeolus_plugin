@@ -78,6 +78,9 @@
               file="Source/ui/ParameterSlider.cpp"/>
         <FILE id="j8xpdL" name="ParameterSlider.h" compile="0" resource="0"
               file="Source/ui/ParameterSlider.h"/>
+        <FILE id="JLGrPz" name="SequencerView.cpp" compile="1" resource="0"
+              file="Source/ui/SequencerView.cpp"/>
+        <FILE id="ZXjyL1" name="SequencerView.h" compile="0" resource="0" file="Source/ui/SequencerView.h"/>
         <FILE id="IMWRu0" name="StopButton.cpp" compile="1" resource="0" file="Source/ui/StopButton.cpp"/>
         <FILE id="lZISO8" name="StopButton.h" compile="0" resource="0" file="Source/ui/StopButton.h"/>
       </GROUP>

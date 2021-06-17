@@ -26,6 +26,7 @@
 #include "ui/LevelIndicator.h"
 #include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"
+#include "ui/SequencerView.h"
 
 //==============================================================================
 /**
@@ -60,6 +61,8 @@ private:
     juce::OwnedArray<ui::DivisionView> _divisionViews;
 
     CustomMidiKeyboard _midiKeyboard;
+
+    ui::SequencerView _sequencerView;
 
     juce::Label _versionLabel;
     juce::Label _cpuLoadLabel;
