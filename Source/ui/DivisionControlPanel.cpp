@@ -33,6 +33,8 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     , _volumeLevelL{division->volumeLevel().left, LevelIndicator::Orientation::Vertical}
     , _volumeLevelR{division->volumeLevel().right, LevelIndicator::Orientation::Vertical}
 {
+    jassert(division);
+
     _midiChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
     auto f = _midiChannelLabel.getFont();
     f.setHeight(14);
@@ -54,7 +56,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _tremulantButton.setClickingTogglesState(true);
     _tremulantButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
     _tremulantButton.setColour(TextButton::buttonOnColourId, Colour(0x00, 0x66, 0x33));
-    _tremulantButton.setToggleState(_division->isTremulantEnabled(), false);
+    _tremulantButton.setToggleState(_division->isTremulantEnabled(), juce::dontSendNotification);
 
     _tremulantButton.onClick = [this]() {
         _division->setTremulantEnabled(_tremulantButton.getToggleState());
@@ -70,6 +72,13 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 
     _gainSlider.setSkewFactor(0.5f);
     addAndMakeVisible(_gainSlider);
+
+    _division->addListener(this);
+}
+
+DivisionControlPanel::~DivisionControlPanel()
+{
+    _division->removeListener(this);
 }
 
 void DivisionControlPanel::resized()
@@ -97,6 +106,14 @@ void DivisionControlPanel::paint(juce::Graphics& g)
 {
     g.setColour(Colour(0x1F, 0x1F, 0x1F));
     g.fillRect(getLocalBounds());
+}
+
+void DivisionControlPanel::tremulantEnablementChanged()
+{
+    const bool ena = _division->isTremulantEnabled();
+    if (_tremulantButton.getToggleState() != ena) {
+        _tremulantButton.setToggleState(ena, juce::dontSendNotification);
+    }
 }
 
 } // namespace ui

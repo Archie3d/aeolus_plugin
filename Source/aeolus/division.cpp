@@ -365,8 +365,17 @@ bool Division::isForMIDIChannel(int channel) const noexcept
 
 void Division::setTremulantEnabled(bool ena) noexcept
 {
-    _tremulantEnabled = _hasTremulant && ena;
-    _tremulantTargetLevel = _tremulantEnabled ? _tremulantMaxLevel : 0.0f;
+    if (!_hasTremulant)
+        return;
+
+    if (_tremulantEnabled != ena) {
+        _tremulantEnabled = ena;
+        _tremulantTargetLevel = _tremulantEnabled ? _tremulantMaxLevel : 0.0f;
+
+        _listeners.call([](Listener& listener) {
+                listener.tremulantEnablementChanged();
+            });
+    }
 }
 
 float Division::getTremulantLevel(bool update)

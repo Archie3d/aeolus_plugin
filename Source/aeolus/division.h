@@ -89,7 +89,8 @@ public:
     {
     public:
         virtual ~Listener() = default;
-        virtual void stopEnablementChanged(int stopIndex) = 0;
+        virtual void stopEnablementChanged(int stopIndex) {};
+        virtual void tremulantEnablementChanged() {};
     };
 
     //--------------------------------------------------------------------------
@@ -159,6 +160,10 @@ public:
 
     float getTremulantLevel(bool update = true);
 
+    //------------------------------------------------------
+
+    // All the following methods must be called on the audio thread.
+
     void noteOn(int note, int midiChannel);
     void noteOff(int note, int midiChannel);
     void allNotesOff();
@@ -168,11 +173,22 @@ public:
 
     List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
 
+    /**
+     * Tells the division has been alreayd triggered by a linked division,
+     * so that it should not be receiving the same note on/off event.
+     */
     bool hasBeenTriggered() const noexcept { return _triggerFlag; }
+
+    /**
+     * Clears trigger flag.
+     * This must be called on all divisions before processing the
+     * next note on/off event.
+     */
     void clearTriggerFlag() noexcept { _triggerFlag = false; }
 
-    static Stop::Type stopTypeFromString(const juce::String& n);
+    //------------------------------------------------------
 
+    static Stop::Type stopTypeFromString(const juce::String& n);
 
 private:
 
