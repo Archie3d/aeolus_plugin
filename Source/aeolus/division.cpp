@@ -133,7 +133,6 @@ void Division::initFromVar(const var& v)
 
 var Division::getPersistentState() const
 {
-    // Per division, but we have only one so far
     auto* divisionObj = new DynamicObject();
 
     divisionObj->setProperty("midi_channel", getMIDIChannel());

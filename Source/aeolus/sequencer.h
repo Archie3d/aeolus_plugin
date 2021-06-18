@@ -38,11 +38,24 @@ public:
     {
         std::vector<bool> stops;    ///< Stops enablement mask.
         bool tremulant;             ///< Tremulant enablement.
+
+        juce::var getPersistentState() const;
+        void setPersistentState(const juce::var& v);
     };
 
     struct OrganState
     {
         std::vector<DivisionState> divisions;
+
+        juce::var getPersistentState() const;
+        void setPersistentState(const juce::var& v);
+    };
+
+    class Listener
+    {
+    public:
+        virtual ~Listener() {};
+        virtual void sequencerStepChanged(int step) = 0;
     };
 
     Sequencer() = delete;
@@ -51,12 +64,18 @@ public:
     int getStepsCount() const noexcept { return (int)_steps.size(); }
     int getCurrentStep() const noexcept { return _currentStep; }
 
+    void addListener(Listener* listener) { _listeners.add(listener); }
+    void removeListener(Listener* listener) { _listeners.remove(listener); }
+
+    juce::var getPersistentState() const;
+    void setPersistentState(const juce::var& v);
+
     /**
      * Capture the organ state from the engine into the current step.
      */
     void captureCurrentStep();
 
-    void setStep(int index);
+    void setStep(int index, bool captureCurrentState = true);
 
     void stepForward();
 
@@ -69,6 +88,8 @@ private:
     Engine& _engine;
     std::vector<OrganState> _steps;
     int _currentStep;
+
+    juce::ListenerList<Listener> _listeners;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Sequencer)
 };

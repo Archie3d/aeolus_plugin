@@ -24,21 +24,30 @@
 
 namespace ui {
 
-class SequencerView : public juce::Component
+class SequencerView : public juce::Component,
+                      public aeolus::Sequencer::Listener
 {
 public:
 
     SequencerView(aeolus::Sequencer* sequencer);
+    ~SequencerView();
 
     // juce::Component
     void resized() override;
 
+    // aeolus::Sequencer::Listener
+    void sequencerStepChanged(int step) override;
+
 private:
+
+    constexpr static int radioGroupId = 1001;
 
     void populateStepButtons();
 
     aeolus::Sequencer* _sequencer;
     juce::OwnedArray<juce::TextButton> _stepButtons;
+
+    juce::TextButton _advanceButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SequencerView)
 };

@@ -57,8 +57,7 @@ DivisionView::DivisionView(aeolus::Division* division)
 
 void DivisionView::cancelAllStops()
 {
-    if (_division == nullptr)
-        return;
+    jassert(_division != nullptr);
 
     for (int i = 0; i < _division->getStopsCount(); ++i) {
         auto& stop = _division->getStopByIndex(i);
@@ -72,13 +71,19 @@ void DivisionView::cancelAllStops()
 
 void DivisionView::cancelAllLinks()
 {
-    if (_division == nullptr)
-        return;
+    jassert(_division != nullptr);
 
     _division->cancelAllLinks();
 
     for (auto& button : _linkButtons)
         button->setToggleState(false, dontSendNotification);
+}
+
+void DivisionView::cancelTremulant()
+{
+    jassert(_division != nullptr);
+
+    _division->setTremulantEnabled(false);
 }
 
 constexpr int controlPanelWidth = 130;

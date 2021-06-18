@@ -114,8 +114,10 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
         for (auto* divisionView : _divisionViews) {
             divisionView->cancelAllStops();
             divisionView->cancelAllLinks();
+            divisionView->cancelTremulant();
         }
     };
+
     addAndMakeVisible(_cancelButton);
 
     addAndMakeVisible(_divisionsViewport);

@@ -25,14 +25,112 @@ using namespace juce;
 
 AEOLUS_NAMESPACE_BEGIN
 
+//==============================================================================
+
+var Sequencer::DivisionState::getPersistentState() const
+{
+    auto* obj = new DynamicObject();
+
+    Array<var> stopsArr;
+
+    for (const auto& s : stops)
+        stopsArr.add(s);
+
+    obj->setProperty("stops", stopsArr);
+    obj->setProperty("tremulant", tremulant);
+
+    return var{obj};
+}
+
+void Sequencer::DivisionState::setPersistentState(const var& v)
+{
+    if (const auto* obj = v.getDynamicObject()) {
+        if (const auto* stopsArr = obj->getProperty("stops").getArray()) {
+            if (stopsArr->size() == stops.size()) {
+                for (int i = 0; i < stops.size(); ++i)
+                    stops[i] = stopsArr->getUnchecked(i);
+            }
+        }
+
+        tremulant = obj->getProperty("tremulant");
+    }
+}
+
+//==============================================================================
+
+var Sequencer::OrganState::getPersistentState() const
+{
+    auto* obj = new DynamicObject();
+
+    Array<var> divisionsArr;
+
+    for (const auto& division : divisions)
+        divisionsArr.add(division.getPersistentState());
+
+    obj->setProperty("divisions", divisionsArr);
+
+    return var{obj};
+}
+
+void Sequencer::OrganState::setPersistentState(const var& v)
+{
+    if (const auto* obj = v.getDynamicObject()) {
+        if (const auto* divisionsArr = obj->getProperty("divisions").getArray()) {
+            if (divisionsArr->size() == divisions.size()) {
+                for (int i = 0; i < divisions.size(); ++i)
+                    divisions[i].setPersistentState(divisionsArr->getUnchecked(i));
+            }
+        }
+    }
+}
+
+//==============================================================================
+
 Sequencer::Sequencer(Engine& engine, int numSteps)
     : _engine{engine}
     , _steps(numSteps)
     , _currentStep{0}
+    , _listeners{}
 {
     jassert(_steps.size() > 0);
 
     initFromEngine();
+}
+
+var Sequencer::getPersistentState() const
+{
+    auto* sequencerObj = new DynamicObject();
+
+    Array<var> stepsArr;
+
+    for (int stepIdx = 0; stepIdx < _steps.size(); ++stepIdx)
+        stepsArr.add(_steps[stepIdx].getPersistentState());
+
+    sequencerObj->setProperty("steps", stepsArr);
+    sequencerObj->setProperty("current_step", _currentStep);
+
+    return var{sequencerObj};
+}
+
+void Sequencer::setPersistentState(const var& v)
+{
+    if (auto* sequencerObj = v.getDynamicObject()) {
+
+        if (auto* stepsArr = sequencerObj->getProperty("steps").getArray()) {
+            if (stepsArr->size() == _steps.size()) {
+                for (int stepIdx = 0; stepIdx < _steps.size(); ++stepIdx)
+                    _steps[stepIdx].setPersistentState(stepsArr->getUnchecked(stepIdx));
+            }
+        }
+
+        const int currentStep = sequencerObj->getProperty("current_step");
+
+        if (currentStep >= 0 && currentStep < (int)_steps.size()) {
+            // Don't capture current state as it is unititialised
+            // and should not go into the sequencer.
+            setStep(currentStep, false);
+        }
+    }
 }
 
 void Sequencer::captureCurrentStep()
@@ -40,13 +138,21 @@ void Sequencer::captureCurrentStep()
     captureState(_steps[_currentStep]);
 }
 
-void Sequencer::setStep(int index)
+void Sequencer::setStep(int index, bool captureCurrentState)
 {
     jassert(index >= 0 && index < (int)_steps.size());
 
-    captureCurrentStep();
-    _currentStep = index;
-    recallState(_steps[_currentStep]);
+    if (index != _currentStep) {
+        if (captureCurrentState)
+            captureCurrentStep();
+
+        _currentStep = index;
+        recallState(_steps[_currentStep]);
+
+        _listeners.call([index](Listener& listener) {
+                listener.sequencerStepChanged(index);
+            });
+    }
 }
 
 void Sequencer::stepForward()

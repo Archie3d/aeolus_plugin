@@ -35,6 +35,7 @@ public:
 
     void cancelAllStops();
     void cancelAllLinks();
+    void cancelTremulant();
 
     int getEstimatedHeightForWidth(int width) const;
 

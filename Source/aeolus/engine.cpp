@@ -388,9 +388,11 @@ var Engine::getPersistentState() const
 {
     auto* obj = new DynamicObject();
 
+    // Save the IR.
     int irNum = _selectedIR;
     obj->setProperty("ir", irNum);
 
+    // Save divisions.
     Array<var> divisions;
 
     for (auto* division : _divisions)
@@ -398,13 +400,17 @@ var Engine::getPersistentState() const
 
     obj->setProperty("divisions", divisions);
 
+    // Make sure to capture current configuration into the sequencer's step.
+    _sequencer->captureCurrentStep();
+    obj->setProperty("sequencer", _sequencer->getPersistentState());
+
     return var{obj};
 }
 
 void Engine::setPersistentState(const var& state)
 {
     if (const auto* obj = state.getDynamicObject()) {
-
+        // Restore the IR
         int irNum = obj->getProperty("ir");
 
         if (MessageManager::getInstance()->isThisTheMessageThread())
@@ -414,6 +420,11 @@ void Engine::setPersistentState(const var& state)
 
         postReverbIR(irNum);
 
+        // Restore the sequencer
+        _sequencer->setPersistentState(obj->getProperty("sequencer"));
+
+        // Restore the divisions after the sequencer (in case we are restoring
+        // from a state that did not have a sequencer before).
         if (const auto* divisions = obj->getProperty("divisions").getArray()) {
 
             if (divisions->size() != _divisions.size()) {
@@ -426,6 +437,7 @@ void Engine::setPersistentState(const var& state)
                 division->setPersistentState(divisions->getReference(divIdx));
             }
         }
+
     }
 }
 
