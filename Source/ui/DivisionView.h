@@ -33,6 +33,8 @@ public:
 
     DivisionView(aeolus::Division* division = nullptr);
 
+    void update();
+
     void cancelAllStops();
     void cancelAllLinks();
     void cancelTremulant();

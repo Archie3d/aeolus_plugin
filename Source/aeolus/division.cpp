@@ -46,7 +46,6 @@ Division::Division(Engine& engine, const String& name)
     , _activeVoices{}
     , _triggerFlag{}
     , _volumeLevel{}
-    , _listeners{}
 {
     _swellFilterSpec.type = dsp::BiquadFilter::LowPass;
     _swellFilterSpec.sampleRate = SAMPLE_RATE;
@@ -208,17 +207,6 @@ void Division::setPersistentState(const juce::var& v)
     }
 }
 
-void Division::addListener(Listener* listener)
-{
-    jassert(listener != nullptr);
-    _listeners.add(listener);
-}
-
-void Division::removeListener(Listener* listener)
-{
-    _listeners.remove(listener);
-}
-
 void Division::populateLinkedDivisions()
 {
     _linkedDivisions.clear();
@@ -313,13 +301,7 @@ void Division::enableStop(int i, bool ena)
 {
     jassert(isPositiveAndBelow(i, _rankwaves.size()));
 
-    if (_rankwaves[i].enabled != ena) {
-        _rankwaves[i].enabled = ena;
-
-        _listeners.call([i](Listener& listener) {
-                listener.stopEnablementChanged(i);
-            });
-    }
+    _rankwaves[i].enabled = ena;
 }
 
 bool Division::isStopEnabled(int i) const
@@ -373,14 +355,8 @@ void Division::setTremulantEnabled(bool ena) noexcept
     if (!_hasTremulant)
         return;
 
-    if (_tremulantEnabled != ena) {
-        _tremulantEnabled = ena;
-        _tremulantTargetLevel = _tremulantEnabled ? _tremulantMaxLevel : 0.0f;
-
-        _listeners.call([](Listener& listener) {
-                listener.tremulantEnablementChanged();
-            });
-    }
+    _tremulantEnabled = ena;
+    _tremulantTargetLevel = _tremulantEnabled ? _tremulantMaxLevel : 0.0f;
 }
 
 float Division::getTremulantLevel(bool update)

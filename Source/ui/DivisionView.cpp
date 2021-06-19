@@ -55,6 +55,14 @@ DivisionView::DivisionView(aeolus::Division* division)
     populateLinkButtons();
 }
 
+void DivisionView::update()
+{
+    _controlPanel.update();
+
+    for (auto* b : _stopButtons)
+        b->update();
+}
+
 void DivisionView::cancelAllStops()
 {
     jassert(_division != nullptr);

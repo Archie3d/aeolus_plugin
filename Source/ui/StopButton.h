@@ -27,16 +27,14 @@ namespace ui {
 /**
  * @brief Toggle button associated with a particular stop on a division.
  */
-class StopButton final : public juce::Button,
-                         public aeolus::Division::Listener
+class StopButton final : public juce::Button
 {
 public:
     StopButton(aeolus::Division& division, int stopIndex);
-    ~StopButton();
+
     void setMargin(int m) noexcept { _margin = m; }
 
-    // aeolus::Division::Listener
-    void stopEnablementChanged(int stopIndex) override;
+    void update();
 
 protected:
     // juce::Button

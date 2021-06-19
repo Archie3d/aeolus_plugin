@@ -72,13 +72,11 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 
     _gainSlider.setSkewFactor(0.5f);
     addAndMakeVisible(_gainSlider);
-
-    _division->addListener(this);
 }
 
-DivisionControlPanel::~DivisionControlPanel()
+void DivisionControlPanel::update()
 {
-    _division->removeListener(this);
+    _tremulantButton.setToggleState(_division->isTremulantEnabled(), juce::dontSendNotification);
 }
 
 void DivisionControlPanel::resized()
@@ -106,14 +104,6 @@ void DivisionControlPanel::paint(juce::Graphics& g)
 {
     g.setColour(Colour(0x1F, 0x1F, 0x1F));
     g.fillRect(getLocalBounds());
-}
-
-void DivisionControlPanel::tremulantEnablementChanged()
-{
-    const bool ena = _division->isTremulantEnabled();
-    if (_tremulantButton.getToggleState() != ena) {
-        _tremulantButton.setToggleState(ena, juce::dontSendNotification);
-    }
 }
 
 } // namespace ui

@@ -53,6 +53,7 @@ private:
 
     void updateMeters();
     void updateMidiKeyboardRange();
+    void updateDivisionViews();
 
     AeolusAudioProcessor& _audioProcessor;
 

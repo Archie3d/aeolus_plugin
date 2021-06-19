@@ -38,21 +38,11 @@ StopButton::StopButton(aeolus::Division& division, int stopIndex)
     this->onClick = [this]() {
         _division.enableStop(_stopIndex, getToggleState());
     };
-
-    _division.addListener(this);
 }
 
-StopButton::~StopButton()
+void StopButton::update()
 {
-    _division.removeListener(this);
-}
-
-void StopButton::stopEnablementChanged(int stopIndex)
-{
-    // Update button state to reflect the stop state.
-    if (stopIndex == _stopIndex && getToggleState() != _stop.enabled) {
-        setToggleState(_stop.enabled, juce::dontSendNotification);
-    }
+    setToggleState(_division.isStopEnabled(_stopIndex), juce::dontSendNotification);
 }
 
 void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)

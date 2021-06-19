@@ -217,6 +217,7 @@ void AeolusAudioProcessorEditor::populateDivisions()
 void AeolusAudioProcessorEditor::refresh()
 {
     updateMeters();
+    updateDivisionViews();
     updateMidiKeyboardRange();
 }
 
@@ -237,4 +238,10 @@ void AeolusAudioProcessorEditor::updateMidiKeyboardRange()
         _midiKeyboard.setPlayableRange(0, 0);
     else
         _midiKeyboard.setPlayableRange(range.getStart(), range.getEnd());
+}
+
+void AeolusAudioProcessorEditor::updateDivisionViews()
+{
+    for (auto* dv : _divisionViews)
+        dv->update();
 }

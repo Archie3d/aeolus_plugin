@@ -84,15 +84,6 @@ public:
         LevelMeter right;
     };
 
-    /// Listener for the division stop changes
-    class Listener
-    {
-    public:
-        virtual ~Listener() = default;
-        virtual void stopEnablementChanged(int stopIndex) {};
-        virtual void tremulantEnablementChanged() {};
-    };
-
     //--------------------------------------------------------------------------
 
     Division(Engine& engine, const juce::String& name = juce::String());
@@ -111,9 +102,6 @@ public:
 
     juce::String getName() const { return _name; }
     juce::String getMnemonic() const { return _mnemonic; }
-
-    void addListener(Listener* listener);
-    void removeListener(Listener* listener);
 
     /**
      * Populate linked divisions from the division names.
@@ -232,8 +220,6 @@ private:
     bool _triggerFlag;
 
     Level _volumeLevel;
-
-    juce::ListenerList<Listener> _listeners;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Division)
 };

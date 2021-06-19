@@ -26,19 +26,16 @@
 
 namespace ui {
 
-class DivisionControlPanel : public juce::Component,
-                             public aeolus::Division::Listener
+class DivisionControlPanel : public juce::Component
 {
 public:
     DivisionControlPanel(aeolus::Division* division = nullptr);
-    ~DivisionControlPanel();
+
+    void update();
 
     // juce::Component
     void resized() override;
     void paint(juce::Graphics& g) override;
-
-    // aeolus::Division::Listener
-    void tremulantEnablementChanged() override;
 
 private:
 
