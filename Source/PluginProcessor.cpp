@@ -78,27 +78,30 @@ bool AeolusAudioProcessor::isMidiEffect() const
 
 double AeolusAudioProcessor::getTailLengthSeconds() const
 {
-    return 0.0;
+    return _engine.getReverbLengthInSeconds();
 }
 
 int AeolusAudioProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    // NB: some hosts don't cope very well if you tell them there are 0 programs,
+    // so this should be at least 1, even if you're not really implementing programs.
+    return jmax(1, _engine.getSequencer()->getStepsCount());
 }
 
 int AeolusAudioProcessor::getCurrentProgram()
 {
-    return 0;
+    return _engine.getSequencer()->getCurrentStep();
 }
 
-void AeolusAudioProcessor::setCurrentProgram (int /* index */)
+void AeolusAudioProcessor::setCurrentProgram (int index)
 {
+    if (index >= 0 && index < _engine.getSequencer()->getStepsCount())
+        _engine.getSequencer()->setStep(index);
 }
 
-const juce::String AeolusAudioProcessor::getProgramName (int /* index */)
+const juce::String AeolusAudioProcessor::getProgramName (int index)
 {
-    return {};
+    return juce::String("Sequencer step ") + juce::String(index + 1);
 }
 
 void AeolusAudioProcessor::changeProgramName (int /* index */, const juce::String& /* newName */)
@@ -196,7 +199,7 @@ void AeolusAudioProcessor::processMidi (juce::MidiBuffer& midiMessages)
     for (auto msgIter : midiMessages) {
         const auto msg = msgIter.getMessage();
 
-        _engine.getMidiKeyboardState().processNextMidiEvent(msg);
+        _engine.processMIDIMessage(msg);
     }
 
 }

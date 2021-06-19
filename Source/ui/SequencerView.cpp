@@ -37,13 +37,14 @@ SequencerView::SequencerView(aeolus::Sequencer* sequencer)
             _sequencer->stepForward();
         };
     addAndMakeVisible(_advanceButton);
-
-    _sequencer->addListener(this);
 }
 
-SequencerView::~SequencerView()
+void SequencerView::update()
 {
-    _sequencer->removeListener(this);
+    const auto currentStep = _sequencer->getCurrentStep();
+
+    for (int i = 0; i < _stepButtons.size(); ++i)
+        _stepButtons[i]->setToggleState(i == currentStep, juce::dontSendNotification);
 }
 
 void SequencerView::resized()
@@ -67,12 +68,6 @@ void SequencerView::resized()
     x += buttonPadding;
 
     _advanceButton.setBounds(x, buttonPadding, 2 * buttonWidth, getHeight() - 2 * buttonPadding);
-}
-
-void SequencerView::sequencerStepChanged(int step)
-{
-    if (step >= 0 && step < _stepButtons.size())
-        _stepButtons[step]->setToggleState(true, juce::dontSendNotification);
 }
 
 void SequencerView::populateStepButtons()

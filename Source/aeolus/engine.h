@@ -161,6 +161,8 @@ public:
      */
     int getReverbIR() const noexcept { return _selectedIR; }
 
+    float getReverbLengthInSeconds() const;
+
     /**
      * Set reverb wet output level (linear).
      * @note This must be called on the audio thread.
@@ -179,9 +181,24 @@ public:
     Level& getVolumeLevel() noexcept { return _volumeLevel; }
 
     /**
+     * Assign MIDI channel to be used to control the organ stops and sequencer.
+     */
+    int getMIDIControlChannel() const noexcept { return _midiControlChannel; }
+
+    /**
+     * Returns currently set MIDI control channel.
+     */
+    void setMIDIControlChannel(int c) noexcept { _midiControlChannel = c; }
+
+    /**
      * Generate audio.
      */
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
+
+    /**
+     * Process incoming MIDI messages.
+     */
+    void processMIDIMessage(const juce::MidiMessage& message);
 
     /**
      * Handle note-on events.
@@ -233,6 +250,8 @@ private:
     /// Apply the gloval volume.
     void applyVolume(float* outL, float* outR, int numFrames);
 
+    void processControlMIDIMessage(const juce::MidiMessage& message);
+
     float _sampleRate;
 
     RingBuffer<NoteEvent, 1024> _pendingNoteEvents;
@@ -265,6 +284,8 @@ private:
     juce::MidiKeyboardState _midiKeyboardState;
 
     Level _volumeLevel;
+
+    std::atomic<int> _midiControlChannel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Engine)
 };

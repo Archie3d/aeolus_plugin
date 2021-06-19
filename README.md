@@ -20,3 +20,6 @@ From the original implementation this project takes only `addsynth` and `rankwav
 The rest and the most of the code (including voicing, spatialisation, reverb, etc.) is all new, and it is not based on the original Aeolus, so the sound this plugin produces is different.
 
 The convolution reverb uses IRs from the [Open AIR](https://www.openair.hosted.york.ac.uk/) project database.
+
+## MIDI Control
+Sequencer steps are controlled via the program change messages sent on the control MIDI channel (program 0 corresponds to the first step of the sequencer, 1 - to the second and so on).

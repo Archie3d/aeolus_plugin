@@ -20,7 +20,7 @@
 #pragma once
 
 #include "aeolus/globals.h"
-
+#include <atomic>
 #include <vector>
 
 AEOLUS_NAMESPACE_BEGIN
@@ -51,21 +51,11 @@ public:
         void setPersistentState(const juce::var& v);
     };
 
-    class Listener
-    {
-    public:
-        virtual ~Listener() {};
-        virtual void sequencerStepChanged(int step) = 0;
-    };
-
     Sequencer() = delete;
     Sequencer(Engine& engine, int numSteps);
 
     int getStepsCount() const noexcept { return (int)_steps.size(); }
     int getCurrentStep() const noexcept { return _currentStep; }
-
-    void addListener(Listener* listener) { _listeners.add(listener); }
-    void removeListener(Listener* listener) { _listeners.remove(listener); }
 
     juce::var getPersistentState() const;
     void setPersistentState(const juce::var& v);
@@ -87,9 +77,7 @@ private:
 
     Engine& _engine;
     std::vector<OrganState> _steps;
-    int _currentStep;
-
-    juce::ListenerList<Listener> _listeners;
+    std::atomic<int> _currentStep;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Sequencer)
 };

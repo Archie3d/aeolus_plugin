@@ -54,6 +54,8 @@ private:
     void updateMeters();
     void updateMidiKeyboardRange();
     void updateDivisionViews();
+    void updateSequencerView();
+    void updateMidiControlChannel();
 
     AeolusAudioProcessor& _audioProcessor;
 
@@ -84,6 +86,10 @@ private:
 
     /// Organ cancel button
     juce::TextButton _cancelButton;
+
+    /// MIDI control channel selection
+    juce::Label _midiControlChannelLabel;
+    juce::ComboBox _midiControlChannelComboBox;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

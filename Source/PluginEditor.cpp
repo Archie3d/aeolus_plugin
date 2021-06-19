@@ -48,6 +48,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
+    , _midiControlChannelLabel{{}, {"Conrol channel"}}
+    , _midiControlChannelComboBox{}
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
@@ -132,6 +134,21 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     addAndMakeVisible(_sequencerView);
 
+    _midiControlChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
+    addAndMakeVisible(_midiControlChannelLabel);
+
+    _midiControlChannelComboBox.addItem("All", 1);
+    for (int i = 1; i <= 16; ++i) {
+        _midiControlChannelComboBox.addItem(String(i), i + 1);
+    }
+
+    _midiControlChannelComboBox.setSelectedId(1 + _audioProcessor.getEngine().getMIDIControlChannel(), juce::dontSendNotification);
+    _midiControlChannelComboBox.onChange = [this]() {
+        _audioProcessor.getEngine().setMIDIControlChannel(_midiControlChannelComboBox.getSelectedId() - 1);
+    };
+
+    addAndMakeVisible(_midiControlChannelComboBox);
+
     resized();
 
     startTimerHz(10);
@@ -196,6 +213,10 @@ void AeolusAudioProcessorEditor::resized()
 
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _cancelButton.setBounds((_midiKeyboard.getX() - 60)/2, getHeight() - 60, 60, 35);
+
+    int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 100) / 2;
+    _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY(), 100, 20);
+    _midiControlChannelComboBox.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 100, 20);
 }
 
 void AeolusAudioProcessorEditor::timerCallback()
@@ -218,7 +239,9 @@ void AeolusAudioProcessorEditor::refresh()
 {
     updateMeters();
     updateDivisionViews();
+    updateSequencerView();
     updateMidiKeyboardRange();
+    updateMidiControlChannel();
 }
 
 void AeolusAudioProcessorEditor::updateMeters()
@@ -244,4 +267,15 @@ void AeolusAudioProcessorEditor::updateDivisionViews()
 {
     for (auto* dv : _divisionViews)
         dv->update();
+}
+
+void AeolusAudioProcessorEditor::updateSequencerView()
+{
+    _sequencerView.update();
+}
+
+void AeolusAudioProcessorEditor::updateMidiControlChannel()
+{
+    const int ch = _audioProcessor.getEngine().getMIDIControlChannel();
+    _midiControlChannelComboBox.setSelectedId(1 + ch, juce::dontSendNotification);
 }

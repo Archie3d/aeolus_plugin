@@ -46,7 +46,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
         _midiChannelComboBox.addItem(String(i), i + 1);
     }
 
-    _midiChannelComboBox.setSelectedId(1 + _division->getMIDIChannel(), true);
+    _midiChannelComboBox.setSelectedId(1 + _division->getMIDIChannel(), juce::dontSendNotification);
     _midiChannelComboBox.onChange = [this]() {
         _division->setMIDIChannel(_midiChannelComboBox.getSelectedId() - 1);
     };

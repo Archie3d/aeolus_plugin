@@ -90,7 +90,6 @@ Sequencer::Sequencer(Engine& engine, int numSteps)
     : _engine{engine}
     , _steps(numSteps)
     , _currentStep{0}
-    , _listeners{}
 {
     jassert(_steps.size() > 0);
 
@@ -107,7 +106,7 @@ var Sequencer::getPersistentState() const
         stepsArr.add(_steps[stepIdx].getPersistentState());
 
     sequencerObj->setProperty("steps", stepsArr);
-    sequencerObj->setProperty("current_step", _currentStep);
+    sequencerObj->setProperty("current_step", getCurrentStep());
 
     return var{sequencerObj};
 }
@@ -148,10 +147,6 @@ void Sequencer::setStep(int index, bool captureCurrentState)
 
         _currentStep = index;
         recallState(_steps[_currentStep]);
-
-        _listeners.call([index](Listener& listener) {
-                listener.sequencerStepChanged(index);
-            });
     }
 }
 

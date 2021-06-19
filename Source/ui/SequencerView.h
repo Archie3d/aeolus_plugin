@@ -24,19 +24,16 @@
 
 namespace ui {
 
-class SequencerView : public juce::Component,
-                      public aeolus::Sequencer::Listener
+class SequencerView : public juce::Component
 {
 public:
 
     SequencerView(aeolus::Sequencer* sequencer);
-    ~SequencerView();
+
+    void update();
 
     // juce::Component
     void resized() override;
-
-    // aeolus::Sequencer::Listener
-    void sequencerStepChanged(int step) override;
 
 private:
 

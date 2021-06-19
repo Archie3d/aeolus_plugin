@@ -204,6 +204,7 @@ Engine::Engine()
     , _interpolator{1.0f}
     , _midiKeyboardState{}
     , _volumeLevel{}
+    , _midiControlChannel{0}
 {
     populateDivisions();
 
@@ -252,6 +253,11 @@ void Engine::postReverbIR(int num)
     _selectedIR = num;
 
     _irSwitchEvents.send({num});
+}
+
+float Engine::getReverbLengthInSeconds() const
+{
+    return float(_convolver.length()) * SAMPLE_RATE_R;
 }
 
 void Engine::setReverbWet(float v)
@@ -328,6 +334,17 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
     _volumeLevel.right.process(origOutR, origNumFrames);
 }
 
+void Engine::processMIDIMessage(const MidiMessage& message)
+{
+    const int ch = getMIDIControlChannel();
+
+    if (ch == 0 || message.getChannel() == 0 || message.getChannel() == getMIDIControlChannel())
+        processControlMIDIMessage(message);
+    
+    if (message.isNoteOnOrOff())
+        _midiKeyboardState.processNextMidiEvent(message);
+}
+
 void Engine::noteOn(int note, int midiChannel)
 {
     clearDivisionsTriggerFlag();
@@ -388,6 +405,9 @@ var Engine::getPersistentState() const
 {
     auto* obj = new DynamicObject();
 
+    // Save control channel
+    obj->setProperty("midi_ctrl_channel", getMIDIControlChannel());
+
     // Save the IR.
     int irNum = _selectedIR;
     obj->setProperty("ir", irNum);
@@ -410,6 +430,9 @@ var Engine::getPersistentState() const
 void Engine::setPersistentState(const var& state)
 {
     if (const auto* obj = state.getDynamicObject()) {
+        // Restore control channel
+        setMIDIControlChannel(obj->getProperty("midi_ctrl_channel"));
+
         // Restore the IR
         int irNum = obj->getProperty("ir");
 
@@ -577,6 +600,22 @@ void Engine::applyVolume(float* outL, float* outR, int numFrames)
             outL[i] *= g;
             outR[i] *= g;
         }
+    }
+}
+
+void Engine::processControlMIDIMessage(const MidiMessage& message)
+{
+    // NOTE: VST3 will not pass through the program change MIDI messages.
+    // Instead program change must be handled at the processor level
+    // via the setCurrentProgram() method.
+
+    // Here we handle the program change message nevertheless
+    // in case of a non-VST3 or stand-alone plugin.
+    if (message.isProgramChange()) {
+        int step = message.getProgramChangeNumber();
+
+        if (step >= 0 && step < _sequencer->getStepsCount())
+            _sequencer->setStep(step);
     }
 }
 
