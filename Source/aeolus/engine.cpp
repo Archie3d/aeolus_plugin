@@ -616,20 +616,6 @@ void Engine::processControlMIDIMessage(const MidiMessage& message)
 
         if (step >= 0 && step < _sequencer->getStepsCount())
             _sequencer->setStep(step);
-    } else if (message.isController()) {
-        int cc = message.getControllerNumber();
-        const float value = float(message.getControllerValue()) / 127.0f;
-
-        switch (cc) {
-        case CC_VOLUME:
-            setVolume(value);
-            break;
-        case CC_REVERB:
-            setReverbWet(value);
-            break;
-        default:
-            break;
-        }
     }
 }
 

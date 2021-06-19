@@ -199,9 +199,29 @@ void AeolusAudioProcessor::processMidi (juce::MidiBuffer& midiMessages)
     for (auto msgIter : midiMessages) {
         const auto msg = msgIter.getMessage();
 
+        // Handle clobal CCs
+        const int ch = msg.getChannel();
+
+        if ((ch == 0 || _engine.getMIDIControlChannel() == 0 || ch == _engine.getMIDIControlChannel())
+            && msg.isController()) {
+            
+            int cc = msg.getControllerNumber();
+            const float value = float(msg.getControllerValue()) / 127.0f;
+
+            switch (cc) {
+            case aeolus::CC_VOLUME:
+                (*_parameters.volume) = value;
+                break;
+            case aeolus::CC_REVERB:
+                (*_parameters.reverbWet) = value;
+                break;
+            default:
+                break;
+            }
+        }
+
         _engine.processMIDIMessage(msg);
     }
-
 }
 
 //==============================================================================

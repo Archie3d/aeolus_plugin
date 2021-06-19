@@ -71,6 +71,14 @@ constexpr static int SEQUENCER_N_STEPS = 16;
 
 //==============================================================================
 
+// MIDI controls
+enum {
+    CC_VOLUME = 7,
+    CC_REVERB = 91
+};
+
+//==============================================================================
+
 /// Values used by previous version of the synth.
 namespace deprecated {
 
