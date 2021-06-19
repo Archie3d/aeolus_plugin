@@ -123,6 +123,11 @@ public:
         NUM_PARAMS
     };
 
+    enum {
+        CC_VOLUME = 7,
+        CC_REVERB = 91
+    };
+
     //--------------------------------------------------------------------------
 
     Engine();
@@ -161,6 +166,9 @@ public:
      */
     int getReverbIR() const noexcept { return _selectedIR; }
 
+    /**
+     * Returns the reverb tail in seconds.
+     */
     float getReverbLengthInSeconds() const;
 
     /**

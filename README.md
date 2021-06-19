@@ -23,3 +23,6 @@ The convolution reverb uses IRs from the [Open AIR](https://www.openair.hosted.y
 
 ## MIDI Control
 Sequencer steps are controlled via the program change messages sent on the control MIDI channel (program 0 corresponds to the first step of the sequencer, 1 - to the second and so on).
+
+- `CC 7` on control channel controls the global volume;
+- `CC 91` on control channel controls the reverb output level;
