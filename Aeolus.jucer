@@ -4,7 +4,7 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               pluginManufacturerCode="Arbe" cppLanguageStandard="latest" pluginManufacturer="Arthur Benilov"
               companyName="Arthur Benilov" companyEmail="arthur.benilov@gmail.com"
-              headerPath="../../Source" version="0.1.7">
+              headerPath="../../Source" version="0.1.8">
   <MAINGROUP id="EZY9mB" name="Aeolus">
     <GROUP id="{F5BD30ED-E053-46A6-92B3-3C91BCF2F283}" name="Source">
       <GROUP id="{23278877-F57C-DD4B-1CA0-6C0998101C82}" name="aeolus">
