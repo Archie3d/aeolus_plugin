@@ -1,10 +1,15 @@
 ![aeolus](Resources/icons/icon256.png)
 # Aeolus
-Pipe organ emulator using additive synthesis as a VST plugin.
+Pipe organ emulator using additive synthesis as a VST plugin (or a stand-alone executable).
 
-Aeolus was originally developed by Fons Adriaensen and presented in 2004. The original implementation is Linux only and can be found [here](https://kokkinizita.linuxaudio.org/linuxaudio/aeolus/) (or across Linux distribution packages). At present it looks like Aeolus development has been abandoned.
+Aeolus was originally developed by Fons Adriaensen and presented in 2004. The original implementation is Linux only and can be found [here](https://kokkinizita.linuxaudio.org/linuxaudio/aeolus/) (or across Linux distribution packages). At present it looks like Aeolus development has been mostly abandoned (but [Organnery](https://organnery.com/) picked up the original Aeolus project to make it run on a Raspberry Pi).
 
-This project leverages the wavetables systhesis part of the original Aeolus, and frames it into a standard VST3 plugin using [JUCE](https://github.com/juce-framework/JUCE) framework, so that it can be run in Windows/macOS VST hosts. Additiona improvements to the sound include the pipes chiff noise on attack, and the new pipe models.
+This project leverages the wavetables systhesis part of the original Aeolus, and delivers it as a standard VST3 plugin using [JUCE](https://github.com/juce-framework/JUCE) framework, so that it can be run in Windows/macOS VST3 hosts.
+
+This implementation contains additional improvements to the sound generation including
+- pipes chiff noise on attack;
+- some new pipe models;
+- convolutional reverb.
 
 The original binary format for the pipe models and the organ configuration has been translated (partially) to JSON.
 
