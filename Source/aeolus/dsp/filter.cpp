@@ -23,7 +23,7 @@ AEOLUS_NAMESPACE_BEGIN
 
 namespace dsp {
 
-void BiquadFilter::updateSpec (BiquadFilter::Spec& spec)
+void BiquadFilter::updateSpec(BiquadFilter::Spec& spec)
 {
     float A = 0.0f;
 

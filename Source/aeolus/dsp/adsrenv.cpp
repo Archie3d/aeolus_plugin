@@ -30,35 +30,35 @@ namespace dsp {
 // https://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code/
 
 Envelope::Envelope()
-    : currentState (Off),
-      currentLevel (0.0f),
-      attackRate (0.0f),
-      attackCoef (0.0f),
-      attackBase (0.0f),
-      decayRate (0.0f),
-      decayCoef (0.0f),
-      decayBase (0.0f),
-      releaseRate (0.0f),
-      releaseCoef (0.0f),
-      releaseBase (0.0f),
-      sustainLevel (0.0f)
+    : currentState{Off}
+    , currentLevel{0.0f}
+    , attackRate{0.0f}
+    , attackCoef{0.0f}
+    , attackBase{0.0f}
+    , decayRate{0.0f}
+    , decayCoef{0.0f}
+    , decayBase{0.0f}
+    , releaseRate{0.0f}
+    , releaseCoef{0.0f}
+    , releaseBase{0.0f}
+    , sustainLevel{0.0f}
 {
 }
 
-void Envelope::trigger (const Envelope::Trigger& trigger, float sampleRate)
+void Envelope::trigger(const Envelope::Trigger& trigger, float sampleRate)
 {
     sustainLevel = trigger.sustain;
 
     attackRate = trigger.attack * sampleRate;
-    attackCoef = calculate (attackRate, AttackTargetRatio);
+    attackCoef = calculate(attackRate, AttackTargetRatio);
     attackBase = (1.0f + AttackTargetRatio) * (1.0f - attackCoef);
 
     decayRate = trigger.decay * sampleRate;
-    decayCoef = calculate (decayRate, DecayReleaseTargetRatio);
+    decayCoef = calculate(decayRate, DecayReleaseTargetRatio);
     decayBase = (sustainLevel - DecayReleaseTargetRatio) * (1.0f - decayCoef);
 
     releaseRate = trigger.release * sampleRate;
-    releaseCoef = calculate (releaseRate, DecayReleaseTargetRatio);
+    releaseCoef = calculate(releaseRate, DecayReleaseTargetRatio);
     releaseBase = -DecayReleaseTargetRatio * (1.0f - releaseCoef);
 
     currentState = Attack;
@@ -71,10 +71,10 @@ void Envelope::release()
         currentState = Release;
 }
 
-void Envelope::release (float t, float sampleRate)
+void Envelope::release(float t, float sampleRate)
 {
     releaseRate = t * sampleRate;
-    releaseCoef = calculate (releaseRate, DecayReleaseTargetRatio);
+    releaseCoef = calculate(releaseRate, DecayReleaseTargetRatio);
     releaseBase = -DecayReleaseTargetRatio * (1.0f - releaseCoef);
 
     currentState = Release;
@@ -89,8 +89,7 @@ float Envelope::next()
     case Attack:
         currentLevel = attackBase + currentLevel * attackCoef;
 
-        if (currentLevel >= 1.0f)
-        {
+        if (currentLevel >= 1.0f) {
             currentLevel = 1.0f;
             currentState = Decay;
         }
@@ -98,8 +97,7 @@ float Envelope::next()
     case Decay:
         currentLevel = decayBase + currentLevel * decayCoef;
 
-        if (currentLevel <= sustainLevel)
-        {
+        if (currentLevel <= sustainLevel) {
             currentLevel = sustainLevel;
             currentState = currentLevel > 0.0f ? Sustain : Off;
         }
@@ -109,8 +107,7 @@ float Envelope::next()
     case Release:
         currentLevel = releaseBase + currentLevel * releaseCoef;
 
-        if (currentLevel <= 0.0f)
-        {
+        if (currentLevel <= 0.0f) {
             currentLevel = 0.0f;
             currentState = Off;
         }
@@ -122,9 +119,9 @@ float Envelope::next()
     return currentLevel;
 }
 
-float Envelope::calculate (float rate, float targetRatio)
+float Envelope::calculate(float rate, float targetRatio)
 {
-    return rate <= 0 ? 0.0f : std::exp (-std::log ((1.0f + targetRatio) / targetRatio) / rate);
+    return rate <= 0 ? 0.0f : std::exp(-std::log((1.0f + targetRatio) / targetRatio) / rate);
 }
 
 } // namespace dsp

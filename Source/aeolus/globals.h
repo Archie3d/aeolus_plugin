@@ -163,7 +163,7 @@ struct Cos<B, A, double>
 //----------------------------------------------------------
 
 template <typename T>
-constexpr bool isPowerOfTwo (T v)
+constexpr bool isPowerOfTwo(T v)
 {
     return (v & (v - 1)) == 0;
 }

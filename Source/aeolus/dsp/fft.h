@@ -25,12 +25,15 @@
 #include <cmath>
 #include <array>
 #include <complex>
-#include <vector>
+#include <valarray>
 
 AEOLUS_NAMESPACE_BEGIN
 
 namespace dsp {
 
+/**
+ * @brief Fast Fourier transformation of a complex array.
+ */
 class Fft
 {
 public:
@@ -44,8 +47,7 @@ public:
     };
 
     using Complex = std::complex<float>;
-    //using Array = ::std::valarray<Complex>;
-    using Array = std::vector<Complex>;
+    using Array = ::std::valarray<Complex>;
 
     static void direct(Array& x, Window win = Window::None);
 
@@ -57,6 +59,7 @@ private:
 };
 
 //----------------------------------------------------------
+
 template<unsigned N, typename T = float>
 struct DanielsonLanczos;
 
@@ -65,7 +68,7 @@ struct DanielsonLanczos
 {
     using Next = DanielsonLanczos<N / 2, T>;
 
-    inline static std::array<float, N> w alignas (32) = []() {
+    inline static std::array<float, N> w alignas(32) = []() {
         std::array<float, N> w;
 
         w[0] = 1.0f;
@@ -251,7 +254,7 @@ struct GFFT
     template <typename U>
     static constexpr U log2int(U n)
     {
-        return ((n < 2) ? 0 : 1 + log2int (n / 2));
+        return ((n < 2) ? 0 : 1 + log2int(n / 2));
     }
 
     static void permutate(T* data)
@@ -268,10 +271,9 @@ struct GFFT
             b = (((b & 0xff00ff00) >> 8) | ((b & 0x00ff00ff) << 8));
             b = ((b >> 16) | (b << 16)) >> (32 - m);
 
-            if (b > a)
-            {
-                std::swap (data[a * 2], data[b * 2]);
-                std::swap (data[a * 2 + 1], data[b * 2 + 1]);
+            if (b > a) {
+                std::swap(data[a * 2], data[b * 2]);
+                std::swap(data[a * 2 + 1], data[b * 2 + 1]);
             }
         }
     }
@@ -291,7 +293,7 @@ struct GFFT
             b = ((b >> 16) | (b << 16)) >> (32 - m);
 
             if (b > a)
-                std::swap (data[a * 2], data[b * 2]);
+                std::swap(data[a * 2], data[b * 2]);
         }
     }
 
@@ -310,13 +312,13 @@ struct GFFT
             b = ((b >> 16) | (b << 16)) >> (32 - m);
 
             if (b > a)
-                std::swap (data[a * 2], data[b * 2]);
+                std::swap(data[a * 2], data[b * 2]);
         }
     }
 
     static void conj(T* data)
     {
-        for (unsigned i = 1; i < 2*N; i += 2)
+        for (unsigned i = 1; i < 2 * N; i += 2)
             data[i] = -data[i];
     }
 };

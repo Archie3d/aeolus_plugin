@@ -43,7 +43,7 @@ struct Worker::Impl
         , sema(0)
         , running(false)
         , thread(nullptr)
-    {        
+    {
     }
 
     ~Impl()
@@ -56,7 +56,7 @@ struct Worker::Impl
         while (running) {
             Worker::Job* job = nullptr;
 
-            wait();        
+            wait();
 
             if (running && jobsQueue.receive (job)) {
                 jassert(job != nullptr);

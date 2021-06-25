@@ -23,6 +23,12 @@
 
 AEOLUS_NAMESPACE_BEGIN
 
+/**
+ * Implementation of a double-linked list.
+ * The list chain pointers get embedded into the items objects,
+ * so that adding/removing the items does not require any memory allocations.
+ */
+
 template <class Item> struct ListItem;
 template <class Item> struct List;
 
@@ -71,23 +77,20 @@ struct List
     Item* first() noexcept { return _head; }
     Item* last() noexcept { return _tail; }
 
-    void append (Item* item) noexcept
+    void append(Item* item) noexcept
     {
         jassert (item != nullptr);
 
-        if (_head == nullptr)
-        {
+        if (_head == nullptr) {
             _head = item;
             _tail = item;
-        }
-        else
-        {
+        } else {
             item->appendAfter (_tail);
             _tail = item;
         }
     }
 
-    void prepend (Item* item) noexcept
+    void prepend(Item* item) noexcept
     {
         jassert (item != nullptr);
 
@@ -115,8 +118,7 @@ struct List
     {
         auto* i = _head;
 
-        while (i != nullptr)
-        {
+        while (i != nullptr) {
             if (i == item)
                 return true;
 
@@ -126,7 +128,7 @@ struct List
         return false;
     }
 
-    Item* removeAndReturnNext (Item* item) noexcept
+    Item* removeAndReturnNext(Item* item) noexcept
     {
         Item* n = item->next();
         remove (item);
@@ -142,21 +144,16 @@ struct List
     {
         Item* it = _head;
 
-        if (index >= 0)
-        {
-            while (index > 0 && it != nullptr)
-            {
+        if (index >= 0) {
+            while (index > 0 && it != nullptr) {
                 --index;
                 it = it->next();
             }
-        }
-        else
-        {
+        } else {
             it = _tail;
             ++index;
 
-            while (index < 0 && it != nullptr)
-            {
+            while (index < 0 && it != nullptr) {
                 ++index;
                 it = it->prev();
             }
@@ -169,6 +166,5 @@ private:
     Item* _head = nullptr;
     Item* _tail = nullptr;
 };
-
 
 AEOLUS_NAMESPACE_END

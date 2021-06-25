@@ -26,6 +26,9 @@ AEOLUS_NAMESPACE_BEGIN
 
 namespace dsp {
 
+/**
+ * @brief Stereo convolution reverb.
+ */
 class Convolver final
 {
 public:
@@ -44,31 +47,33 @@ public:
     constexpr static float DefaultWet  = 1.0f;
     constexpr static float DefaultGain = 1.0f;
 
+    /// Single convolution block size (in number of samples).
+    constexpr static size_t BlockSize = 4096;
+
     Convolver();
     ~Convolver();
 
-    void setIR (const juce::AudioBuffer<float>& ir);
+    void setIR(const juce::AudioBuffer<float>& ir);
 
-    void setDryWet (float dry, float wet, bool force = false);
+    void setDryWet(float dry, float wet, bool force = false);
     bool isAudible() const;
 
-    void prepareToPlay (float sampleRate, size_t nFrames);
+    void prepareToPlay(float sampleRate, size_t nFrames);
 
     void process(const float *inL, const float *inR, float *outL, float *outR, size_t numFrames);
 
-    void setNonRealtime (bool nonRealtime);
+    void setNonRealtime(bool nonRealtime);
 
     int length() const noexcept;
-    void setLength (int len) noexcept;
+    void setLength(int len) noexcept;
 
     bool zeroDelay() const noexcept;
-    void setZeroDelay (bool v) noexcept;
+    void setZeroDelay(bool v) noexcept;
 
 protected:
 
     struct Impl;
     std::unique_ptr<Impl> d;
-
 };
 
 } // namespace dsp

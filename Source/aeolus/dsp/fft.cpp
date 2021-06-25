@@ -48,7 +48,7 @@ static float blackman(int i, int n)
 
 void Fft::direct(Fft::Array& x, Fft::Window win)
 {
-    applyWindow (x, win);
+    applyWindow(x, win);
 
     // DFT
     unsigned int N = (unsigned int) x.size(), k = N, n;
@@ -97,22 +97,16 @@ void Fft::direct(Fft::Array& x, Fft::Window win)
 void Fft::inverse(Array &x)
 {
     // conjugate the complex numbers
-    for (auto &xx : x)
-        xx = std::conj(xx);
+    x = x.apply(std::conj);
 
     // forward fft
-    direct(x);
+    direct (x);
 
     // conjugate the complex numbers again
-    for (auto &xx : x)
-        xx = std::conj(xx);
+    x = x.apply(std::conj);
 
     // scale the numbers
-    const float r = 1.0f / float(x.size());
-
-    for (auto& xx : x)
-        xx *= r;
-
+    x /= (float) x.size();
 }
 
 void Fft::applyWindow(Fft::Array&x, Fft::Window win)
@@ -122,15 +116,15 @@ void Fft::applyWindow(Fft::Array&x, Fft::Window win)
         break;
     case Fft::Window::Hann:
         for (int i = 0; i < x.size(); ++i)
-            x[i] *= hann (i, (int) x.size());
+            x[i] *= hann(i, (int) x.size());
         break;
     case Fft::Window::Hamming:
         for (int i = 0; i < x.size(); ++i)
-            x[i] *= hamming (i, (int) x.size());
+            x[i] *= hamming(i, (int) x.size());
         break;
     case Fft::Window::Blackman:
         for (int i = 0; i < x.size(); ++i)
-            x[i] *= blackman (i, (int) x.size());
+            x[i] *= blackman(i, (int) x.size());
         break;
     default:
         break;

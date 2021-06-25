@@ -27,8 +27,6 @@ AEOLUS_NAMESPACE_BEGIN
 
 namespace dsp {
 
-constexpr size_t ConvBlockSize = 4096;
-
 using ConvHead = dsp::CascadeConvolver<
                       dsp::FIR<32>,
                       dsp::FFT<32>,
@@ -40,9 +38,9 @@ using ConvHead = dsp::CascadeConvolver<
                       dsp::FFT<2048>
                   >;
 
-static_assert (ConvHead::Length == ConvBlockSize, "Header block size is wrong");
+static_assert(ConvHead::Length == Convolver::BlockSize, "Header block size is wrong");
 
-using ConvBlock = dsp::FFT<ConvBlockSize>;
+using ConvBlock = dsp::FFT<Convolver::BlockSize>;
 
 struct Convolver::Impl
 {
@@ -65,8 +63,8 @@ struct Convolver::Impl
     ConvHead headR;
     bool zeroDelay;
 
-    dsp::EquallyPartitionedConvolver<ConvBlockSize> convL;
-    dsp::EquallyPartitionedConvolver<ConvBlockSize> convR;
+    dsp::EquallyPartitionedConvolver<Convolver::BlockSize> convL;
+    dsp::EquallyPartitionedConvolver<Convolver::BlockSize> convR;
 
     std::vector<ConvBlock> blocksL;
     std::vector<ConvBlock> blocksR;
@@ -80,28 +78,28 @@ struct Convolver::Impl
     size_t framesProcessed;
 
     Impl ()
-        : params (Convolver::NUM_PARAMS),
-          length (0),
-          state (Idle),
-          headL(),
-          headR(),
-          zeroDelay (true),
-          convL(),
-          convR(),
-          input (2, ConvHead::Lenght),
-          ir (2, ConvHead::Lenght),
-          irSamplesRead (0),
-          inputSize (0),
-          framesProcessed (0)
+        : params{Convolver::NUM_PARAMS}
+        , length{0}
+        , state{Idle}
+        , headL{}
+        , headR{}
+        , zeroDelay{true}
+        , convL{}
+        , convR{}
+        , input(2, ConvHead::Lenght)
+        , ir(2, ConvHead::Lenght)
+        , irSamplesRead{0}
+        , inputSize{0}
+        , framesProcessed{0}
     {
-        params[DRY].setName ("dry");
-        params[DRY].setValue (DefaultDry, true);
+        params[DRY].setName("dry");
+        params[DRY].setValue(DefaultDry, true);
 
-        params[WET].setName ("wet");
-        params[WET].setValue (DefaultWet, true);
+        params[WET].setName("wet");
+        params[WET].setValue(DefaultWet, true);
 
-        params[GAIN].setName ("gain");
-        params[GAIN].setValue (DefaultGain, true);
+        params[GAIN].setName("gain");
+        params[GAIN].setValue(DefaultGain, true);
 
         worker.start();
     }
@@ -113,32 +111,29 @@ struct Convolver::Impl
 
     void init ()
     {
-        size_t numBlocks = length < ConvBlockSize ? 1 : (length - 1) / ConvBlockSize + 1;
-        inputSize = numBlocks * ConvBlockSize;
+        size_t numBlocks = length < Convolver::BlockSize ? 1 : (length - 1) / Convolver::BlockSize + 1;
+        inputSize = numBlocks * Convolver::BlockSize;
 
-        convL.resize (numBlocks);
-        convR.resize (numBlocks);
+        convL.resize(numBlocks);
+        convR.resize(numBlocks);
 
-        headL.init (ir.getWritePointer (0), input.getWritePointer (0), ConvBlockSize);
-        headR.init (ir.getWritePointer (1), input.getWritePointer (1), ConvBlockSize);
+        headL.init(ir.getWritePointer (0), input.getWritePointer (0), Convolver::BlockSize);
+        headR.init(ir.getWritePointer (1), input.getWritePointer (1), Convolver::BlockSize);
 
         updateRealtime (false);
 
         reset();
     }
 
-    void updateRealtime (bool isNonRealtime)
+    void updateRealtime(bool isNonRealtime)
     {
         // Run convolution on a side thread for real-time processing.
-        if (isNonRealtime)
-        {
-            convL.setWorker (nullptr);
-            convR.setWorker (nullptr);
-        }
-        else
-        {
-            convL.setWorker (&worker);
-            convR.setWorker (&worker);
+        if (isNonRealtime) {
+            convL.setWorker(nullptr);
+            convR.setWorker(nullptr);
+        } else {
+            convL.setWorker(&worker);
+            convR.setWorker(&worker);
         }
     }
 
@@ -157,10 +152,10 @@ struct Convolver::Impl
         framesProcessed = 0;
     }
 
-    void setDryWet (float dry, float wet, bool force)
+    void setDryWet(float dry, float wet, bool force)
     {
-        params[DRY].setValue (dry, force);
-        params[WET].setValue (wet, force);
+        params[DRY].setValue(dry, force);
+        params[WET].setValue(wet, force);
     }
 
     float isAudible() const
@@ -169,7 +164,7 @@ struct Convolver::Impl
             || params[WET].value() > 0.0f;
     }
 
-    void setIR (const AudioBuffer<float>& buffer)
+    void setIR(const AudioBuffer<float>& buffer)
     {
         ir = buffer;
         
@@ -178,8 +173,8 @@ struct Convolver::Impl
         framesProcessed = 0;
         input.clear();
 
-        headL.init (ir.getWritePointer (0), input.getWritePointer (0), ConvBlockSize);
-        headR.init (ir.getWritePointer (1), input.getWritePointer (1), ConvBlockSize);
+        headL.init(ir.getWritePointer (0), input.getWritePointer (0), Convolver::BlockSize);
+        headR.init(ir.getWritePointer (1), input.getWritePointer (1), Convolver::BlockSize);
 
         headL.reset();
         headR.reset();
@@ -187,21 +182,19 @@ struct Convolver::Impl
         convL.reset();
         convR.reset();
 
-        int i = zeroDelay ? ConvBlockSize : 0;
-        const float* irL = ir.getReadPointer (0);
-        const float* irR = ir.getReadPointer (1);
+        int i = zeroDelay ? Convolver::BlockSize : 0;
+        const float* irL = ir.getReadPointer(0);
+        const float* irR = ir.getReadPointer(1);
 
-        while (i < jmin ((int)inputSize, ir.getNumSamples()))
-        {
-            convL.feedIr (irL[i]);
-            convR.feedIr (irR[i]);
+        while (i < jmin ((int)inputSize, ir.getNumSamples())) {
+            convL.feedIr(irL[i]);
+            convR.feedIr(irR[i]);
             ++i;
         }
 
-        while (i < inputSize)
-        {
-            convL.feedIr (0.0f);
-            convR.feedIr (0.0f);
+        while (i < inputSize) {
+            convL.feedIr(0.0f);
+            convR.feedIr(0.0f);
             ++i;
         }
 
@@ -214,7 +207,7 @@ struct Convolver::Impl
         init();
     }
 
-    void process (const float *inL, const float *inR, float *outL, float *outR, size_t numFrames)
+    void process(const float *inL, const float *inR, float *outL, float *outR, size_t numFrames)
     {
         if (state == Init)
             state = zeroDelay ? FeedHeadIR : ProcessWithIRStream;
@@ -222,42 +215,21 @@ struct Convolver::Impl
         if (state == FeedHeadIR)
         {
             // ir buffer is ready at this point
-            if (ir.getNumSamples() <= ConvBlockSize)
-            {
+            if (ir.getNumSamples() <= Convolver::BlockSize) {
                 irSamplesRead = ir.getNumSamples();
                 state = Process;
-            }
-            else
-            {
-                irSamplesRead = ConvBlockSize;
+            } else {
+                irSamplesRead = Convolver::BlockSize;
                 state = ProcessWithIRStream;
             }
         }
 
-        if (state == ProcessWithIRStream)
-        {
-            for (size_t i = 0; i < numFrames; ++i)
-            {
-                float l = convL.tick (inL[i]);
-                float r = convR.tick (inR[i]);
-
-                if (zeroDelay)
-                {
-                    l += headL.tick (inL[i]);
-                    r += headR.tick (inR[i]);
-                }
-
-                float dry = params[Convolver::DRY].nextValue();
-                float wet = params[Convolver::WET].nextValue();
-
-                outL[i] = l * wet + inL[i] * dry;
-                outR[i] = r * wet + inR[i] * dry;
-            }
+        if (state == ProcessWithIRStream) {
+            processFrame(inL, inR, outL, outR, numFrames);
 
             framesProcessed += numFrames;
 
-            if (framesProcessed >= inputSize || irSamplesRead >= ir.getNumSamples())
-            {
+            if (framesProcessed >= inputSize || irSamplesRead >= ir.getNumSamples()) {
                 // The entire IR has been read, switch to procesing without IR streaming
                 state = Process;
             }
@@ -265,27 +237,37 @@ struct Convolver::Impl
             return;
         }
 
-        if (state == Process)
-        {
-            for (size_t i = 0; i < numFrames; ++i)
-            {
-                float l = convL.tick (inL[i]);
-                float r = convR.tick (inR[i]);
+        if (state == Process) {
+            processFrame(inL, inR, outL, outR, numFrames);
 
-                if (zeroDelay)
-                {
-                    l += headL.tick (inL[i]);
-                    r += headR.tick (inR[i]);
-                }
+            return;
+        }
+    }
 
-                float dry = params[Convolver::DRY].nextValue();
-                float wet = params[Convolver::WET].nextValue();
+    void processFrame(const float *inL, const float *inR, float *outL, float *outR, size_t numFrames)
+    {
+        if (zeroDelay) {
+            for (size_t i = 0; i < numFrames; ++i) {
+                const float l = convL.tick(inL[i]) + headL.tick(inL[i]);
+                const float r = convR.tick(inR[i]) + headR.tick(inR[i]);
+
+                const float dry = params[Convolver::DRY].nextValue();
+                const float wet = params[Convolver::WET].nextValue();
 
                 outL[i] = l * wet + inL[i] * dry;
                 outR[i] = r * wet + inR[i] * dry;
             }
+        } else {
+            for (size_t i = 0; i < numFrames; ++i) {
+                const float l = convL.tick(inL[i]);
+                const float r = convR.tick(inR[i]);
 
-            return;
+                const float dry = params[Convolver::DRY].nextValue();
+                const float wet = params[Convolver::WET].nextValue();
+
+                outL[i] = l * wet + inL[i] * dry;
+                outR[i] = r * wet + inR[i] * dry;
+            }
         }
     }
 };
@@ -293,20 +275,20 @@ struct Convolver::Impl
 //----------------------------------------------------------
 
 Convolver::Convolver()
-    : d (std::make_unique<Impl>())
+    : d(std::make_unique<Impl>())
 {
 }
 
 Convolver::~Convolver() = default;
 
-void Convolver::setIR (const AudioBuffer<float>& ir)
+void Convolver::setIR(const AudioBuffer<float>& ir)
 {
-    d->setIR (ir);
+    d->setIR(ir);
 }
 
-void Convolver::setDryWet (float dry, float wet, bool force)
+void Convolver::setDryWet(float dry, float wet, bool force)
 {
-    d->setDryWet (dry, wet, force);
+    d->setDryWet(dry, wet, force);
 }
 
 bool Convolver::isAudible() const
@@ -314,19 +296,19 @@ bool Convolver::isAudible() const
     return d->isAudible();
 }
 
-void Convolver::prepareToPlay (float /* sampleRate */, size_t /* nFrames */)
+void Convolver::prepareToPlay(float /* sampleRate */, size_t /* nFrames */)
 {
     d->prepareToPlay();
 }
 
-void Convolver::process (const float *inL, const float *inR, float *outL, float *outR, size_t numFrames)
+void Convolver::process(const float *inL, const float *inR, float *outL, float *outR, size_t numFrames)
 {
-    d->process (inL, inR, outL, outR, numFrames);
+    d->process(inL, inR, outL, outR, numFrames);
 }
 
-void Convolver::setNonRealtime (bool nonRealtime)
+void Convolver::setNonRealtime(bool nonRealtime)
 {
-    d->updateRealtime (nonRealtime);
+    d->updateRealtime(nonRealtime);
 }
 
 int Convolver::length() const noexcept
@@ -334,7 +316,7 @@ int Convolver::length() const noexcept
     return (int) d->length;
 }
 
-void Convolver::setLength (int len) noexcept
+void Convolver::setLength(int len) noexcept
 {
     d->length = len;
 }
@@ -344,7 +326,7 @@ bool Convolver::zeroDelay() const noexcept
     return d->zeroDelay;
 }
 
-void Convolver::setZeroDelay (bool v) noexcept
+void Convolver::setZeroDelay(bool v) noexcept
 {
     d->zeroDelay = v;
 }

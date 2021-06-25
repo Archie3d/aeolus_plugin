@@ -30,20 +30,20 @@ namespace ui {
 class ParameterSlider : public juce::Slider
 {
 public:
-    explicit ParameterSlider (juce::AudioProcessorParameter &p,
-                              juce::Slider::SliderStyle style = juce::Slider::LinearVertical,
-                              juce::Slider::TextEntryBoxPosition textBoxPosition = juce::Slider::NoTextBox);
+    explicit ParameterSlider(juce::AudioProcessorParameter &p,
+                             juce::Slider::SliderStyle style = juce::Slider::LinearVertical,
+                             juce::Slider::TextEntryBoxPosition textBoxPosition = juce::Slider::NoTextBox);
     ~ParameterSlider();
 
-    double getValueFromText (const juce::String &text) override;
-    juce::String getTextFromValue (double value) override;
+    double getValueFromText(const juce::String &text) override;
+    juce::String getTextFromValue(double value) override;
 
 private:
 
     struct Impl;
     std::unique_ptr<Impl> d;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterSlider)
 };
 
 } // namespace ui

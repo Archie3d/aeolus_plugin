@@ -40,7 +40,7 @@ struct ParameterSlider::Impl
             startTimerHz (20);
         }
 
-        void sliderValueChanged (Slider *pSlider) override
+        void sliderValueChanged(Slider *pSlider) override
         {
             if (pSlider->isMouseButtonDown())
                 parameter.setValueNotifyingHost(static_cast<float>(pSlider->getValue()));
@@ -48,12 +48,12 @@ struct ParameterSlider::Impl
                 parameter.setValue(static_cast<float>(pSlider->getValue()));
         }
 
-        void sliderDragStarted (Slider*) override
+        void sliderDragStarted(Slider*) override
         {
             parameter.beginChangeGesture();
         }
 
-        void sliderDragEnded (Slider*) override
+        void sliderDragEnded(Slider*) override
         {
             parameter.endChangeGesture();
         }
@@ -65,31 +65,31 @@ struct ParameterSlider::Impl
 
     };
 
-    ParameterSlider &slider;	// Reference to interface object.
-    Handler handler;			// Slider handler
+    ParameterSlider &slider;    // Reference to interface object.
+    Handler handler;            // Slider handler
 
     Impl (ParameterSlider &s, AudioProcessorParameter &p)
         : slider(s)
         , handler(*this, p)
     {
-        slider.addListener (&handler);
+        slider.addListener(&handler);
     }
 
     void updateSliderPosition()
     {
         auto newValue = handler.parameter.getValue();
-        if ((newValue != static_cast<float>(slider.getValue()))
-            && !slider.isMouseButtonDown()) {
+
+        if ((newValue != static_cast<float>(slider.getValue())) && !slider.isMouseButtonDown()) {
             slider.setValue (newValue);
         }
     }
 
-    double getValueFromText (const String &text)
+    double getValueFromText(const String &text)
     {
-        return handler.parameter.getValueForText (text);
+        return handler.parameter.getValueForText(text);
     }
 
-    String getTextFromValue (double value)
+    String getTextFromValue(double value)
     {
         return handler.parameter.getText(static_cast<float>(value), 1024)
             + " " + handler.parameter.getLabel();
@@ -100,8 +100,8 @@ struct ParameterSlider::Impl
 //----------------------------------------------------------
 
 ParameterSlider::ParameterSlider (AudioProcessorParameter &p, SliderStyle style, TextEntryBoxPosition textBoxPosition)
-    : Slider (style, textBoxPosition)
-    , d (std::make_unique<Impl>(*this, p))
+    : Slider(style, textBoxPosition)
+    , d(std::make_unique<Impl>(*this, p))
 {
     setRange(0.0, 1.0, 0.0);
     setDoubleClickReturnValue(true, p.getDefaultValue());
@@ -109,14 +109,14 @@ ParameterSlider::ParameterSlider (AudioProcessorParameter &p, SliderStyle style,
 
 ParameterSlider::~ParameterSlider() = default;
 
-double ParameterSlider::getValueFromText (const String &text)
+double ParameterSlider::getValueFromText(const String &text)
 {
     return d->getValueFromText(text);
 }
 
-String ParameterSlider::getTextFromValue (double value)
+String ParameterSlider::getTextFromValue(double value)
 {
-    return d->getTextFromValue (value);
+    return d->getTextFromValue(value);
 }
 
 } // namespace ui

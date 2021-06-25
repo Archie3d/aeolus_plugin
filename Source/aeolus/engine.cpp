@@ -166,7 +166,8 @@ void EngineGlobal::loadIRs()
     AudioFormatManager manager;
     manager.registerBasicFormats();
 
-    _longestIRLength = 4096;
+    // A minimum size we can have is a single convolution block.
+    _longestIRLength = dsp::Convolver::BlockSize;
 
     for (auto& ir : _irs) {
         std::unique_ptr<InputStream> stream = std::make_unique<MemoryInputStream>(ir.data, ir.size, false);
