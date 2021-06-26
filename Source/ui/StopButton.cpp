@@ -18,7 +18,7 @@
 // ----------------------------------------------------------------------------
 
 #include "ui/StopButton.h"
-#include "ui/CustomLookAndFeel.h";
+#include "ui/CustomLookAndFeel.h"
 
 using namespace juce;
 
