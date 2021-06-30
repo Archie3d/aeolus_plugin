@@ -187,7 +187,7 @@ JUCE_IMPLEMENT_SINGLETON(EngineGlobal)
 //==============================================================================
 
 Engine::Engine()
-    : _sampleRate{SAMPLE_RATE}
+    : _sampleRate{SAMPLE_RATE_F}
     , _voicePool(*this)
     , _params{NUM_PARAMS}
     , _divisions{}
@@ -217,13 +217,13 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
 {
     // Make sure the stops wavetable is updated.
     auto* g = EngineGlobal::getInstance();
-    g->updateStops(SAMPLE_RATE);
+    g->updateStops(SAMPLE_RATE_F);
 
     // Select the first IR for reverb by default
     setReverbIR(_selectedIR);
     _convolver.setDryWet(1.0f, 0.25f, true);
 
-    _interpolator.setRatio(SAMPLE_RATE / sampleRate); // 44100 / sampleRate
+    _interpolator.setRatio(SAMPLE_RATE_F / sampleRate); // 44100 / sampleRate
     _interpolator.reset();
 
     _sampleRate = sampleRate;
@@ -236,8 +236,8 @@ void Engine::setReverbIR(int num)
 
     if (num >= 0 && num < irs.size()) {
         const auto& ir = irs[num];
-        _convolver.setLength(int(ir.waveform.getNumSamples() / 4096 + 1) * 4096);
-        _convolver.prepareToPlay(SAMPLE_RATE, SUB_FRAME_LENGTH); // these parameters are irrelevant
+        _convolver.setLength(int(ir.waveform.getNumSamples() / dsp::Convolver::BlockSize + 1) * dsp::Convolver::BlockSize);
+        _convolver.prepareToPlay(SAMPLE_RATE_F, SUB_FRAME_LENGTH); // these parameters are irrelevant
         _convolver.setZeroDelay(ir.zeroDelay);
         _convolver.setIR(ir.waveform);
 

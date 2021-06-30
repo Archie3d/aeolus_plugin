@@ -48,10 +48,10 @@ Division::Division(Engine& engine, const String& name)
     , _volumeLevel{}
 {
     _swellFilterSpec.type = dsp::BiquadFilter::LowPass;
-    _swellFilterSpec.sampleRate = SAMPLE_RATE;
+    _swellFilterSpec.sampleRate = SAMPLE_RATE_F;
     _swellFilterSpec.dbGain = 0.0f;
     _swellFilterSpec.q = 0.7071f;
-    _swellFilterSpec.freq = 0.4f * SAMPLE_RATE;
+    _swellFilterSpec.freq = 0.4f * SAMPLE_RATE_F;
 
     dsp::BiquadFilter::updateSpec(_swellFilterSpec);
     dsp::BiquadFilter::resetState(_swellFilterSpec, _swellFilterStateL);

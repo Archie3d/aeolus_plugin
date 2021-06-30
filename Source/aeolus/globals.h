@@ -31,9 +31,9 @@ AEOLUS_NAMESPACE_BEGIN
 /// since there are not many harmonics to be generated
 /// and thus we can get away without using an interpolation filter
 /// when upsampling only.
-constexpr static float SAMPLE_RATE = 44100.0f;
-
-constexpr static float SAMPLE_RATE_R = 1.0f / SAMPLE_RATE;
+constexpr static int SAMPLE_RATE = 44100;
+constexpr static float SAMPLE_RATE_F = (float) SAMPLE_RATE;
+constexpr static float SAMPLE_RATE_R = 1.0f / SAMPLE_RATE_F;
 
 /// Global volume gain.
 constexpr static float VOLUME_GAIN = 4.0f;

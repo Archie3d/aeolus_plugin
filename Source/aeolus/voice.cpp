@@ -28,7 +28,7 @@ Voice::Voice(Engine& engine)
     : _engine(engine)
     , _state{}
     , _buffer{0}
-    , _delayLine{(int)SAMPLE_RATE}
+    , _delayLine{SAMPLE_RATE}
     , _delay{0.0f}
     , _chiff{}
     , _spatialSource{}
@@ -45,7 +45,7 @@ void Voice::trigger(const Pipewave::State& state)
     const auto dt = 1.0f / freq;
 
     // Delay pipe harmonic signal so that chiff noise builds up first
-    _delay = jmin((float)_delayLine.size(), 0.5f * dt * SAMPLE_RATE);
+    _delay = jmin((float)_delayLine.size(), 0.5f * dt * SAMPLE_RATE_F);
 
     _chiff.setAttack(5.0f * dt);
     _chiff.setDecay(100.0f * dt);
@@ -68,7 +68,7 @@ void Voice::trigger(const Pipewave::State& state)
 
     float x = width * k * ((float) abs(note - 65) + 1.0f);
 
-    _spatialSource.setSampleRate(SAMPLE_RATE);
+    _spatialSource.setSampleRate(SAMPLE_RATE_F);
     _spatialSource.setSourcePosition(x, 5.0f);
     _spatialSource.recalculate();
     _postReleaseCounter = _spatialSource.getPostFxSamplesCount() + int(2*_delay + 0.5f);

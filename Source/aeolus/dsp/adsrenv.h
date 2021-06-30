@@ -57,9 +57,9 @@ public:
 
     State state() const noexcept { return currentState; }
 
-    void trigger(const Trigger& trigger, float sampleRate = SAMPLE_RATE);
+    void trigger(const Trigger& trigger, float sampleRate = SAMPLE_RATE_F);
     void release();
-    void release(float t, float sampleRate = SAMPLE_RATE);
+    void release(float t, float sampleRate = SAMPLE_RATE_F);
 
     float next();
 

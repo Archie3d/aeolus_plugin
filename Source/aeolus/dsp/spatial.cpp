@@ -26,7 +26,7 @@ using namespace juce;
 namespace dsp {
 
 SpatialSource::SpatialSource()
-    : _sampleRate{SAMPLE_RATE}
+    : _sampleRate{SAMPLE_RATE_F}
     , _sourcePosition{0.0f, 0.0f}
     , _listenerPosition{0.0f, 0.0f}
     , _listenerOrientation{0.0f}
