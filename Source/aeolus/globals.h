@@ -25,7 +25,18 @@
 #define AEOLUS_NAMESPACE_END }
 #define AEOLUS_USING_NAMESPACE using namespace aeolus;
 
+/// Multibus output option (must be set in the project configuration)
+#ifndef AEOLUS_MULTIBUS_OUTPUT
+#   define AEOLUS_MULTIBUS_OUTPUT 0
+#endif
+
 AEOLUS_NAMESPACE_BEGIN
+
+#if AEOLUS_MULTIBUS_OUTPUT
+    constexpr static int N_OUTPUT_CHANNELS = 16;
+#else
+    constexpr static int N_OUTPUT_CHANNELS = 2;
+#endif
 
 /// Processing sample rate. It is low enough
 /// since there are not many harmonics to be generated

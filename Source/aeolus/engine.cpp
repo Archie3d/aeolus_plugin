@@ -192,9 +192,9 @@ Engine::Engine()
     , _params{NUM_PARAMS}
     , _divisions{}
     , _sequencer{}
-    , _subFrameBuffer{2, SUB_FRAME_LENGTH}
-    , _divisionFrameBuffer{2, SUB_FRAME_LENGTH}
-    , _voiceFrameBuffer{2, SUB_FRAME_LENGTH}
+    , _subFrameBuffer{N_OUTPUT_CHANNELS, SUB_FRAME_LENGTH}
+    , _divisionFrameBuffer{N_OUTPUT_CHANNELS, SUB_FRAME_LENGTH}
+    , _voiceFrameBuffer{N_OUTPUT_CHANNELS, SUB_FRAME_LENGTH}
     , _remainedSamples{0}
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
     , _tremulantPhase{0.0f}

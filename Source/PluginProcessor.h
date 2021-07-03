@@ -47,8 +47,12 @@ public:
     void releaseResources() override;
 
    #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+    bool canAddBus(bool isInput) const override;
+    bool canRemoveBus(bool isInput) const override;
+    bool canApplyBusCountChange(bool isInput, bool isAdding, BusProperties& outProperties) override;
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+    void processorLayoutsChanged() override;
+#endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void processMidi (juce::MidiBuffer& midiMessages);
@@ -84,6 +88,8 @@ public:
     void handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 
 private:
+
+    static BusesProperties getBusesProperties();
 
     aeolus::Engine _engine;
 

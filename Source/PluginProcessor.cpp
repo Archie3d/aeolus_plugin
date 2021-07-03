@@ -26,9 +26,7 @@ using namespace juce;
 
 //==============================================================================
 AeolusAudioProcessor::AeolusAudioProcessor()
-     : AudioProcessor (BusesProperties()
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                       )
+    : AudioProcessor(getBusesProperties())
     , _engine{}
     , _parameters(*this)
     , _processLoad{0.0f}
@@ -121,30 +119,90 @@ void AeolusAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
+
+bool AeolusAudioProcessor::canAddBus(bool isInput) const
+{
+#if AEOLUS_MULTIBUS_OUTPUT
+    return !isInput;
+#else
+    ignoreUnused(isInput);
+    return false;
+#endif
+}
+
+bool AeolusAudioProcessor::canRemoveBus(bool isInput) const
+{
+#if AEOLUS_MULTIBUS_OUTPUT
+    const auto nOutputs = getBusCount(false);
+    return !isInput && nOutputs > 1;
+#else
+    ignoreUnused(isInput);
+    return false;
+#endif
+}
+
+bool AeolusAudioProcessor::canApplyBusCountChange(bool isInput, bool isAdding, BusProperties& outProperties)
+{
+#if AEOLUS_MULTIBUS_OUTPUT
+    if (isInput)
+        return false;
+
+    if (getBusCount(false) == 0)
+        return false;
+
+    if (isAdding && !canAddBus(isInput))
+        return false;
+
+    if (!isAdding && !canRemoveBus(isInput))
+        return false;
+
+    if (isAdding) {
+        outProperties.busName = String("Output/") + String(getBusCount(false));
+        outProperties.defaultLayout = AudioChannelSet::mono();
+        outProperties.activeByDefault = true;
+    }
+
+    return true;
+#else
+    ignoreUnused(isInput, isAdding, outProperties);
+    return false;
+#endif
+}
+
 bool AeolusAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    static_assert(!JucePlugin_IsMidiEffect, "This plugin is not a MIDI effect");
+    static_assert(JucePlugin_IsSynth, "This plugin is a synthesizer");
+
+    // No inputs are expected.
+    if (layouts.inputBuses.size() > 0)
         return false;
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
+#if AEOLUS_MULTIBUS_OUTPUT
+
+    for (int i = 0; i < layouts.outputBuses.size(); ++i) {
+        auto channelSet = layouts.outputBuses.getUnchecked(i);
+
+        // In multibus configuration all the output channels are mono
+        if (channelSet != AudioChannelSet::mono())
+            return false;
+    }
 
     return true;
-  #endif
-}
+#else
+    if (layouts.outputBuses.size() == 1 && layouts.outputBuses.getUnchecked(0) == AudioChannelSet::stereo())
+        return true;
+
+    return false;
 #endif
+}
+
+void AeolusAudioProcessor::processorLayoutsChanged()
+{
+    const auto numBuses = getBusCount(false);
+}
+
+#endif // JucePlugin_PreferredChannelConfigurations
 
 void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -167,15 +225,31 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
     processMidi (midiMessages);
 
-    float* outL = buffer.getWritePointer (0);
+#if AEOLUS_MULTIBUS_OUTPUT
+
+    auto numBuses = getBusCount(false);
+
+    for (auto busIdx = 0; busIdx < numBuses; ++busIdx) {
+        auto busBuffer = getBusBuffer(buffer, false, busIdx);
+
+        float* out = busBuffer.getWritePointer(0);
+
+        _engine.process(out, out, (size_t)busBuffer.getNumSamples(), isNonRealtime());
+    }
+
+#else
+
+    float* outL = buffer.getWritePointer(0);
     float* outR = outL;
 
     if (totalNumOutputChannels > 1)
-        outR = buffer.getWritePointer (1);
+        outR = buffer.getWritePointer(1);
 
     _engine.setReverbWet(_parameters.reverbWet->get());
     _engine.setVolume(_parameters.volume->get());
     _engine.process(outL, outR, (size_t) buffer.getNumSamples(), isNonRealtime());
+
+#endif // AEOLUS_MULTIBUS_OUTPUT
 
     auto timestampStop = high_resolution_clock::now();
     auto duration_us = duration_cast<microseconds> (timestampStop - timestampStart).count();
@@ -183,7 +257,7 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     float realTime_us = 1e6f * (float) buffer.getNumSamples() / _engine.getSampleRate();
     float load = duration_us / realTime_us;
 
-    _processLoad = jmin (1.0f, 0.99f * _processLoad + 0.01f * load);
+    _processLoad = jmin(1.0f, 0.99f * _processLoad + 0.01f * load);
 
     if (_panicRequest) {
         _engine.allNotesOff();
@@ -191,7 +265,7 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     }
 }
 
-void AeolusAudioProcessor::processMidi (juce::MidiBuffer& midiMessages)
+void AeolusAudioProcessor::processMidi(juce::MidiBuffer& midiMessages)
 {
     if (midiMessages.getNumEvents() == 0)
         return;
@@ -265,6 +339,8 @@ void AeolusAudioProcessor::setStateInformation (const void* data, int sizeInByte
 
 void AeolusAudioProcessor::handleNoteOn(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float /* velocity */)
 {
+    ignoreUnused(source);
+
     if (MessageManager::getInstance()->isThisTheMessageThread()) {
         _engine.postNoteEvent(true, midiNoteNumber, midiChannel);
     } else {
@@ -274,6 +350,8 @@ void AeolusAudioProcessor::handleNoteOn(juce::MidiKeyboardState* source, int mid
 
 void AeolusAudioProcessor::handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float /* velocity */)
 {
+    ignoreUnused(source);
+
     if (MessageManager::getInstance()->isThisTheMessageThread()) {
         _engine.postNoteEvent(false, midiNoteNumber, midiChannel);
     } else {
@@ -281,6 +359,21 @@ void AeolusAudioProcessor::handleNoteOff(juce::MidiKeyboardState* source, int mi
     }
 }
 
+//==============================================================================
+
+AudioProcessor::BusesProperties AeolusAudioProcessor::getBusesProperties()
+{
+    BusesProperties buses;
+
+#if AEOLUS_MULTIBUS_OUTPUT
+    for (int i = 0; i < aeolus::N_OUTPUT_CHANNELS; ++i)
+        props = buses.withOutput(String("Output/") + String(i), AudioChannelSet::mono(), true);
+#else
+    buses = buses.withOutput("Output", AudioChannelSet::stereo(), true);
+#endif
+
+    return buses;
+}
 
 //==============================================================================
 // This creates new instances of the plugin..
