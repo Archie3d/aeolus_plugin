@@ -194,7 +194,7 @@ Engine::Engine()
     , _sequencer{}
     , _subFrameBuffer{N_OUTPUT_CHANNELS, SUB_FRAME_LENGTH}
     , _divisionFrameBuffer{N_OUTPUT_CHANNELS, SUB_FRAME_LENGTH}
-    , _voiceFrameBuffer{N_OUTPUT_CHANNELS, SUB_FRAME_LENGTH}
+    , _voiceFrameBuffer{N_VOICE_CHANNELS, SUB_FRAME_LENGTH}
     , _remainedSamples{0}
     , _tremulantBuffer{1, SUB_FRAME_LENGTH}
     , _tremulantPhase{0.0f}
@@ -202,7 +202,7 @@ Engine::Engine()
     , _selectedIR{0}
     , _irSwitchEvents{}
     , _reverbTailCounter{0}
-    , _interpolator{1.0f}
+    , _interpolator{1.0f, N_OUTPUT_CHANNELS}
     , _midiKeyboardState{}
     , _volumeLevel{}
     , _midiControlChannel{0}
@@ -333,6 +333,53 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
 
     _volumeLevel.left.process(origOutL, origNumFrames);
     _volumeLevel.right.process(origOutR, origNumFrames);
+}
+
+void Engine::process(float** out, int numChannels, int numFrames, bool isNonRealtime)
+{
+    const int origNumFrames = numFrames;
+
+    processPendingIRSwitchEvents();
+    processPendingNoteEvents();
+
+    bool wasAudioGenerated = false;
+
+    int outIdx = 0;
+
+    while (numFrames > 0) {
+        int idx = SUB_FRAME_LENGTH - _remainedSamples;
+        const float** sub = _subFrameBuffer.getArrayOfReadPointers();
+
+        while (_remainedSamples > 0 && _interpolator.canWrite()) {
+            for (int ch = 0; ch < numChannels; ++ch)
+                _interpolator.write(sub[ch][idx], ch, ch == (numChannels -1));
+            
+            --_remainedSamples;
+            idx += 1;
+        }
+
+        while (numFrames > 0 && _interpolator.canRead()) {
+            for (int ch = 0; ch < numChannels; ++ch)
+                _interpolator.read(out[ch][outIdx], ch, ch == (numChannels - 1));
+
+            numFrames -= 1;
+            outIdx += 1;
+        }
+
+        if (_remainedSamples == 0 && numFrames > 0)
+        {
+            wasAudioGenerated |= processSubFrame();
+            jassert(_remainedSamples > 0);
+        }
+
+        // Multibus processing does not have a convolver FX
+
+        // TODO: Maybe we also don't need to apply the master volume here?
+        applyVolume(out, numChannels, origNumFrames);
+
+        //_volumeLevel.left.process(origOutL, origNumFrames);
+        //_volumeLevel.right.process(origOutR, origNumFrames);
+    }
 }
 
 void Engine::processMIDIMessage(const MidiMessage& message)
@@ -515,6 +562,9 @@ void Engine::postNoteEvent(bool onOff, int note, int midiChannel)
 
 bool Engine::processSubFrame()
 {
+    jassert(_subFrameBuffer.getNumChannels() == _divisionFrameBuffer.getNumChannels());
+    jassert(_subFrameBuffer.getNumSamples() == _divisionFrameBuffer.getNumSamples());
+
     generateTremulant();
 
     _subFrameBuffer.clear();
@@ -531,13 +581,12 @@ bool Engine::processSubFrame()
         if (hasVoices) {
             division->modulate(_divisionFrameBuffer, _tremulantBuffer);
 
-            _subFrameBuffer.addFrom(0, 0, _divisionFrameBuffer, 0, 0, SUB_FRAME_LENGTH);
-            _subFrameBuffer.addFrom(1, 0, _divisionFrameBuffer, 1, 0, SUB_FRAME_LENGTH);
+            for (int ch = 0; ch < _subFrameBuffer.getNumChannels(); ++ch)
+                _subFrameBuffer.addFrom(ch, 0, _divisionFrameBuffer, ch, 0, SUB_FRAME_LENGTH);
         }
 
         division->volumeLevel().left.process(_divisionFrameBuffer, 0);
         division->volumeLevel().right.process(_divisionFrameBuffer, 1);
-
     }
 
     _remainedSamples = SUB_FRAME_LENGTH;
@@ -583,6 +632,25 @@ void Engine::generateTremulant()
 
         if (_tremulantPhase >= juce::MathConstants<float>::twoPi)
             _tremulantPhase -= juce::MathConstants<float>::twoPi;
+    }
+}
+
+void Engine::applyVolume(float** out, int numChannels, int numFrames)
+{
+    if (_params[VOLUME].isSmoothing()) {
+        for (int i = 0; i < numFrames; ++i) {
+            const float g = _params[VOLUME].nextValue() * VOLUME_GAIN;
+            
+            for (int ch = 0; ch < numChannels; ++ch)
+                out[ch][i] *= g;
+        }
+    } else {
+        const float g = _params[VOLUME].target() * VOLUME_GAIN;
+
+        for (int ch = 0; ch < numChannels; ++ch) {
+            for (int i = 0; i < numFrames; ++i)
+                out[ch][i] *= g;
+        }
     }
 }
 

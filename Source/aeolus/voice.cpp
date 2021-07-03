@@ -31,6 +31,7 @@ Voice::Voice(Engine& engine)
     , _delayLine{SAMPLE_RATE}
     , _delay{0.0f}
     , _chiff{}
+    , _panPosition{0.0f}
     , _spatialSource{}
 {
 }
@@ -66,7 +67,11 @@ void Voice::trigger(const Pipewave::State& state)
     const auto& model = _state.pipewave->getModel();
     const float width = 0.15f * model.getFd() / model.getFn();
 
-    float x = width * k * ((float) abs(note - 65) + 1.0f);
+    float x = width * k * (float)abs(note - 65);
+
+    // Assuming notes range [36..96]
+    float n = k * float(abs(note - 65)); // ~[-30..30]
+    _panPosition = jlimit(0.0f, 1.0f, (n + 30.0f) / 60.0f);
 
     _spatialSource.setSampleRate(SAMPLE_RATE_F);
     _spatialSource.setSourcePosition(x, 5.0f);
@@ -122,7 +127,12 @@ void Voice::process(float* outL, float* outR)
 
     _chiff.process(_buffer, SUB_FRAME_LENGTH);
 
-    _spatialSource.process(_buffer, outL, outR, SUB_FRAME_LENGTH);
+    // Spatial modellig is only applied on stereo voice output
+    if (outL != outR) {
+        _spatialSource.process(_buffer, outL, outR, SUB_FRAME_LENGTH);
+    } else {
+        memcpy(outL, _buffer, sizeof(float) * SUB_FRAME_LENGTH);
+    }
 }
 
 bool Voice::isOver() const noexcept

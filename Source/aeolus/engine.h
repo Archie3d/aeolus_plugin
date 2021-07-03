@@ -198,6 +198,8 @@ public:
      */
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
+    void process(float** out, int numChannels, int numFrames, bool isNonRealtime = false);
+
     /**
      * Process incoming MIDI messages.
      */
@@ -251,6 +253,7 @@ private:
     void generateTremulant();
 
     /// Apply the gloval volume.
+    void applyVolume(float** out, int numChannels, int numFrames);
     void applyVolume(float* outL, float* outR, int numFrames);
 
     void processControlMIDIMessage(const juce::MidiMessage& message);

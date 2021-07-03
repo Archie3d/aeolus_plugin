@@ -23,20 +23,28 @@ AEOLUS_NAMESPACE_BEGIN
 
 namespace dsp {
 
-Interpolator::Interpolator(float ratio)
-    : _accL{0.0f}
-    , _accR{0.0f}
+Interpolator::Interpolator(float ratio, size_t nChannels)
+    : _acc(nChannels)
     , _accIndex{0}
     , _accFrac{0.0f}
     , _ratio{ratio}
 {
+    jassert(nChannels > 0);
+}
 
+void Interpolator::setNumberOfChannels(size_t n)
+{
+    jassert(n > 0);
+    _acc.resize(n);
+    reset();
 }
 
 void Interpolator::reset()
 {
-    ::memset (_accL, 0, sizeof (float) * 8);
-    ::memset (_accR, 0, sizeof (float) * 8);
+    for (auto& buf : _acc) {
+        ::memset(buf.data(), 0, sizeof(float) * 8);
+    }
+
     _accIndex = 0;
     _accFrac = 0.0f;
 }
@@ -46,13 +54,45 @@ bool Interpolator::canRead() const noexcept
     return _accFrac < 1.0f;
 }
 
-bool Interpolator::read(float& l, float& r) noexcept
+bool Interpolator::readAllChannels(float* const x) noexcept
+{
+    jassert(x != nullptr);
+
+    if (_accFrac >= 1.0f)
+        return false;
+
+    for (size_t i = 0; i < _acc.size(); ++i) {
+        x[i] = math::lagr(&_acc[i].data()[_accIndex], _accFrac);
+    }
+
+    _accFrac += _ratio;
+
+    return true;
+}
+
+bool Interpolator::read(float& x, size_t channel, bool increment)
 {
     if (_accFrac >= 1.0f)
         return false;
 
-    l = math::lagr(&_accL[_accIndex], _accFrac);
-    r = math::lagr(&_accR[_accIndex], _accFrac);
+    x = math::lagr(&_acc[channel].data()[_accIndex], _accFrac);
+
+    if (increment) {
+        _accFrac += _ratio;
+    }
+
+    return true;
+}
+
+bool Interpolator::read(float& l, float& r) noexcept
+{
+    jassert(_acc.size() > 1);
+
+    if (_accFrac >= 1.0f)
+        return false;
+
+    l = math::lagr(&_acc[0].data()[_accIndex], _accFrac);
+    r = math::lagr(&_acc[1].data()[_accIndex], _accFrac);
 
     _accFrac += _ratio;
 
@@ -64,13 +104,49 @@ bool Interpolator::canWrite() const noexcept
     return _accFrac >= 1.0f;
 }
 
-bool Interpolator::write(float l, float r) noexcept
+bool Interpolator::writeAllChannels(const float* const x) noexcept
 {
+    jassert(x != nullptr);
+
     if (_accFrac < 1.0f)
         return false;
 
-    _accL[_accIndex] = _accL[_accIndex + 4] = l;
-    _accR[_accIndex] = _accR[_accIndex + 4] = r;
+    for (size_t i = 0; i < _acc.size(); ++i) {
+        _acc[i][_accIndex] = _acc[i][_accIndex + 4] = x[i];
+    }
+
+    _accIndex = (_accIndex + 1) % 4;
+    _accFrac -= 1.0f;
+
+    return true;
+}
+
+bool Interpolator::write(float x, size_t channel, bool increment)
+{
+    jassert(_acc.size() > 1);
+
+    if (_accFrac < 1.0f)
+        return false;
+
+    _acc[channel][_accIndex] = _acc[channel][_accIndex + 4] = x;
+
+    if (increment) {
+        _accIndex = (_accIndex + 1) % 4;
+        _accFrac -= 1.0f;
+    }
+
+    return true;
+}
+
+bool Interpolator::write(float l, float r) noexcept
+{
+    jassert(_acc.size() > 1);
+
+    if (_accFrac < 1.0f)
+        return false;
+
+    _acc[0][_accIndex] = _acc[0][_accIndex + 4] = l;
+    _acc[1][_accIndex] = _acc[1][_accIndex + 4] = r;
 
     _accIndex = (_accIndex + 1) % 4;
     _accFrac -= 1.0f;

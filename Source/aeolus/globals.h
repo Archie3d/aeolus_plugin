@@ -34,8 +34,10 @@ AEOLUS_NAMESPACE_BEGIN
 
 #if AEOLUS_MULTIBUS_OUTPUT
     constexpr static int N_OUTPUT_CHANNELS = 16;
+    constexpr static int N_VOICE_CHANNELS = 1;
 #else
     constexpr static int N_OUTPUT_CHANNELS = 2;
+    constexpr static int N_VOICE_CHANNELS = 2;
 #endif
 
 /// Processing sample rate. It is low enough
