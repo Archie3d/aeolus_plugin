@@ -33,10 +33,13 @@ class LevelMeter
 public:
 
     LevelMeter();
+    LevelMeter(const LevelMeter& other);
+    LevelMeter& operator =(const LevelMeter& other);
 
     float getPeakLevel() const noexcept { return _peak; }
     float getRMSLevel() const noexcept { return _rms; }
 
+    void process(const juce::AudioBuffer<float>& buffer);
     void process(const juce::AudioBuffer<float>& buffer, int channel);
     void process(float* const buffer, int size);
 

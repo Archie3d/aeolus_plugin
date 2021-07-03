@@ -458,7 +458,7 @@ bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voi
 
 #if AEOLUS_MULTIBUS_OUTPUT
         // Mix voice to the corresponding output channel depending on the pan-position
-        int ch = jlimit(0, targetBuffer.getNumChannels() - 1, int(voice->getPanPosition() * (targetBuffer.getNumChannels() - 1)));
+        int ch = jlimit(0, targetBuffer.getNumChannels() - 1, int(voice->getPanPosition() * targetBuffer.getNumChannels()));
         targetBuffer.addFrom(ch, 0, voiceBuffer, 0, 0, SUB_FRAME_LENGTH);
 #else
         targetBuffer.addFrom(0, 0, voiceBuffer, 0, 0, SUB_FRAME_LENGTH);
@@ -481,12 +481,6 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
     jassert(targetBuffer.getNumSamples() == SUB_FRAME_LENGTH);
     jassert(tremulantBuffer.getNumSamples() == SUB_FRAME_LENGTH);
 
-    float* outL = targetBuffer.getWritePointer(0);
-    float* outR = targetBuffer.getWritePointer(1);
-
-    jassert(outL != nullptr);
-    jassert(outR != nullptr);
-
     const float* gain = tremulantBuffer.getReadPointer(0);
     jassert(gain != nullptr);
 
@@ -496,8 +490,44 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
     auto& paramGain = _params[Division::GAIN];
     paramGain.setValue(_paramGain->get());
 
+#if AEOLUS_MULTIBUS_OUTPUT
+
+    if (paramGain.isSmoothing()) {
+
+        for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+            const float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
+
+            for (int ch = 0; ch < targetBuffer.getNumChannels(); ++ch) {
+                targetBuffer.getWritePointer(ch)[i] *= g;
+            }
+        }
+
+    } else {
+        // Gain is stable
+        const float pgain = paramGain.target();
+
+        for (int ch = 0; ch < targetBuffer.getNumChannels(); ++ch) {
+            float* const out = targetBuffer.getWritePointer(ch);
+
+            for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+                float g = (1.0f + gain[i] * lvl) * pgain;
+                out[i] *= g;
+            }
+        }
+    }
+
+    // No swell filtering for multibus
+
+#else
+
+    float* outL = targetBuffer.getWritePointer(0);
+    float* outR = targetBuffer.getWritePointer(1);
+
+    jassert(outL != nullptr);
+    jassert(outR != nullptr);
+
     for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
-        float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
+        const float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
         outL[i] *= g;
         outR[i] *= g;
     }
@@ -511,6 +541,7 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
         dsp::BiquadFilter::process(_swellFilterSpec, _swellFilterStateL, outL, outL, SUB_FRAME_LENGTH);
         dsp::BiquadFilter::process(_swellFilterSpec, _swellFilterStateR, outR, outR, SUB_FRAME_LENGTH);
     }
+#endif
 }
 
 Division::Stop::Type Division::stopTypeFromString(const String& n)

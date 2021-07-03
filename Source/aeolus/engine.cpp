@@ -215,6 +215,8 @@ Engine::Engine()
 
 void Engine::prepareToPlay(float sampleRate, int frameSize)
 {
+    ignoreUnused(frameSize);
+
     // Make sure the stops wavetable is updated.
     auto* g = EngineGlobal::getInstance();
     g->updateStops(SAMPLE_RATE_F);
@@ -293,8 +295,6 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
             const float* subL = _subFrameBuffer.getReadPointer(0, idx);
             const float* subR = _subFrameBuffer.getReadPointer(1, idx);
 
-            const int n = jmin(_remainedSamples, numFrames);
-
             while (_remainedSamples > 0 && _interpolator.canWrite()) {
                 _interpolator.write(*subL, *subR);
                 --_remainedSamples;
@@ -335,9 +335,12 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
     _volumeLevel.right.process(origOutR, origNumFrames);
 }
 
-void Engine::process(float** out, int numChannels, int numFrames, bool isNonRealtime)
+void Engine::process(AudioBuffer<float>& out, bool isNonRealtime)
 {
-    const int origNumFrames = numFrames;
+    ignoreUnused(isNonRealtime);
+
+    const int numChannels = out.getNumChannels();
+    int numFrames = out.getNumSamples();
 
     processPendingIRSwitchEvents();
     processPendingNoteEvents();
@@ -348,19 +351,21 @@ void Engine::process(float** out, int numChannels, int numFrames, bool isNonReal
 
     while (numFrames > 0) {
         int idx = SUB_FRAME_LENGTH - _remainedSamples;
-        const float** sub = _subFrameBuffer.getArrayOfReadPointers();
 
         while (_remainedSamples > 0 && _interpolator.canWrite()) {
             for (int ch = 0; ch < numChannels; ++ch)
-                _interpolator.write(sub[ch][idx], ch, ch == (numChannels -1));
-            
+                _interpolator.writeUnchecked(_subFrameBuffer.getReadPointer(ch)[idx], (size_t) ch);
+            _interpolator.writeIncrement();
+
             --_remainedSamples;
             idx += 1;
         }
 
         while (numFrames > 0 && _interpolator.canRead()) {
             for (int ch = 0; ch < numChannels; ++ch)
-                _interpolator.read(out[ch][outIdx], ch, ch == (numChannels - 1));
+                out.getWritePointer(ch)[outIdx] = _interpolator.readUnchecked(ch);
+
+            _interpolator.readIncrement();
 
             numFrames -= 1;
             outIdx += 1;
@@ -372,14 +377,15 @@ void Engine::process(float** out, int numChannels, int numFrames, bool isNonReal
             jassert(_remainedSamples > 0);
         }
 
-        // Multibus processing does not have a convolver FX
-
-        // TODO: Maybe we also don't need to apply the master volume here?
-        applyVolume(out, numChannels, origNumFrames);
-
-        //_volumeLevel.left.process(origOutL, origNumFrames);
-        //_volumeLevel.right.process(origOutR, origNumFrames);
     }
+
+    // Multibus processing does not have a convolver FX
+
+    // Global volume across all the buses
+    applyVolume(out);
+
+    _volumeLevel.left.process(out);
+    _volumeLevel.right = _volumeLevel.left;
 }
 
 void Engine::processMIDIMessage(const MidiMessage& message)
@@ -585,8 +591,13 @@ bool Engine::processSubFrame()
                 _subFrameBuffer.addFrom(ch, 0, _divisionFrameBuffer, ch, 0, SUB_FRAME_LENGTH);
         }
 
+#if AEOLUS_MULTIBUS_OUTPUT
+        division->volumeLevel().left.process(_divisionFrameBuffer);
+        division->volumeLevel().right = division->volumeLevel().left;
+#else
         division->volumeLevel().left.process(_divisionFrameBuffer, 0);
         division->volumeLevel().right.process(_divisionFrameBuffer, 1);
+#endif
     }
 
     _remainedSamples = SUB_FRAME_LENGTH;
@@ -635,22 +646,18 @@ void Engine::generateTremulant()
     }
 }
 
-void Engine::applyVolume(float** out, int numChannels, int numFrames)
+void Engine::applyVolume(AudioBuffer<float>& out)
 {
     if (_params[VOLUME].isSmoothing()) {
-        for (int i = 0; i < numFrames; ++i) {
+        for (int i = 0; i < out.getNumSamples(); ++i) {
             const float g = _params[VOLUME].nextValue() * VOLUME_GAIN;
-            
-            for (int ch = 0; ch < numChannels; ++ch)
-                out[ch][i] *= g;
+
+            for (int ch = 0; ch < out.getNumChannels(); ++ch)
+                out.getWritePointer(ch)[i] *= g;
         }
     } else {
         const float g = _params[VOLUME].target() * VOLUME_GAIN;
-
-        for (int ch = 0; ch < numChannels; ++ch) {
-            for (int i = 0; i < numFrames; ++i)
-                out[ch][i] *= g;
-        }
+        out.applyGain(g);
     }
 }
 
@@ -674,7 +681,7 @@ void Engine::applyVolume(float* outL, float* outR, int numFrames)
 
 void Engine::processControlMIDIMessage(const MidiMessage& message)
 {
-    // NOTE: VST3 will not pass through the program change MIDI messages.
+    // NOTE: VST3 will not pass the program change MIDI messages through.
     // Instead program change must be handled at the processor level
     // via the setCurrentProgram() method.
 

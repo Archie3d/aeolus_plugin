@@ -29,6 +29,36 @@ LevelMeter::LevelMeter()
 {
 }
 
+LevelMeter::LevelMeter(const LevelMeter& other)
+    : _peak{other._peak.load()}
+    , _rms{other._rms.load()}
+{
+}
+
+LevelMeter& LevelMeter::operator = (const LevelMeter& other)
+{
+    if (this != &other) {
+        _peak = other._peak.load();
+        _rms = other._rms.load();
+    }
+
+    return *this;
+}
+
+void LevelMeter::process(const AudioBuffer<float>& buffer)
+{
+    float peak{0.0f};
+    float rms{0.0f};
+
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch) {
+        peak = jmax(peak, buffer.getMagnitude(ch, 0, buffer.getNumSamples()));
+        rms = jmax(rms, buffer.getRMSLevel(ch, 0, buffer.getNumSamples()));
+    }
+
+    _peak = peak;
+    _rms = rms;
+}
+
 void LevelMeter::process(const AudioBuffer<float>& buffer, int channel)
 {
     _peak = buffer.getMagnitude(channel, 0, buffer.getNumSamples());

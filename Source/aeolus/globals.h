@@ -33,7 +33,7 @@
 AEOLUS_NAMESPACE_BEGIN
 
 #if AEOLUS_MULTIBUS_OUTPUT
-    constexpr static int N_OUTPUT_CHANNELS = 16;
+    constexpr static int N_OUTPUT_CHANNELS = 8;
     constexpr static int N_VOICE_CHANNELS = 1;
 #else
     constexpr static int N_OUTPUT_CHANNELS = 2;
@@ -112,7 +112,7 @@ T lerp (T a, T b, T frac) { return a + (b - a) * frac; }
 
 /// Lagrange polynomial interpolation
 template <typename T>
-T lagr (T x_1, T x0, T x1, T x2, T frac)
+T lagr (T x_1, T x0, T x1, T x2, T frac) noexcept
 {
     const T c1 = x1 - (1.0f / 3.0f) * x_1 - 0.5f * x0 - (1.0f / 6.0f) * x2;
     const T c2 = 0.5f * (x_1 + x1) - x0;
@@ -121,7 +121,7 @@ T lagr (T x_1, T x0, T x1, T x2, T frac)
 }
 
 template <typename T>
-T lagr (T* x, T frac)
+T lagr (const T* const x, T frac) noexcept
 {
     const T c1 = x[2] - (1.0f / 3.0f) * x[0] - 0.5f * x[1] - (1.0f / 6.0f) * x[3];
     const T c2 = 0.5f * (x[0] + x[2]) - x[1];

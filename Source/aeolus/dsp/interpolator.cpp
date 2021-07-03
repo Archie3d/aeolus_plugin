@@ -70,18 +70,23 @@ bool Interpolator::readAllChannels(float* const x) noexcept
     return true;
 }
 
-bool Interpolator::read(float& x, size_t channel, bool increment)
+float Interpolator::readUnchecked(size_t channel) const noexcept
 {
-    if (_accFrac >= 1.0f)
-        return false;
+    jassert(_accFrac < 1.0f);
 
-    x = math::lagr(&_acc[channel].data()[_accIndex], _accFrac);
+    return math::lagr(&_acc[channel].data()[_accIndex], _accFrac);
+}
 
-    if (increment) {
-        _accFrac += _ratio;
-    }
+float Interpolator::readLinearUnchecked(size_t channel) const noexcept
+{
+    jassert(_accFrac < 1.0f);
 
-    return true;
+    return math::lerp(_acc[channel].data()[_accIndex], _acc[channel].data()[_accIndex + 1], _accFrac);
+}
+
+void Interpolator::readIncrement()
+{
+    _accFrac += _ratio;
 }
 
 bool Interpolator::read(float& l, float& r) noexcept
@@ -121,21 +126,17 @@ bool Interpolator::writeAllChannels(const float* const x) noexcept
     return true;
 }
 
-bool Interpolator::write(float x, size_t channel, bool increment)
+void Interpolator::writeUnchecked(float x, size_t channel)
 {
     jassert(_acc.size() > 1);
 
-    if (_accFrac < 1.0f)
-        return false;
-
     _acc[channel][_accIndex] = _acc[channel][_accIndex + 4] = x;
+}
 
-    if (increment) {
-        _accIndex = (_accIndex + 1) % 4;
-        _accFrac -= 1.0f;
-    }
-
-    return true;
+void Interpolator::writeIncrement()
+{
+    _accIndex = (_accIndex + 1) % 4;
+    _accFrac -= 1.0f;
 }
 
 bool Interpolator::write(float l, float r) noexcept

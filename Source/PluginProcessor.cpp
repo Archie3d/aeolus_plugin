@@ -159,7 +159,7 @@ bool AeolusAudioProcessor::canApplyBusCountChange(bool isInput, bool isAdding, B
     if (isAdding) {
         outProperties.busName = String("Output/") + String(getBusCount(false));
         outProperties.defaultLayout = AudioChannelSet::mono();
-        outProperties.activeByDefault = true;
+        outProperties.isActivatedByDefault = true;
     }
 
     return true;
@@ -227,15 +227,8 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
 #if AEOLUS_MULTIBUS_OUTPUT
 
-    auto numBuses = getBusCount(false);
-
-    for (auto busIdx = 0; busIdx < numBuses; ++busIdx) {
-        auto busBuffer = getBusBuffer(buffer, false, busIdx);
-
-        float* out = busBuffer.getWritePointer(0);
-
-        _engine.process(out, out, (size_t)busBuffer.getNumSamples(), isNonRealtime());
-    }
+    _engine.setVolume(_parameters.volume->get());
+    _engine.process(buffer, isNonRealtime());
 
 #else
 
@@ -367,7 +360,7 @@ AudioProcessor::BusesProperties AeolusAudioProcessor::getBusesProperties()
 
 #if AEOLUS_MULTIBUS_OUTPUT
     for (int i = 0; i < aeolus::N_OUTPUT_CHANNELS; ++i)
-        props = buses.withOutput(String("Output/") + String(i), AudioChannelSet::mono(), true);
+        buses = buses.withOutput(String("Output/") + String(i), AudioChannelSet::mono(), true);
 #else
     buses = buses.withOutput("Output", AudioChannelSet::stereo(), true);
 #endif

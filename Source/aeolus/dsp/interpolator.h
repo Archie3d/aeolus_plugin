@@ -47,13 +47,16 @@ public:
 
     bool canRead() const noexcept;
     bool readAllChannels(float* const x) noexcept;
-    bool read(float&x, size_t channel, bool increment);
+    float readUnchecked(size_t channel) const noexcept;
+    float readLinearUnchecked(size_t channel) const noexcept;
+    void readIncrement();
     bool read(float& l, float& r) noexcept;
 
 
     bool canWrite() const noexcept;
     bool writeAllChannels(const float* const x) noexcept;
-    bool write(float x, size_t channel, bool increment);
+    void writeUnchecked(float x, size_t channel);
+    void writeIncrement();
     bool write(float l, float r) noexcept;
 
 private:
