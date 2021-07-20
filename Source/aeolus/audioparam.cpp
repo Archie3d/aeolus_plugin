@@ -17,6 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
+#include <climits>
 #include "aeolus/audioparam.h"
 
 using namespace juce;
@@ -85,8 +86,13 @@ float AudioParameter::nextValue()
     updateSmoothing();
 
     if (_smoothing) {
+        const float prevValue { _currentValue };
         _currentValue = _targetValue * _frac + _currentValue * (1.0f - _frac);
-        updateSmoothing();
+
+        if (std::fabsf(_currentValue - prevValue) <= std::numeric_limits<float>::epsilon()) {
+            // No advancement - jump to the target
+            _currentValue = _targetValue;
+        }
     }
 
     return _currentValue;
@@ -94,9 +100,7 @@ float AudioParameter::nextValue()
 
 void AudioParameter::updateSmoothing()
 {
-    constexpr float epsilon = 1e-6f;
-
-    _smoothing = std::fabsf(_currentValue - _targetValue) > epsilon;
+    _smoothing = std::fabsf(_currentValue - _targetValue) > std::numeric_limits<float>::epsilon();
 
     if (!_smoothing)
         _currentValue = _targetValue;
