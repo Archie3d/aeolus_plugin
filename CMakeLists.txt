@@ -37,10 +37,12 @@ juce_add_plugin(${PROJECT_NAME}
     PLUGIN_DESCRIPTION "Aeolus"
     PRODUCT_NAME "Aeolus"
     COMPANY_NAME "Arthur Benilov"
-    IS_SYNTN TRUE
+    IS_SYNTH TRUE
     IS_MIDI_EFFECT FALSE
     NEEDS_MIDI_INPUT TRUE
     FORMATS ${plugin_formats}
+    ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon256.png"
+    ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -82,3 +84,8 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_DISPLAY_SPLASH_SCREEN=0
 )
+
+if(APPLE)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_AU=1)
+    target_compile_options(${PROJECT_NAME} PRIVATE "-mfma"
+endif()
