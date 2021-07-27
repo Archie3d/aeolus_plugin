@@ -87,5 +87,5 @@ target_compile_definitions(${PROJECT_NAME}
 
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_AU=1)
-    target_compile_options(${PROJECT_NAME} PRIVATE "-mfma"
+    target_compile_options(${PROJECT_NAME} PRIVATE "-mfma")
 endif()
