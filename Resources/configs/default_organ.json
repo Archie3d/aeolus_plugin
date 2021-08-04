@@ -14,6 +14,7 @@
                 { "name": "Celeste\n8",         "type": "string",    "pipe": "celesta",          "chiff": 0.4 },
                 { "name": "Principal\n4",       "type": "principal", "pipe": "I_principal_4",    "chiff": 0.9 },
                 { "name": "Flute Dolce\n4",     "type": "flute",     "pipe": "III_flautodolce4", "chiff": 0.4 },
+                { "name": "Fifteenth\n2",       "type": "principal", "pipe": "ottavina2",        "chiff": 0.3 },
                 { "name": "Mixture\nV",         "type": "principal", "pipe": ["mixtur3", "tertia", "ottavina2", "quintflute", "sifflet1"], "chiff": 0.21, "gain": 2.4 },
                 { "name": "Bassoon\n16",        "type": "reed",      "pipe": "III_bassoon",      "chiff": 1.0 },
                 { "name": "Cornopean\n8",       "type": "reed",      "pipe": ["new_oboe_fa", "I_trumpet"], "chiff": 0.6 },
@@ -40,6 +41,8 @@
                 { "name": "Fifteenth\n2",       "type": "principal", "pipe": "I_octave_2",       "chiff": 0.9, "gain": 1.8 },
                 { "name": "Spitz Flute\n2",     "type": "flute",     "pipe": "II_cornet4",       "chiff": 0.6, "gain": 1.4 },
                 { "name": "Tierce\n1 3/5",      "type": "flute",     "pipe": "tertia",           "chiff": 0.2, "gain": 10.0 },
+                { "name": "Quint\n1 1/3",       "type": "flute",     "pipe": "II_quint_113",     "chiff": 0.4, "gain": 2.0 }, 
+                { "name": "Sifflet\n1",         "type": "flute",     "pipe": "I_octave_1",       "chiff": 0.4, "gain": 2.0 },
                 { "name": "Cymbale\nVI",        "type": "principal", "pipe": "III_cymbel",       "chiff": 0.6, "gain": 2.5 },
                 { "name": "Cromorne\n8",        "type": "reed",      "pipe": "cromhorne",        "chiff": 0.5 }
             ]
@@ -57,10 +60,10 @@
                 { "name": "Principal\n4",             "type": "principal",    "pipe": "I_principal_4",    "chiff": 0.9 },
                 { "name": "Flute\n4",                 "type": "flute",        "pipe": "flute4",           "chiff": 0.4,  "gain": 1.6 },
                 { "name": "Twelfth\n2 2/3",           "type": "flute",        "pipe": "I_quinte_223",     "chiff": 0.4,  "gain": 1.5 },
-                { "name": "Fifteenth\n2",             "type": "principal",    "pipe": "superoctave2",     "chiff": 0.3,  "gain": 1.5 },
+                { "name": "Fifteenth\n2",             "type": "principal",    "pipe": "superoctave2",     "chiff": 0.3,  "gain": 4.0 },
                 { "name": "Sesquialtera\nII",         "type": "principal",    "pipe": "sesqualtera",      "chiff": 0.17, "gain": 2.0 },
                 { "name": "Mixture\nIV",              "type": "principal",    "pipe": ["mixtur3", "I_octave_1", "superoctave2", "nasard"], "chiff": 0.17, "gain": 2.0 },
-                { "name": "Fourniture\nV",            "type": "principal",    "pipe": "I_mixtur5fach",    "chiff": 0.3, "gain": 2.1 },
+                { "name": "Fourniture\nV",            "type": "principal",    "pipe": "I_fourniture5",    "chiff": 0.3, "gain": 3.1 },
                 { "name": "Cornet\nV",                "type": "flute",        "pipe": ["II_cornet1", "II_cornet2", "II_cornet3", "II_cornet4", "II_cornet5"], "chiff": 0.2 },
                 { "name": "Trumpet\n8",               "type": "reed",         "pipe": "I_trumpet",        "chiff": 0.8 },
                 { "name": "Trumpet\n4",               "type": "reed",         "pipe": "I_trumpet4",       "chiff": 0.8 }

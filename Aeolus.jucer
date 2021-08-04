@@ -137,10 +137,14 @@
       </GROUP>
       <GROUP id="{10CE4C3F-2423-3369-B5E6-AAE7423AED1D}" name="stops">
         <GROUP id="{6C1D6465-DF5F-6265-8CFA-5EEE4A77A84D}" name="custom">
+          <FILE id="TnY8Ca" name="I_fourniture5_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/I_fourniture5_ae0.json"/>
           <FILE id="bT0qWz" name="I_principal_16_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_principal_16_ae0.json"/>
           <FILE id="hPHIEP" name="I_trumpet4_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_trumpet4_ae0.json"/>
+          <FILE id="bMOPEV" name="II_quint_113_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/II_quint_113_ae0.json"/>
           <FILE id="DKnyC9" name="III_bassoon_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/III_bassoon_ae0.json"/>
           <FILE id="VpHr1G" name="P_flute8_ae0.json" compile="0" resource="1"
