@@ -39,6 +39,8 @@ public:
         std::vector<bool> stops;    ///< Stops enablement mask.
         bool tremulant;             ///< Tremulant enablement.
 
+        std::vector<bool> links;    ///< Manuals links.
+
         juce::var getPersistentState() const;
         void setPersistentState(const juce::var& v);
     };

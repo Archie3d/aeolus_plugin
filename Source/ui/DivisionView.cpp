@@ -61,6 +61,11 @@ void DivisionView::update()
 
     for (auto* b : _stopButtons)
         b->update();
+
+    int linkIdx = 0;
+
+    for (auto* b : _linkButtons)
+        b->setToggleState(_division->isLinkEnabled(linkIdx++), juce::dontSendNotification);
 }
 
 void DivisionView::cancelAllStops()

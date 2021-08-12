@@ -39,6 +39,13 @@ var Sequencer::DivisionState::getPersistentState() const
     obj->setProperty("stops", stopsArr);
     obj->setProperty("tremulant", tremulant);
 
+    Array<var> linksArr;
+
+    for (const auto& l : links)
+        linksArr.add(l);
+
+    obj->setProperty("links", linksArr);
+
     return var{obj};
 }
 
@@ -53,6 +60,13 @@ void Sequencer::DivisionState::setPersistentState(const var& v)
         }
 
         tremulant = obj->getProperty("tremulant");
+
+        if (const auto* linksArr = obj->getProperty("links").getArray()) {
+            if (linksArr->size() == links.size()) {
+                for (int i = 0; i < links.size(); ++i)
+                    links[i] = linksArr->getUnchecked(i);
+            }
+        }
     }
 }
 
@@ -166,6 +180,7 @@ void Sequencer::initFromEngine()
         for (int divIdx = 0; divIdx < numDivisions; ++divIdx) {
             auto* division = _engine.getDivisionByIndex(divIdx);
             step.divisions[divIdx].stops.resize(division->getStopsCount());
+            step.divisions[divIdx].links.resize(division->getLinksCount());
         }
     }
 }
@@ -188,6 +203,11 @@ void Sequencer::captureState(OrganState& organState)
 
         // Capture tremulant
         divisionState.tremulant = division->isTremulantEnabled();
+
+        // Capture links
+        const auto numLinks = division->getLinksCount();
+        for (int linkIdx = 0; linkIdx < numLinks; ++linkIdx)
+            divisionState.links[linkIdx] = division->getLinkByIndex(linkIdx).enabled;
     }
 }
 
@@ -205,8 +225,12 @@ void Sequencer::recallState(const OrganState& organState)
         for (int i = 0; i < division->getStopsCount(); ++i) 
             division->enableStop(i, organState.divisions[divIdx].stops[i]);
 
-        // REstore tremulant
+        // Restore tremulant
         division->setTremulantEnabled(organState.divisions[divIdx].tremulant);
+
+        // Restore links
+        for (int i = 0; i < division->getLinksCount(); ++i)
+            division->enableLink(i, organState.divisions[divIdx].links[i]);
     }
 }
 
