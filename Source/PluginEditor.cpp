@@ -33,6 +33,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _divisionsComponent{}
     , _divisionViews{}
     , _midiKeyboard(p.getEngine().getMidiKeyboardState(), MidiKeyboardComponent::horizontalKeyboard)
+    , _overlay{}
     , _sequencerView(p.getEngine().getSequencer())
     , _versionLabel{{}, JucePlugin_VersionString}
     , _cpuLoadLabel{{}, "CPU Load:"}
@@ -132,8 +133,6 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _midiKeyboard.setAvailableRange(24, 108);
     addAndMakeVisible(_midiKeyboard);
 
-    addAndMakeVisible(_sequencerView);
-
     _midiControlChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
     addAndMakeVisible(_midiControlChannelLabel);
 
@@ -149,12 +148,27 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     addAndMakeVisible(_midiControlChannelComboBox);
 
+    // Overlay and sequencer must go on the very top
+
+    addChildComponent(_overlay);
+
+    _overlay.onClick = [this]() {
+        _sequencerView.cancelProgramMode();
+    };
+
+    _sequencerView.addListener(this);
+
+    addAndMakeVisible(_sequencerView);
+
     resized();
 
     startTimerHz(10);
 }
 
-AeolusAudioProcessorEditor::~AeolusAudioProcessorEditor() = default;
+AeolusAudioProcessorEditor::~AeolusAudioProcessorEditor()
+{
+    _sequencerView.removeListener(this);
+};
 
 //==============================================================================
 void AeolusAudioProcessorEditor::paint (juce::Graphics& g)
@@ -167,6 +181,8 @@ void AeolusAudioProcessorEditor::paint (juce::Graphics& g)
 
 void AeolusAudioProcessorEditor::resized()
 {
+    _overlay.setBounds(getLocalBounds());
+
     constexpr int margin = 5;
 
     _versionLabel.setBounds(getWidth() - 60, margin, 60 - margin, 20);
@@ -222,6 +238,16 @@ void AeolusAudioProcessorEditor::resized()
 void AeolusAudioProcessorEditor::timerCallback()
 {
     refresh();
+}
+
+void AeolusAudioProcessorEditor::onSequencerEnterProgramMode()
+{
+    _overlay.setVisible(true);
+}
+
+void AeolusAudioProcessorEditor::onSequencerLeaveProgramMode()
+{
+    _overlay.setVisible(false);
 }
 
 void AeolusAudioProcessorEditor::populateDivisions()

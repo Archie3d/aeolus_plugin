@@ -67,9 +67,14 @@ public:
      */
     void captureCurrentStep();
 
+    void captureStateToStep(int index);
+
     void setStep(int index, bool captureCurrentState = true);
 
     void stepForward();
+
+    void setCurrentStepDirty() noexcept { _dirty = true; }
+    bool isCurrentStepDirty() const noexcept { return _dirty; }
 
 private:
 
@@ -80,6 +85,8 @@ private:
     Engine& _engine;
     std::vector<OrganState> _steps;
     std::atomic<int> _currentStep;
+
+    bool _dirty;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Sequencer)
 };

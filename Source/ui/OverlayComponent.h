@@ -20,55 +20,26 @@
 #pragma once
 
 #include "aeolus/globals.h"
-#include "aeolus/sequencer.h"
+
+#include <functional>
 
 namespace ui {
 
-class SequencerView : public juce::Component
+class OverlayComponent : public juce::Component
 {
 public:
-
-    class Listener
-    {
-    public:
-        virtual ~Listener() = default;
-
-        virtual void onSequencerEnterProgramMode() = 0;
-        virtual void onSequencerLeaveProgramMode() = 0;
-    };
-
-    SequencerView(aeolus::Sequencer* sequencer);
-
-    void update();
-    void setDirty() { _sequencer->setCurrentStepDirty(); }
-
-    void cancelProgramMode();
-
-    void addListener(Listener* listener);
-    void removeListener(Listener* listener);
+    OverlayComponent();
 
     // juce::Component
-    void resized() override;
+    void paint(juce::Graphics& g) override;
+    void mouseDown(const juce::MouseEvent& event) override;
+    void mouseUp(const juce::MouseEvent& event) override;
+
+    std::function<void()> onClick;
 
 private:
-
-    constexpr static int radioGroupId = 1001;
-
-    void populateStepButtons();
-
-    void enterProgramMode();
-
-    aeolus::Sequencer* _sequencer;
-    juce::OwnedArray<juce::TextButton> _stepButtons;
-
-    juce::TextButton _setButton;
-    juce::TextButton _advanceButton;
-
-    bool _programMode;
-
-    juce::ListenerList<Listener> _listeners;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SequencerView)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OverlayComponent)
 };
 
 } // namespace ui
+

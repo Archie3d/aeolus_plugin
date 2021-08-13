@@ -474,8 +474,6 @@ var Engine::getPersistentState() const
 
     obj->setProperty("divisions", divisions);
 
-    // Make sure to capture current configuration into the sequencer's step.
-    _sequencer->captureCurrentStep();
     obj->setProperty("sequencer", _sequencer->getPersistentState());
 
     return var{obj};
@@ -499,6 +497,9 @@ void Engine::setPersistentState(const var& state)
 
         // Restore the sequencer
         _sequencer->setPersistentState(obj->getProperty("sequencer"));
+
+        // The divisions state may be different from the sequencer, so we mark it dirty
+        _sequencer->setCurrentStepDirty();
 
         // Restore the divisions after the sequencer (in case we are restoring
         // from a state that did not have a sequencer before).

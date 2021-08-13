@@ -187,6 +187,7 @@ void Division::enableLink(int i, bool ena)
 {
     jassert(isPositiveAndBelow(i, _linkedDivisions.size()));
     _linkedDivisions[i].enabled = ena;
+    _engine.getSequencer()->setCurrentStepDirty();
 }
 
 bool Division::isLinkEnabled(int i)
@@ -205,6 +206,8 @@ void Division::cancelAllLinks()
 {
     for (auto& link : _linkedDivisions)
         link.enabled = false;
+
+    _engine.getSequencer()->setCurrentStepDirty();
 }
 
 void Division::clear()
@@ -247,6 +250,8 @@ void Division::enableStop(int i, bool ena)
     jassert(isPositiveAndBelow(i, _stops.size()));
 
     _stops[i].setEnabled(ena);
+
+    _engine.getSequencer()->setCurrentStepDirty();
 }
 
 bool Division::isStopEnabled(int i) const
@@ -298,6 +303,8 @@ void Division::setTremulantEnabled(bool ena) noexcept
 
     _tremulantEnabled = ena;
     _tremulantTargetLevel = _tremulantEnabled ? _tremulantMaxLevel : 0.0f;
+
+    _engine.getSequencer()->setCurrentStepDirty();
 }
 
 float Division::getTremulantLevel(bool update)

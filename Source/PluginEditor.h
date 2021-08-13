@@ -27,13 +27,15 @@
 #include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"
 #include "ui/SequencerView.h"
+#include "ui/OverlayComponent.h"
 
 //==============================================================================
 /**
  * @brief Plugin UI.
  */
 class AeolusAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                    public juce::Timer
+                                    public juce::Timer,
+                                    public ui::SequencerView::Listener
 {
 public:
     AeolusAudioProcessorEditor (AeolusAudioProcessor&);
@@ -45,6 +47,10 @@ public:
 
     // juce::Timer
     void timerCallback() override;
+
+    // SequencerView::Listener
+    void onSequencerEnterProgramMode() override;
+    void onSequencerLeaveProgramMode() override;
 
 private:
 
@@ -64,6 +70,8 @@ private:
     juce::OwnedArray<ui::DivisionView> _divisionViews;
 
     CustomMidiKeyboard _midiKeyboard;
+
+    ui::OverlayComponent _overlay;
 
     ui::SequencerView _sequencerView;
 

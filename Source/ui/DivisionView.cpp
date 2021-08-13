@@ -30,11 +30,13 @@ constexpr int paddingBottom = 5;
 constexpr int buttonSize = 80;
 
 DivisionView::DivisionView(aeolus::Division* division)
-    : _division(division)
+    : onStateChanged{}
+    , _division(division)
     , _nameLabel{{}, division->getName()}
     , _cancelButton{"All OFF"}
     , _controlPanel(division)
     , _stopButtons{}
+
 {
     _nameLabel.setJustificationType(Justification::centred);
     _nameLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0x99));
@@ -64,8 +66,10 @@ void DivisionView::update()
 
     int linkIdx = 0;
 
-    for (auto* b : _linkButtons)
-        b->setToggleState(_division->isLinkEnabled(linkIdx++), juce::dontSendNotification);
+    for (auto* b : _linkButtons) {
+        const bool enabled { _division->isLinkEnabled(linkIdx++) };
+        b->setToggleState(enabled, juce::dontSendNotification);
+    }
 }
 
 void DivisionView::cancelAllStops()

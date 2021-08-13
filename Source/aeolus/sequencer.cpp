@@ -104,6 +104,7 @@ Sequencer::Sequencer(Engine& engine, int numSteps)
     : _engine{engine}
     , _steps(numSteps)
     , _currentStep{0}
+    , _dirty{true}
 {
     jassert(_steps.size() > 0);
 
@@ -149,19 +150,30 @@ void Sequencer::setPersistentState(const var& v)
 void Sequencer::captureCurrentStep()
 {
     captureState(_steps[_currentStep]);
+    _dirty = false;
+}
+
+void Sequencer::captureStateToStep(int index)
+{
+    jassert(isPositiveAndBelow(index, (int)_steps.size()));
+
+    captureState(_steps[index]);
+
+    // Current state now matches the sequencer step, so we switch to it
+    _currentStep = index;
+    _dirty = false;
 }
 
 void Sequencer::setStep(int index, bool captureCurrentState)
 {
     jassert(index >= 0 && index < (int)_steps.size());
 
-    if (index != _currentStep) {
-        if (captureCurrentState)
-            captureCurrentStep();
+    if (captureCurrentState)
+        captureCurrentStep();
 
-        _currentStep = index;
-        recallState(_steps[_currentStep]);
-    }
+    _currentStep = index;
+    recallState(_steps[_currentStep]);
+    _dirty = false;
 }
 
 void Sequencer::stepForward()

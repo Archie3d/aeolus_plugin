@@ -25,6 +25,8 @@
 #include "ui/DivisionControlPanel.h"
 #include "ui/StopButton.h"
 
+#include <functional>
+
 namespace ui {
 
 class DivisionView : public juce::Component
@@ -44,6 +46,8 @@ public:
     // juce::Component
     void resized() override;
     void paint(juce::Graphics&) override;
+
+    std::function<void()> onStateChanged;
 
 private:
 
