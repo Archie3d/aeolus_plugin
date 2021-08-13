@@ -61,6 +61,12 @@ public:
             String
         };
 
+        struct Zone {
+            int fromKey;
+            int toKey;
+            std::vector<Rankwave*> rankwaves;
+        };
+
         Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
         bool enabled = false;                       ///< Stop enablement flag.
         juce::String name = "";                     ///< Stop display name.
@@ -209,7 +215,7 @@ private:
     dsp::BiquadFilter::State _swellFilterStateL;
     dsp::BiquadFilter::State _swellFilterStateR;
 
-    std::vector<Stop> _rankwaves;    ///< All the stops this division has.
+    std::vector<Stop> _stops;   ///< All the stops this division has.
 
     List<Voice> _activeVoices;  ///< Active voices on this division.
 

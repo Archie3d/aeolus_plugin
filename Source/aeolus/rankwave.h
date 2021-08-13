@@ -47,7 +47,7 @@ public:
         Over
     };
 
-    /// PLayback state.
+    /// Playback state.
     struct State
     {
         Pipewave *pipewave = nullptr;

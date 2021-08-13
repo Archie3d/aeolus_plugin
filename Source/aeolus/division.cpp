@@ -42,7 +42,7 @@ Division::Division(Engine& engine, const String& name)
     , _swellFilterSpec{}
     , _swellFilterStateL{}
     , _swellFilterStateR{}
-    , _rankwaves{}
+    , _stops{}
     , _activeVoices{}
     , _triggerFlag{}
     , _volumeLevel{}
@@ -140,7 +140,7 @@ var Division::getPersistentState() const
     {
         Array<var> stops;
 
-        for (const auto& stop : _rankwaves) {
+        for (const auto& stop : _stops) {
             auto* stopObj = new DynamicObject();
             stopObj->setProperty("name", stop.name);
             stopObj->setProperty("enabled", stop.enabled);
@@ -181,7 +181,7 @@ void Division::setPersistentState(const juce::var& v)
                     const String stopName = stopObj->getProperty("name");
                     const bool enabled = stopObj->getProperty("enabled");
 
-                    for (auto& stop : _rankwaves) {
+                    for (auto& stop : _stops) {
                         if (stop.name == stopName) {
                             stop.enabled = enabled;
                             break;
@@ -250,7 +250,7 @@ void Division::cancelAllLinks()
 
 void Division::clear()
 {
-    _rankwaves.clear();
+    _stops.clear();
 }
 
 Division::Stop& Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
@@ -265,8 +265,8 @@ Division::Stop& Division::addRankwave(Rankwave* ptr, bool ena, const String& nam
     if (name.isEmpty())
         ref.name = ptr->getStopName();
 
-    _rankwaves.push_back(ref);
-    return _rankwaves.back();
+    _stops.push_back(ref);
+    return _stops.back();
 }
 
 Division::Stop& Division::addRankwaves(Rankwave** ptr, int size, bool ena, const String& name)
@@ -288,32 +288,32 @@ Division::Stop& Division::addRankwaves(Rankwave** ptr, int size, bool ena, const
     if (name.isEmpty())
         ref.name = ptr[0]->getStopName();
 
-    _rankwaves.push_back(ref);
-    return _rankwaves.back();
+    _stops.push_back(ref);
+    return _stops.back();
 }
 
 int Division::getStopsCount() const noexcept
 {
-    return (int)_rankwaves.size();
+    return (int)_stops.size();
 }
 
 void Division::enableStop(int i, bool ena)
 {
-    jassert(isPositiveAndBelow(i, _rankwaves.size()));
+    jassert(isPositiveAndBelow(i, _stops.size()));
 
-    _rankwaves[i].enabled = ena;
+    _stops[i].enabled = ena;
 }
 
 bool Division::isStopEnabled(int i) const
 {
-    jassert(isPositiveAndBelow(i, _rankwaves.size()));
-    return _rankwaves[i].enabled;
+    jassert(isPositiveAndBelow(i, _stops.size()));
+    return _stops[i].enabled;
 }
 
 Division::Stop& Division::getStopByIndex(int i)
 {
-    jassert(isPositiveAndBelow(i, _rankwaves.size()));
-    return _rankwaves[i];
+    jassert(isPositiveAndBelow(i, _stops.size()));
+    return _stops[i];
 }
 
 void Division::disableAllStops()
@@ -327,7 +327,7 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
     minNote = -1;
     maxNote = -1;
 
-    for (const auto& ref : _rankwaves) {
+    for (const auto& ref : _stops) {
         if (ref.enabled) {
             for (int i = 0; i < MAX_RANK; ++i) {
                 const auto* ptr = ref.rankwave[i];
@@ -379,7 +379,7 @@ void Division::noteOn(int note, int midiChannel)
 
     _triggerFlag = true;
 
-    for (auto& rw : _rankwaves) {
+    for (auto& rw : _stops) {
         for (int i = 0; i < MAX_RANK; ++i) {
             if (auto* ptr = rw.rankwave[i]) {
                 if (rw.enabled && ptr->isForNote(note)) {
