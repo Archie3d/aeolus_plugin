@@ -76,6 +76,10 @@
               file="Source/ui/LevelIndicator.cpp"/>
         <FILE id="neJNeV" name="LevelIndicator.h" compile="0" resource="0"
               file="Source/ui/LevelIndicator.h"/>
+        <FILE id="I1Rt4N" name="OverlayComponent.cpp" compile="1" resource="0"
+              file="Source/ui/OverlayComponent.cpp"/>
+        <FILE id="dLtSej" name="OverlayComponent.h" compile="0" resource="0"
+              file="Source/ui/OverlayComponent.h"/>
         <FILE id="vA3Bb5" name="ParameterSlider.cpp" compile="1" resource="0"
               file="Source/ui/ParameterSlider.cpp"/>
         <FILE id="j8xpdL" name="ParameterSlider.h" compile="0" resource="0"
