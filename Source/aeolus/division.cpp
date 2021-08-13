@@ -91,24 +91,23 @@ void Division::initFromVar(const var& v)
 
                     if (const auto* pipes = pipeObj.getArray()) {
                         // Multiple pipes on single stop
-                        Rankwave* rankwaves[MAX_RANK] = {nullptr};
-                        int r = 0;
+                        std::vector<Rankwave*> rankwaves;
 
-                        for (int j = 0; j < pipes->size() && r < MAX_RANK; ++j) {
+                        for (int j = 0; j < pipes->size(); ++j) {
                             const String pipeName = pipes->getUnchecked(j);
 
                             if (auto* rankwavePtr = g->getStopByName(pipeName)) {
-                                rankwaves[r++] = rankwavePtr;
+                                rankwaves.push_back(rankwavePtr);
                             } else {
                                 DBG("Stop pipe " + pipeName + " cannot be found.");
                             }
                         }
 
-                        if (r > 0) {
-                            auto& s = addRankwaves(rankwaves, r, false, stopName);
-                            s.type = Division::stopTypeFromString(stopType);
-                            s.gain = gain;
-                            s.chiffGain = chiffGain;
+                        if (!rankwaves.empty()) {
+                            auto& s = addRankwaves(rankwaves, false, stopName);
+                            s.setType(Stop::getTypeFromString(stopType));
+                            s.setGain(gain);
+                            s.setChiffGain(chiffGain);
                         }
 
                     } else {
@@ -117,9 +116,9 @@ void Division::initFromVar(const var& v)
 
                         if (auto* rankwavePtr = g->getStopByName(pipeName)) {
                             auto&s = addRankwave(rankwavePtr, false, stopName);
-                            s.type = Division::stopTypeFromString(stopType);
-                            s.gain = gain;
-                            s.chiffGain = chiffGain;
+                            s.setType(Stop::getTypeFromString(stopType));
+                            s.setGain(gain);
+                            s.setChiffGain(chiffGain);
                         } else {
                             DBG("Stop pipe " + pipeName + " cannot be found.");
                         }
@@ -142,8 +141,8 @@ var Division::getPersistentState() const
 
         for (const auto& stop : _stops) {
             auto* stopObj = new DynamicObject();
-            stopObj->setProperty("name", stop.name);
-            stopObj->setProperty("enabled", stop.enabled);
+            stopObj->setProperty("name", stop.getName());
+            stopObj->setProperty("enabled", stop.isEnabled());
 
             stops.add(var{stopObj});
         }
@@ -182,8 +181,8 @@ void Division::setPersistentState(const juce::var& v)
                     const bool enabled = stopObj->getProperty("enabled");
 
                     for (auto& stop : _stops) {
-                        if (stop.name == stopName) {
-                            stop.enabled = enabled;
+                        if (stop.getName()== stopName) {
+                            stop.setEnabled(enabled);
                             break;
                         }
                     }
@@ -253,40 +252,26 @@ void Division::clear()
     _stops.clear();
 }
 
-Division::Stop& Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
+Stop& Division::addRankwave(Rankwave* ptr, bool ena, const String& name)
 {
     jassert(ptr != nullptr);
 
     Stop ref{};
-    ref.rankwave[0] = ptr;
-    ref.enabled = ena;
-    ref.name = name;
-
-    if (name.isEmpty())
-        ref.name = ptr->getStopName();
+    ref.addZone(ptr);
+    ref.setEnabled(ena);
+    ref.setName(name.isEmpty() ? ptr->getStopName() : name);
 
     _stops.push_back(ref);
     return _stops.back();
 }
 
-Division::Stop& Division::addRankwaves(Rankwave** ptr, int size, bool ena, const String& name)
+Stop& Division::addRankwaves(const std::vector<Rankwave*> rw, bool ena, const String& name)
 {
-    jassert(ptr != nullptr);
-    size = jmin(size, MAX_RANK);
-
+    jassert(!rw.empty());
     Stop ref{};
-    ref.enabled = ena;
-    ref.name = name;
-
-    for (int i = 0; i < size; ++i) {
-        Rankwave* rwPtr = ptr[i];
-        jassert(rwPtr != nullptr);
-
-        ref.rankwave[i] = rwPtr;
-    }
-
-    if (name.isEmpty())
-        ref.name = ptr[0]->getStopName();
+    ref.addZone(rw);
+    ref.setEnabled(ena);
+    ref.setName(name.isEmpty() ? rw[0]->getStopName() : name);
 
     _stops.push_back(ref);
     return _stops.back();
@@ -301,16 +286,16 @@ void Division::enableStop(int i, bool ena)
 {
     jassert(isPositiveAndBelow(i, _stops.size()));
 
-    _stops[i].enabled = ena;
+    _stops[i].setEnabled(ena);
 }
 
 bool Division::isStopEnabled(int i) const
 {
     jassert(isPositiveAndBelow(i, _stops.size()));
-    return _stops[i].enabled;
+    return _stops[i].isEnabled();
 }
 
-Division::Stop& Division::getStopByIndex(int i)
+Stop& Division::getStopByIndex(int i)
 {
     jassert(isPositiveAndBelow(i, _stops.size()));
     return _stops[i];
@@ -327,18 +312,14 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
     minNote = -1;
     maxNote = -1;
 
-    for (const auto& ref : _stops) {
-        if (ref.enabled) {
-            for (int i = 0; i < MAX_RANK; ++i) {
-                const auto* ptr = ref.rankwave[i];
+    for (const auto& stop : _stops) {
+        if (stop.isEnabled()) {
+            const auto range{stop.getKeyRange()};
 
-                if (ptr != nullptr) {
-                    if (minNote < 0 || minNote > ptr->getNoteMin())
-                        minNote = ptr->getNoteMin();
-                    if (maxNote < 0 || maxNote < ptr->getNoteMax())
-                        maxNote = ptr->getNoteMax();
-                }
-            }
+            if (minNote < 0 || minNote > range.getStart())
+                minNote = range.getStart();
+            if (maxNote < 0 || maxNote < range.getEnd() - 1)
+                maxNote = range.getEnd() - 1;
         }
     }
 }
@@ -379,13 +360,16 @@ void Division::noteOn(int note, int midiChannel)
 
     _triggerFlag = true;
 
-    for (auto& rw : _stops) {
-        for (int i = 0; i < MAX_RANK; ++i) {
-            if (auto* ptr = rw.rankwave[i]) {
-                if (rw.enabled && ptr->isForNote(note)) {
-                    auto state = ptr->trigger(note);
-                    state.gain = rw.gain;
-                    state.chiffGain = rw.chiffGain;
+    for (const auto& stop : _stops) {
+        if (!stop.isEnabled())
+            continue;
+
+        for (const auto& zone : stop.getZones()) {
+            if (zone.isForKey(note)) {
+                for (auto* rw : zone.rankwaves) {
+                    auto state = rw->trigger(note);
+                    state.gain = stop.getGain();
+                    state.chiffGain = stop.getChiffGain();
 
                     if (auto* voice = _engine.getVoicePool().trigger(state))
                         _activeVoices.append(voice);
@@ -542,25 +526,6 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
         dsp::BiquadFilter::process(_swellFilterSpec, _swellFilterStateR, outR, outR, SUB_FRAME_LENGTH);
     }
 #endif
-}
-
-Division::Stop::Type Division::stopTypeFromString(const String& n)
-{
-    const static std::map<String, Stop::Type> nameToType {
-        { "principal", Stop::Principal },
-        { "flute",     Stop::Flute },
-        { "reed",      Stop::Reed },
-        { "string",    Stop::String }
-    };
-
-    auto type = Stop::Unknown;
-
-    const auto it = nameToType.find(n.toLowerCase());
-
-    if (it != nameToType.end())
-        type = it->second;
-
-    return type;
 }
 
 AEOLUS_NAMESPACE_END

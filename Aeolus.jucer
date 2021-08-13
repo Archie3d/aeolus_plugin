@@ -53,6 +53,8 @@
         <FILE id="hwHRC6" name="sequencer.h" compile="0" resource="0" file="Source/aeolus/sequencer.h"/>
         <FILE id="r5AvHj" name="simd.cpp" compile="1" resource="0" file="Source/aeolus/simd.cpp"/>
         <FILE id="kfppw1" name="simd.h" compile="0" resource="0" file="Source/aeolus/simd.h"/>
+        <FILE id="lQ9t2o" name="stop.cpp" compile="1" resource="0" file="Source/aeolus/stop.cpp"/>
+        <FILE id="iYlziP" name="stop.h" compile="0" resource="0" file="Source/aeolus/stop.h"/>
         <FILE id="n6Wjna" name="voice.cpp" compile="1" resource="0" file="Source/aeolus/voice.cpp"/>
         <FILE id="MKwBrx" name="voice.h" compile="0" resource="0" file="Source/aeolus/voice.h"/>
         <FILE id="W3dxh5" name="worker.cpp" compile="1" resource="0" file="Source/aeolus/worker.cpp"/>

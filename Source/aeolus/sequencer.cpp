@@ -199,7 +199,7 @@ void Sequencer::captureState(OrganState& organState)
 
         // Capture stops
         for (int stopIdx = 0; stopIdx < numStops; ++stopIdx)
-            divisionState.stops[stopIdx] = division->getStopByIndex(stopIdx).enabled;
+            divisionState.stops[stopIdx] = division->getStopByIndex(stopIdx).isEnabled();
 
         // Capture tremulant
         divisionState.tremulant = division->isTremulantEnabled();

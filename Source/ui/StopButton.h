@@ -44,7 +44,7 @@ private:
 
     aeolus::Division& _division;
     int _stopIndex;
-    aeolus::Division::Stop& _stop;
+    aeolus::Stop& _stop;
 
     int _margin;
 

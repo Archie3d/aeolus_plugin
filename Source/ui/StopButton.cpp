@@ -25,7 +25,7 @@ using namespace juce;
 namespace ui {
 
 StopButton::StopButton(aeolus::Division& division, int stopIndex)
-    : Button{division.getStopByIndex(stopIndex).name}
+    : Button{division.getStopByIndex(stopIndex).getName()}
     , _division{division}
     , _stopIndex{stopIndex}
     , _stop{division.getStopByIndex(stopIndex)}
@@ -33,7 +33,7 @@ StopButton::StopButton(aeolus::Division& division, int stopIndex)
 {
     setClickingTogglesState(true);
 
-    setToggleState(_stop.enabled, juce::dontSendNotification);
+    setToggleState(_stop.isEnabled(), juce::dontSendNotification);
 
     this->onClick = [this]() {
         _division.enableStop(_stopIndex, getToggleState());
@@ -68,9 +68,9 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     g.fillEllipse(bounds.getX() + offset, bounds.getY() + offset,
                   bounds.getWidth() - 8, bounds.getHeight() - 8);
 
-    Colour textColour = _stop.type == aeolus::Division::Stop::Reed
-                                    ? (getToggleState() ? Colour(240, 40, 0) : Colour(128, 20, 0))
-                                    : Colour(0, 0, 0);
+    Colour textColour = _stop.getType() == aeolus::Stop::Type::Reed
+                                        ? (getToggleState() ? Colour(240, 40, 0) : Colour(128, 20, 0))
+                                        : Colour(0, 0, 0);
 
     g.setColour(textColour);
 

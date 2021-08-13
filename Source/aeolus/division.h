@@ -21,6 +21,7 @@
 
 #include "aeolus/globals.h"
 #include "aeolus/rankwave.h"
+#include "aeolus/stop.h"
 #include "aeolus/voice.h"
 #include "aeolus/audioparam.h"
 #include "aeolus/levelmeter.h"
@@ -48,32 +49,6 @@ public:
         GAIN = 0,
 
         NUM_PARAMS
-    };
-
-    /// Single stop descriptor.
-    struct Stop
-    {
-        enum Type {
-            Unknown,
-            Principal,
-            Flute,
-            Reed,
-            String
-        };
-
-        struct Zone {
-            int fromKey;
-            int toKey;
-            std::vector<Rankwave*> rankwaves;
-        };
-
-        Rankwave* rankwave[MAX_RANK] = {nullptr};   ///< Corresponding pipe models.
-        bool enabled = false;                       ///< Stop enablement flag.
-        juce::String name = "";                     ///< Stop display name.
-        Type type = Unknown;                        ///< Stop type.
-
-        float gain = 1.0f;
-        float chiffGain = 0.0f;
     };
 
     /// Link with another division.
@@ -125,7 +100,7 @@ public:
 
     void clear();
     Stop& addRankwave(Rankwave* ptr, bool ena = false, const juce::String& name = juce::String());
-    Stop& addRankwaves(Rankwave** ptr, int size, bool ena = false, const juce::String& name = juce::String());
+    Stop& addRankwaves(const std::vector<Rankwave*> rw, bool ena = false, const juce::String& name = juce::String());
 
     juce::AudioParameterFloat* getParamGain() noexcept { return _paramGain; }
     void setParamGain(juce::AudioParameterFloat* param) noexcept { _paramGain = param; }
@@ -180,10 +155,6 @@ public:
      * next note on/off event.
      */
     void clearTriggerFlag() noexcept { _triggerFlag = false; }
-
-    //------------------------------------------------------
-
-    static Stop::Type stopTypeFromString(const juce::String& n);
 
 private:
 
