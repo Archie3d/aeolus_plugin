@@ -55,6 +55,8 @@ public:
 
     Stop();
 
+    void initFromVar(const juce::var& v);
+
     Type getType() const noexcept { return _type; }
     void setType(Type t) noexcept { _type = t; }
 

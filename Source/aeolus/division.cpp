@@ -77,53 +77,13 @@ void Division::initFromVar(const var& v)
         if (_hasTremulant)
             _tremulantMaxLevel = obj->getProperty("tremulant_level");
 
-        auto* g = EngineGlobal::getInstance();
-
         if (const auto* arr = obj->getProperty("stops").getArray()) {
             for (int i = 0; i < arr->size(); ++i) {
-                if (const auto* stopObj = arr->getUnchecked(i).getDynamicObject()) {
-                    const String stopName = stopObj->getProperty("name");
-                    const String stopType = stopObj->getProperty("type");
-                    const float gain = stopObj->hasProperty("gain") ? (float)stopObj->getProperty("gain") : 1.0f;
-                    const float chiffGain = stopObj->getProperty("chiff");
-
-                    const auto pipeObj = stopObj->getProperty("pipe");
-
-                    if (const auto* pipes = pipeObj.getArray()) {
-                        // Multiple pipes on single stop
-                        std::vector<Rankwave*> rankwaves;
-
-                        for (int j = 0; j < pipes->size(); ++j) {
-                            const String pipeName = pipes->getUnchecked(j);
-
-                            if (auto* rankwavePtr = g->getStopByName(pipeName)) {
-                                rankwaves.push_back(rankwavePtr);
-                            } else {
-                                DBG("Stop pipe " + pipeName + " cannot be found.");
-                            }
-                        }
-
-                        if (!rankwaves.empty()) {
-                            auto& s = addRankwaves(rankwaves, false, stopName);
-                            s.setType(Stop::getTypeFromString(stopType));
-                            s.setGain(gain);
-                            s.setChiffGain(chiffGain);
-                        }
-
-                    } else {
-                        // Assume single pipe per stop
-                        const String pipeName = stopObj->getProperty("pipe");
-
-                        if (auto* rankwavePtr = g->getStopByName(pipeName)) {
-                            auto&s = addRankwave(rankwavePtr, false, stopName);
-                            s.setType(Stop::getTypeFromString(stopType));
-                            s.setGain(gain);
-                            s.setChiffGain(chiffGain);
-                        } else {
-                            DBG("Stop pipe " + pipeName + " cannot be found.");
-                        }
-                    }
-                }
+                Stop stop{};
+                stop.initFromVar(arr->getUnchecked(i));
+                
+                if (!stop.getZones().empty())
+                    _stops.push_back(stop);
             }
         }
     }

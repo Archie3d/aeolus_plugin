@@ -63,6 +63,34 @@
                 { "name": "Fifteenth\n2",             "type": "principal",    "pipe": "superoctave2",     "chiff": 0.3,  "gain": 4.0 },
                 { "name": "Sesquialtera\nII",         "type": "principal",    "pipe": "sesqualtera",      "chiff": 0.17, "gain": 2.0 },
                 { "name": "Mixture\nIV",              "type": "principal",    "pipe": ["mixtur3", "I_octave_1", "superoctave2", "nasard"], "chiff": 0.17, "gain": 2.0 },
+                {
+                    "name": "Mixture\nV",
+                    "type": "principal",
+                    "chiff": 0.25,
+                    "gain": 1.0,
+                    "zones": [
+                        {
+                            "range": [36, 47],
+                            "pipe": ["I_octave_2", "II_quint_113", "I_octave_1", "I_octave_26th", "I_octave_29th"]
+                        },
+                        {
+                            "range": [48, 59],
+                            "pipe": ["I_quinte_223", "I_octave_2", "II_quint_113", "I_octave_1", "I_octave_26th"]
+                        },
+                        {
+                            "range": [60, 71],
+                            "pipe": ["I_principal_4", "I_quinte_223", "I_octave_2", "II_quint_113", "I_octave_1"]
+                        },
+                        {
+                            "range": [72, 83],
+                            "pipe": ["I_principal_5th", "I_principal_4", "I_quinte_223", "I_octave_2", "II_quint_113"]
+                        },
+                        {
+                            "range": [84, 96],
+                            "pipe": ["I_principal_8", "I_principal_5th", "I_principal_4", "I_quinte_223", "I_octave_2"]
+                        }
+                    ]
+                },
                 { "name": "Fourniture\nV",            "type": "principal",    "pipe": "I_fourniture5",    "chiff": 0.3, "gain": 3.1 },
                 { "name": "Cornet\nV",                "type": "flute",        "pipe": ["II_cornet1", "II_cornet2", "II_cornet3", "II_cornet4", "II_cornet5"], "chiff": 0.2 },
                 { "name": "Trumpet\n8",               "type": "reed",         "pipe": "I_trumpet",        "chiff": 0.8 },

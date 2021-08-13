@@ -17,7 +17,10 @@
 //
 // ----------------------------------------------------------------------------
 
-#include "stop.h"
+#include "aeolus/stop.h"
+#include "aeolus/engine.h"
+
+using namespace juce;
 
 AEOLUS_NAMESPACE_BEGIN
 
@@ -31,12 +34,85 @@ Stop::Stop()
 {
 }
 
+std::vector<Rankwave*> getRankwavesFromPipeVar(const var& v)
+{
+    std::vector<Rankwave*> rankwaves;
+
+    auto addRankwave = [&](const String& name) {
+        auto* g = EngineGlobal::getInstance();
+
+        if (auto* rankwave = g->getStopByName(name)) {
+            rankwaves.push_back(rankwave);
+        } else {
+            DBG("Stop pipe " + name + " cannot be found.");
+        }
+    };
+
+
+    if (const auto* arr = v.getArray()) {
+        for (int i = 0; i < arr->size(); ++i) {
+            const String pipeName = arr->getUnchecked(i);
+            addRankwave(pipeName);
+        }
+    } else {
+        const String pipeName = v;
+        addRankwave(pipeName);
+    }
+
+    return rankwaves;
+}
+
+void Stop::initFromVar(const var& v)
+{
+
+
+    if (const auto* obj = v.getDynamicObject()) {
+        _name = obj->getProperty("name");
+        _type = getTypeFromString(obj->getProperty("type"));
+
+        if (obj->hasProperty("gain"))
+            _gain = obj->getProperty("gain");
+
+        if (obj->hasProperty("chiff"))
+            _chiffGain = obj->getProperty("chiff");
+
+        if (obj->hasProperty("pipe")) {
+            const auto pipeObj = obj->getProperty("pipe");
+
+            const auto rankwaves { getRankwavesFromPipeVar(pipeObj) };
+            
+            if (!rankwaves.empty())
+                addZone(rankwaves);
+
+        } else if (obj->hasProperty("zones")) {
+            
+            if (const auto* zonesArr = obj->getProperty("zones").getArray()) {
+                for (int i = 0; i < zonesArr->size(); ++i) {
+                    if (const auto* zoneObj = zonesArr->getUnchecked(i).getDynamicObject()) {
+                        Zone zone{};
+                        zone.rankwaves = getRankwavesFromPipeVar(zoneObj->getProperty("pipe"));
+
+                        if (const auto* range = zoneObj->getProperty("range").getArray()) {
+                            if (range->size() >= 2)
+                                zone.keyRange = Range<int>((int)range->getFirst(), (int)range->getLast() + 1);
+                        }
+                        
+                        if (!zone.rankwaves.empty())
+                            _zones.push_back(zone);
+                    }
+
+                }
+            }
+        }
+    }
+}
+
 void Stop::addZone(Rankwave* ptr)
 {
     jassert(ptr != nullptr);
 
     Zone zone{};
-    zone.keyRange = juce::Range<int>(ptr->getNoteMin(), ptr->getNoteMax() + 1);
+    zone.keyRange = Range<int>(ptr->getNoteMin(), ptr->getNoteMax() + 1);
     zone.rankwaves.push_back(ptr);
 
     _zones.push_back(zone);
@@ -48,10 +124,10 @@ void Stop::addZone(const std::vector<Rankwave*> rw)
         return;
 
     Zone zone{};
-    zone.keyRange = juce::Range<int>(rw[0]->getNoteMin(), rw[0]->getNoteMax() + 1);
+    zone.keyRange = Range<int>(rw[0]->getNoteMin(), rw[0]->getNoteMax() + 1);
     
     for (auto* ptr : rw) {
-        juce::Range<int> range(ptr->getNoteMin(), ptr->getNoteMax() + 1);
+        Range<int> range(ptr->getNoteMin(), ptr->getNoteMax() + 1);
         zone.keyRange = zone.keyRange.getUnionWith(range);\
         zone.rankwaves.push_back(ptr);
     }
@@ -59,7 +135,7 @@ void Stop::addZone(const std::vector<Rankwave*> rw)
     _zones.push_back(zone);
 }
 
-juce::Range<int> Stop::getKeyRange() const
+Range<int> Stop::getKeyRange() const
 {
     if (_zones.empty())
         return {};
@@ -72,9 +148,9 @@ juce::Range<int> Stop::getKeyRange() const
     return range;
 }
 
-Stop::Type Stop::getTypeFromString(const juce::String& n)
+Stop::Type Stop::getTypeFromString(const String& n)
 {
-    const static std::map<juce::String, Stop::Type> nameToType {
+    const static std::map<String, Stop::Type> nameToType {
         { "principal", Stop::Type::Principal },
         { "flute",     Stop::Type::Flute },
         { "reed",      Stop::Type::Reed },

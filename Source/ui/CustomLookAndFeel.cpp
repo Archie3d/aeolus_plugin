@@ -155,7 +155,7 @@ void CustomLookAndFeel::drawLinearSliderBackground(Graphics& g, int x, int y, in
         off.addRectangle(r);
     }
 
-    float intensity = (slider.getValue() - slider.getMinimum()) / (slider.getMaximum() - slider.getMinimum());
+    float intensity = float((slider.getValue() - slider.getMinimum()) / (slider.getMaximum() - slider.getMinimum()));
     intensity = 0.75f * intensity + 0.25f;
 
 
