@@ -127,7 +127,7 @@ public:
     float getHarmonicLevel(int h, int n) const noexcept { return _h_lev[h][n]; }
     float getHarmonicAttack(int h, int n) const noexcept { return _h_att[h][n]; }
     float getHarmonicRandomisation(int h, int n) const noexcept { return _h_ran[h][n]; }
-    float getHarmonicAtp(int h, int n) const noexcept { return _h_atp[h][n]; }
+    float getHarmonicAttackProfile(int h, int n) const noexcept { return _h_atp[h][n]; }
 
     /// Frequency ration nominator.
     int getFn() const noexcept { return _fn; }
@@ -165,10 +165,10 @@ private:
     N_func  _n_dct; ///< Releate time.
     N_func  _n_dcd; ///< Release detune.
 
-    HN_func _h_lev;
-    HN_func _h_ran;
-    HN_func _h_att;
-    HN_func _h_atp;
+    HN_func _h_lev; ///< Harmonic level
+    HN_func _h_ran; ///< Harmonic level randomization.
+    HN_func _h_att; ///< Harmonic attack time
+    HN_func _h_atp; ///< Harmonic attack profile.
 };
 
 //==============================================================================
