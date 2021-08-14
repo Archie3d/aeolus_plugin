@@ -145,14 +145,14 @@
         <GROUP id="{6C1D6465-DF5F-6265-8CFA-5EEE4A77A84D}" name="custom">
           <FILE id="TnY8Ca" name="I_fourniture5_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_fourniture5_ae0.json"/>
-          <FILE id="yeId07" name="I_octave_26th_ae0.json" compile="0" resource="1"
-                file="Resources/stops/custom/I_octave_26th_ae0.json"/>
           <FILE id="GHkYuX" name="I_octave_29th_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_octave_29th_ae0.json"/>
           <FILE id="Vc2e6K" name="I_principal_5th_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_principal_5th_ae0.json"/>
           <FILE id="bT0qWz" name="I_principal_16_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_principal_16_ae0.json"/>
+          <FILE id="sptqx3" name="I_quint_26th_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/I_quint_26th_ae0.json"/>
           <FILE id="hPHIEP" name="I_trumpet4_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_trumpet4_ae0.json"/>
           <FILE id="bMOPEV" name="II_quint_113_ae0.json" compile="0" resource="1"

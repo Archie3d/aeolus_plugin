@@ -40,9 +40,9 @@
                 { "name": "Nazard\n2 2/3",      "type": "flute",     "pipe": "nasard",           "chiff": 0.4, "gain": 2.0 },
                 { "name": "Fifteenth\n2",       "type": "principal", "pipe": "I_octave_2",       "chiff": 0.9, "gain": 1.8 },
                 { "name": "Spitz Flute\n2",     "type": "flute",     "pipe": "II_cornet4",       "chiff": 0.6, "gain": 1.4 },
-                { "name": "Seventeenth\n1 3/5", "type": "flute",     "pipe": "tertia",           "chiff": 0.2, "gain": 10.0 },
-                { "name": "Nineteenth\n1 1/3",  "type": "flute",     "pipe": "II_quint_113",     "chiff": 0.4, "gain": 2.0 }, 
-                { "name": "Twenty second\n1",   "type": "flute",     "pipe": "I_octave_1",       "chiff": 0.4, "gain": 2.0 },
+                { "name": "Tierce\n1 3/5",      "type": "flute",     "pipe": "tertia",           "chiff": 0.2, "gain": 10.0 },
+                { "name": "Larigot\n1 1/3",     "type": "flute",     "pipe": "II_quint_113",     "chiff": 0.4, "gain": 2.0 }, 
+                { "name": "Sifflet\n1",         "type": "flute",     "pipe": "I_octave_1",       "chiff": 0.4, "gain": 2.0 },
                 { "name": "Cymbale\nVI",        "type": "principal", "pipe": "III_cymbel",       "chiff": 0.6, "gain": 2.5 },
                 { "name": "Cromorne\n8",        "type": "reed",      "pipe": "cromhorne",        "chiff": 0.5 }
             ]
@@ -71,11 +71,11 @@
                     "zones": [
                         {
                             "range": [36, 47],
-                            "pipe": ["I_octave_2", "II_quint_113", "I_octave_1", "I_octave_26th", "I_octave_29th"]
+                            "pipe": ["I_octave_2", "II_quint_113", "I_octave_1", "I_quint_26th", "I_octave_29th"]
                         },
                         {
                             "range": [48, 59],
-                            "pipe": ["I_quinte_223", "I_octave_2", "II_quint_113", "I_octave_1", "I_octave_26th"]
+                            "pipe": ["I_quinte_223", "I_octave_2", "II_quint_113", "I_octave_1", "I_quint_26th"]
                         },
                         {
                             "range": [60, 71],
