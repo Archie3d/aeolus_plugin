@@ -35,11 +35,11 @@ void OverlayComponent::paint(Graphics& g)
     g.fillAll();
 }
 
-void OverlayComponent::mouseDown(const MouseEvent& event)
+void OverlayComponent::mouseDown(const MouseEvent&)
 {
 }
 
-void OverlayComponent::mouseUp(const MouseEvent& event)
+void OverlayComponent::mouseUp(const MouseEvent&)
 {
     if (onClick)
         onClick();

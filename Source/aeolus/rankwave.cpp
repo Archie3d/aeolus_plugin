@@ -193,9 +193,6 @@ void Pipewave::genwave()
 {
     thread_local static Random rnd;
 
-    size_t length = (size_t)(_sampleRate + 0.5f);
-    std::vector<float> _arg(length);
-    std::vector<float> _att(length/2);
 
     const float sampleRate_r = 1.0f / _sampleRate;
 
@@ -248,6 +245,9 @@ void Pipewave::genwave()
     int wavetableLength = _attackLength + _loopLength + _sampleStep * (SUB_FRAME_LENGTH + 4);
     _wavetable.resize(wavetableLength);
 
+    std::vector<float> _arg(wavetableLength);
+    std::vector<float> _att(wavetableLength);
+
     _attackStartPtr = _wavetable.data();
     _loopStartPtr = _attackStartPtr + _attackLength;
     _loopEndPtr = _loopStartPtr + _loopLength;
@@ -261,7 +261,7 @@ void Pipewave::genwave()
 
     int k = (int)(_sampleRate * _model.getNoteAttack(_note) + 0.5);
 
-    // _arg[i] will contain phase steps along the generated wavetle
+    // _arg[i] will contain phase steps along the generated wavetable
 
     {
         float t = 0.0f;
@@ -293,7 +293,10 @@ void Pipewave::genwave()
         v = v0 * math::exp2ap(0.1661f * (v + _model.getHarmonicRandomisation(h, _note) * (2.0f * rnd.nextFloat() - 1.0f)));
         k = (int)(_sampleRate * _model.getHarmonicAttack(h, _note) + 0.5f);
 
-        jassert(k <= _att.size());
+        //jassert(k <= _att.size());
+        if (k > _att.size())
+            _att.resize(k);
+
         attgain(_att.data(), k, _model.getHarmonicAttackProfile(h, _note));
 
         for (int i = 0; i < _attackLength + _loopLength; ++i) {
@@ -373,7 +376,7 @@ void Pipewave::attgain(float* att, int n, float p)
         int k = n * i / 24;
         float x =  1.0f - z - 1.5f * y;
         y += w * x;
-        float d = w * y * p / (k - j);
+        float d = k == j ? 0.0f : w * y * p / (k - j);
 
         while (j < k) {
             float m = (float) j / n;

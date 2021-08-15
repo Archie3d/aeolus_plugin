@@ -159,8 +159,12 @@
                 file="Resources/stops/custom/II_quint_113_ae0.json"/>
           <FILE id="DKnyC9" name="III_bassoon_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/III_bassoon_ae0.json"/>
+          <FILE id="orikR0" name="III_violin_8_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/III_violin_8_ae0.json"/>
           <FILE id="VpHr1G" name="P_flute8_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/P_flute8_ae0.json"/>
+          <FILE id="rLKW26" name="P_violoncell_8_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/P_violoncell_8_ae0.json"/>
           <FILE id="pObwT7" name="vox_humana_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/vox_humana_ae0.json"/>
         </GROUP>
