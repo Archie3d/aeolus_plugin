@@ -89,7 +89,7 @@ float AudioParameter::nextValue()
         const float prevValue { _currentValue };
         _currentValue = _targetValue * _frac + _currentValue * (1.0f - _frac);
 
-        if (std::fabsf(_currentValue - prevValue) <= std::numeric_limits<float>::epsilon()) {
+        if (fabsf(_currentValue - prevValue) <= std::numeric_limits<float>::epsilon()) {
             // No advancement - jump to the target
             _currentValue = _targetValue;
         }
@@ -100,7 +100,7 @@ float AudioParameter::nextValue()
 
 void AudioParameter::updateSmoothing()
 {
-    _smoothing = std::fabsf(_currentValue - _targetValue) > std::numeric_limits<float>::epsilon();
+    _smoothing = fabsf(_currentValue - _targetValue) > std::numeric_limits<float>::epsilon();
 
     if (!_smoothing)
         _currentValue = _targetValue;
