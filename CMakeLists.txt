@@ -82,7 +82,7 @@ target_compile_definitions(${PROJECT_NAME}
     PUBLIC
         JUCE_ASIO=1
         JUCE_WEB_BROWSER=0
-        JUSE_USE_CURL=0
+        JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_DISPLAY_SPLASH_SCREEN=0
 )
