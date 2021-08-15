@@ -23,6 +23,33 @@ using namespace juce;
 
 AEOLUS_NAMESPACE_BEGIN
 
+//==============================================================================
+
+class PrepareRankwaveJob : ThreadPoolJob
+{
+public:
+
+    PrepareRankwaveJob(Rankwave* rw, float sampleRate)
+        : ThreadPoolJob(rw->getStopName())
+        , _rankwave{rw}
+        , _sampleRate{sampleRate}
+    {    
+    }
+
+    JobStatus runJob() override
+    {
+        _rankwave->prepareToPlay(_sampleRate);
+        return JobStatus::jobHasFinished;
+    }
+
+private:
+    Rankwave* _rankwave;
+    float _sampleRate;
+};
+
+
+//==============================================================================
+
 EngineGlobal::EngineGlobal()
     : _rankwaves{}
 {
@@ -50,8 +77,26 @@ Rankwave* EngineGlobal::getStopByName(const String& name)
 
 void EngineGlobal::updateStops(float sampleRate)
 {
+    ThreadPool threadPool;
+    std::atomic<int> done((int)_rankwaves.size());
+    WaitableEvent wait;
+
+    for (auto* rw : _rankwaves) {
+        threadPool.addJob([sampleRate, rw, &done, &wait]() {
+                rw->prepareToPlay(sampleRate);
+                done -= 1;
+                wait.signal();
+            });
+    }
+
+    while (done.load() > 0)
+        wait.wait();
+
+/*
+    // Single-thread equivalent   
     for (auto* rw : _rankwaves)
         rw->prepareToPlay(sampleRate);
+*/
 }
 
 void EngineGlobal::loadRankwaves()

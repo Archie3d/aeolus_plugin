@@ -24,8 +24,6 @@ using namespace juce;
 
 AEOLUS_NAMESPACE_BEGIN
 
-std::vector<float> Pipewave::_arg;
-std::vector<float> Pipewave::_att;
 
 Pipewave::Pipewave(Addsynth& model, int note, float freq)
     : _model(model)
@@ -193,19 +191,11 @@ void Pipewave::play(Pipewave::State& state, float* out)
 
 void Pipewave::genwave()
 {
-    static Random rnd;
+    thread_local static Random rnd;
 
-    {
-        int l = (int)_sampleRate;
-
-        if (Pipewave::_arg.size() != l)
-            Pipewave::_arg.resize(l);
-
-        l = (int)(0.5f * _sampleRate);
-
-        if (Pipewave::_att.size() != l)
-            Pipewave::_att.resize(l);
-    }
+    size_t length = (size_t)(_sampleRate + 0.5f);
+    std::vector<float> _arg(length);
+    std::vector<float> _att(length/2);
 
     const float sampleRate_r = 1.0f / _sampleRate;
 
@@ -303,7 +293,8 @@ void Pipewave::genwave()
         v = v0 * math::exp2ap(0.1661f * (v + _model.getHarmonicRandomisation(h, _note) * (2.0f * rnd.nextFloat() - 1.0f)));
         k = (int)(_sampleRate * _model.getHarmonicAttack(h, _note) + 0.5f);
 
-        attgain(k, _model.getHarmonicAttackProfile(h, _note));
+        jassert(k <= _att.size());
+        attgain(_att.data(), k, _model.getHarmonicAttackProfile(h, _note));
 
         for (int i = 0; i < _attackLength + _loopLength; ++i) {
             float t = _arg[i] * (h + 1);
@@ -366,7 +357,7 @@ void Pipewave::looplen(float f, float sampleRate, int lmax, int& aa, int& bb)
     bb = b;
 }
 
-void Pipewave::attgain(int n, float p)
+void Pipewave::attgain(float* att, int n, float p)
 {
     float w = 0.05f;
     float y = 0.6f;
@@ -386,7 +377,7 @@ void Pipewave::attgain(int n, float p)
 
         while (j < k) {
             float m = (float) j / n;
-            _att[j++] = (1.0f - m) * z + m;
+            att[j++] = (1.0f - m) * z + m;
             z += d;
         }
     }

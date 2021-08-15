@@ -89,7 +89,7 @@ private:
     void genwave();
 
     static void looplen(float f, float sampleRate, int lmax, int& aa, int& bb);
-    static void attgain(int n, float p);
+    static void attgain(float* att, int n, float p);
 
     Addsynth& _model;
     int _note;
@@ -109,9 +109,6 @@ private:
     float* _attackStartPtr; // _p0
     float* _loopStartPtr;   // _p1
     float* _loopEndPtr;     // _p2
-
-    static std::vector<float> _arg;
-    static std::vector<float> _att;
 };
 
 //==============================================================================
