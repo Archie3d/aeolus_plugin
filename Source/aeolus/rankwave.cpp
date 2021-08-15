@@ -293,7 +293,6 @@ void Pipewave::genwave()
         v = v0 * math::exp2ap(0.1661f * (v + _model.getHarmonicRandomisation(h, _note) * (2.0f * rnd.nextFloat() - 1.0f)));
         k = (int)(_sampleRate * _model.getHarmonicAttack(h, _note) + 0.5f);
 
-        //jassert(k <= _att.size());
         if (k > _att.size())
             _att.resize(k);
 

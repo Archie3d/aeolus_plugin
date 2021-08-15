@@ -91,18 +91,18 @@ int AeolusAudioProcessor::getCurrentProgram()
     return _engine.getSequencer()->getCurrentStep();
 }
 
-void AeolusAudioProcessor::setCurrentProgram (int index)
+void AeolusAudioProcessor::setCurrentProgram(int index)
 {
     if (index >= 0 && index < _engine.getSequencer()->getStepsCount())
         _engine.getSequencer()->setStep(index);
 }
 
-const juce::String AeolusAudioProcessor::getProgramName (int index)
+const juce::String AeolusAudioProcessor::getProgramName(int index)
 {
     return juce::String("Sequencer step ") + juce::String(index + 1);
 }
 
-void AeolusAudioProcessor::changeProgramName (int /* index */, const juce::String& /* newName */)
+void AeolusAudioProcessor::changeProgramName(int /* index */, const juce::String& /* newName */)
 {
 }
 
