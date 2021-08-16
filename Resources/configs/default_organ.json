@@ -16,7 +16,34 @@
                 { "name": "Principal\n4",       "type": "principal", "pipe": "I_principal_4",    "chiff": 0.9 },
                 { "name": "Flute Dolce\n4",     "type": "flute",     "pipe": "III_flautodolce4", "chiff": 0.4 },
                 { "name": "Fifteenth\n2",       "type": "principal", "pipe": "ottavina2",        "chiff": 0.3 },
-                { "name": "Mixture\nV",         "type": "principal", "pipe": ["mixtur3", "tertia", "ottavina2", "quintflute", "sifflet1"], "chiff": 0.21, "gain": 2.4 },
+                {
+                    "name": "Mixture\nV",
+                    "type": "principal",
+                    "gain": 2.4,
+                    "chiff": 0.21,
+                    "zones": [
+                        {
+                            "range": [36, 47],
+                            "pipe": ["mixtur3", "tertia", "ottavina2", "quintflute", "sifflet1"]
+                        },
+                        {
+                            "range": [48, 59],
+                            "pipe": ["mixtur2", "mixtur3", "tertia", "ottavina2", "quintflute"]
+                        },
+                        {
+                            "range": [60, 71],
+                            "pipe": ["mixtur1", "mixtur2", "mixtur3", "tertia", "ottavina2"]
+                        },
+                        {
+                            "range": [72, 83],
+                            "pipe": ["I_principal_5th", "mixtur1", "mixtur2", "mixtur3", "tertia"]
+                        },
+                        {
+                            "range": [84, 96],
+                            "pipe": ["I_melodia", "I_principal_5th", "mixtur1", "mixtur2", "mixtur3"]
+                        }
+                    ]
+                },
                 { "name": "Bassoon\n16",        "type": "reed",      "pipe": "III_bassoon",      "chiff": 1.0 },
                 { "name": "Cornopean\n8",       "type": "reed",      "pipe": ["new_oboe_fa", "I_trumpet"], "chiff": 0.6 },
                 { "name": "Oboe\n8",            "type": "reed",      "pipe": "new_oboe_fa",      "chiff": 0.8 },
@@ -43,7 +70,7 @@
                 { "name": "Spitz Flute\n2",     "type": "flute",     "pipe": "II_cornet4",       "chiff": 0.6, "gain": 1.4 },
                 { "name": "Tierce\n1 3/5",      "type": "flute",     "pipe": "tertia",           "chiff": 0.2, "gain": 10.0 },
                 { "name": "Larigot\n1 1/3",     "type": "flute",     "pipe": "II_quint_113",     "chiff": 0.4, "gain": 2.0 }, 
-                { "name": "Sifflet\n1",         "type": "flute",     "pipe": "I_octave_1",       "chiff": 0.4, "gain": 2.0 },
+                { "name": "Sifflet\n1",         "type": "flute",     "pipe": "sifflet1",         "chiff": 0.4, "gain": 4.0 },
                 { "name": "Cymbale\nVI",        "type": "principal", "pipe": "III_cymbel",       "chiff": 0.6, "gain": 2.5 },
                 { "name": "Cromorne\n8",        "type": "reed",      "pipe": "cromhorne",        "chiff": 0.5 }
             ]
@@ -63,7 +90,35 @@
                 { "name": "Twelfth\n2 2/3",           "type": "flute",        "pipe": "I_quinte_223",     "chiff": 0.4,  "gain": 1.5 },
                 { "name": "Fifteenth\n2",             "type": "principal",    "pipe": "superoctave2",     "chiff": 0.3,  "gain": 4.0 },
                 { "name": "Sesquialtera\nII",         "type": "principal",    "pipe": "sesqualtera",      "chiff": 0.17, "gain": 2.0 },
-                { "name": "Mixture\nIV",              "type": "principal",    "pipe": ["mixtur3", "I_octave_1", "superoctave2", "nasard"], "chiff": 0.17, "gain": 2.0 },
+                {
+                    "name": "Mixture\nIV",
+                    "type": "principal",
+                    "gain": 2.0,
+                    "chiff": 0.17,
+                    "zones": [
+                        {
+                            "range": [36, 47],
+                            "pipe": ["mixtur3", "nasard", "superoctave2", "tertia", "II_quint_113", "I_octave_1"]
+                        },
+                        {
+                            "range": [48, 59],
+                            "pipe": ["nasard", "superoctave2", "tertia", "II_quint_113"]
+                        },
+                        {
+                            "range": [60, 71],
+                            "pipe": ["mixtur3", "nasard", "superoctave2", "tertia"]
+                        },
+                        {
+                            "range": [72, 83],
+                            "pipe": ["mixtur2", "mixtur3", "nasard", "superoctave2"]
+                        },
+                        {
+                            "range": [84, 96],
+                            "pipe": ["mixtur1", "mixtur2", "mixtur3", "nasard"]
+                        }
+                    ]
+                    
+                },
                 {
                     "name": "Mixture\nV",
                     "type": "principal",
