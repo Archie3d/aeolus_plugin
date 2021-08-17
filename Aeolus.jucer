@@ -143,6 +143,21 @@
       </GROUP>
       <GROUP id="{10CE4C3F-2423-3369-B5E6-AAE7423AED1D}" name="stops">
         <GROUP id="{6C1D6465-DF5F-6265-8CFA-5EEE4A77A84D}" name="custom">
+          <FILE id="c3ziaR" name="harm1_2_ae0.json" compile="0" resource="1"
+                file="Resources/stops/custom/harm1_2_ae0.json"/>
+          <FILE id="Ypb5xc" name="harm1_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm1_ae0.json"/>
+          <FILE id="coFOqT" name="harm5_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm5_ae0.json"/>
+          <FILE id="fr2Job" name="harm8_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm8_ae0.json"/>
+          <FILE id="LztnDt" name="harm12_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm12_ae0.json"/>
+          <FILE id="lD3BRB" name="harm15_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm15_ae0.json"/>
+          <FILE id="FiXXKk" name="harm17_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm17_ae0.json"/>
+          <FILE id="TnAWIX" name="harm19_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm19_ae0.json"/>
+          <FILE id="neyxnA" name="harm22_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm22_ae0.json"/>
+          <FILE id="gFF0VX" name="harm24_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm24_ae0.json"/>
+          <FILE id="HcMvXY" name="harm26_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm26_ae0.json"/>
+          <FILE id="KwWoQ7" name="harm29_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm29_ae0.json"/>
+          <FILE id="JHdflu" name="harm33_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm33_ae0.json"/>
+          <FILE id="n2oejb" name="harm36_ae0.json" compile="0" resource="1" file="Resources/stops/custom/harm36_ae0.json"/>
           <FILE id="TnY8Ca" name="I_fourniture5_ae0.json" compile="0" resource="1"
                 file="Resources/stops/custom/I_fourniture5_ae0.json"/>
           <FILE id="GHkYuX" name="I_octave_29th_ae0.json" compile="0" resource="1"
