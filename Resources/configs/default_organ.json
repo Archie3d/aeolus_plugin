@@ -74,8 +74,8 @@
                 {
                     "name": "Cymbel\nVII",
                     "type": "principal",
-                    "chiff": 0.6,
-                    "gain": 0.7,
+                    "chiff": 1.2,
+                    "gain": 0.5,
                     "zones": [
                         {
                             "range": [36, 47],
@@ -91,7 +91,7 @@
                         },
                         {
                             "range": [72, 83],
-                            "pipe": ["harm1", "harm5", "harm8", "harm12", "harm15", "harm19", "harm22"]
+                            "pipe": ["harm5", "harm8", "harm12", "harm15", "harm19", "harm22", "harm26"]
                         },
                         {
                             "range": [84, 96],
