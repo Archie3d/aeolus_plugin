@@ -75,7 +75,7 @@
                     "name": "Cymbel\nVII",
                     "type": "principal",
                     "chiff": 1.2,
-                    "gain": 0.5,
+                    "gain": 0.25,
                     "zones": [
                         {
                             "range": [36, 47],
@@ -116,88 +116,60 @@
                 { "name": "Flute\n4",                 "type": "flute",        "pipe": "flute4",           "chiff": 0.4,  "gain": 1.6 },
                 { "name": "Twelfth\n2 2/3",           "type": "flute",        "pipe": "I_quinte_223",     "chiff": 0.4,  "gain": 1.5 },
                 { "name": "Fifteenth\n2",             "type": "principal",    "pipe": "superoctave2",     "chiff": 0.3,  "gain": 4.0 },
-                { "name": "Sesquialtera\nII",         "type": "principal",    "pipe": "sesqualtera",      "chiff": 0.17, "gain": 2.0 },
+                { "name": "Sesquialtera\nII",         "type": "principal",    "pipe": "sesqualtera",      "chiff": 0.17, "gain": 3.0 },
                 {
-                    "name": "Mixture\nIV",
+                    "name": "Mixture\nIII",
                     "type": "principal",
                     "gain": 2.0,
                     "chiff": 0.17,
                     "zones": [
                         {
                             "range": [36, 47],
-                            "pipe": ["mixtur3", "nasard", "superoctave2", "tertia", "II_quint_113", "I_octave_1"]
+                            "pipe": ["superoctave2", "II_quint_113", "I_octave_1"]
                         },
                         {
                             "range": [48, 59],
-                            "pipe": ["nasard", "superoctave2", "tertia", "II_quint_113"]
+                            "pipe": ["nasard", "superoctave2", "II_quint_113"]
                         },
                         {
                             "range": [60, 71],
-                            "pipe": ["mixtur3", "nasard", "superoctave2", "tertia"]
+                            "pipe": ["mixtur3", "nasard", "superoctave2"]
                         },
                         {
                             "range": [72, 83],
-                            "pipe": ["mixtur2", "mixtur3", "nasard", "superoctave2"]
+                            "pipe": ["mixtur2", "mixtur3", "nasard"]
                         },
                         {
                             "range": [84, 96],
-                            "pipe": ["mixtur1", "mixtur2", "mixtur3", "nasard"]
+                            "pipe": ["mixtur1", "mixtur2", "mixtur3"]
                         }
                     ]
                 },
                 {
-                    "name": "Mixture\nV",
-                    "type": "principal",
-                    "chiff": 0.25,
-                    "gain": 1.0,
-                    "zones": [
-                        {
-                            "range": [36, 47],
-                            "pipe": ["I_octave_2", "II_quint_113", "I_octave_1", "I_quint_26th", "I_octave_29th"]
-                        },
-                        {
-                            "range": [48, 59],
-                            "pipe": ["I_quinte_223", "I_octave_2", "II_quint_113", "I_octave_1", "I_quint_26th"]
-                        },
-                        {
-                            "range": [60, 71],
-                            "pipe": ["I_principal_4", "I_quinte_223", "I_octave_2", "II_quint_113", "I_octave_1"]
-                        },
-                        {
-                            "range": [72, 83],
-                            "pipe": ["I_principal_5th", "I_principal_4", "I_quinte_223", "I_octave_2", "II_quint_113"]
-                        },
-                        {
-                            "range": [84, 96],
-                            "pipe": ["I_principal_8", "I_principal_5th", "I_principal_4", "I_quinte_223", "I_octave_2"]
-                        }
-                    ]
-                },
-                {
-                    "name": "Fourniture\nV",
+                    "name": "Fourniture\nIV",
                     "type": "principal",
                     "chiff": 0.8,
-                    "gain": 1.0,
+                    "gain": 0.5,
                     "zones": [
                         {
                             "range": [36, 47],
-                            "pipe": ["harm24", "harm26", "harm29", "harm33", "harm36"]
+                            "pipe": ["harm26", "harm29", "harm33", "harm36"]
                         },
                         {
                             "range": [48, 59],
-                            "pipe": ["harm19","harm22", "harm24", "harm26", "harm29"]
+                            "pipe": ["harm19", "harm22", "harm26", "harm29"]
                         },
                         {
                             "range": [60, 71],
-                            "pipe": ["harm15", "harm17", "harm19","harm22", "harm26"]
+                            "pipe": ["harm15", "harm19", "harm22", "harm26"]
                         },
                         {
                             "range": [72, 83],
-                            "pipe": ["harm12", "harm15", "harm17", "harm19","harm22"]
+                            "pipe": ["harm12", "harm15", "harm19", "harm22"]
                         },
                         {
                             "range": [84, 96],
-                            "pipe": ["harm8", "harm12", "harm15", "harm17", "harm19"]
+                            "pipe": ["harm8", "harm12", "harm15", "harm19"]
                         }
                     ]
                 },
