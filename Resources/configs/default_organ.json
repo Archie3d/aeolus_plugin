@@ -157,19 +157,19 @@
                         },
                         {
                             "range": [48, 59],
-                            "pipe": ["harm19", "harm22", "harm26", "harm29"]
+                            "pipe": ["harm22", "harm26", "harm29", "harm33"]
                         },
                         {
                             "range": [60, 71],
-                            "pipe": ["harm15", "harm19", "harm22", "harm26"]
+                            "pipe": ["harm19", "harm22", "harm26", "harm29"]
                         },
                         {
                             "range": [72, 83],
-                            "pipe": ["harm12", "harm15", "harm19", "harm22"]
+                            "pipe": ["harm15", "harm19", "harm22", "harm26"]
                         },
                         {
                             "range": [84, 96],
-                            "pipe": ["harm8", "harm12", "harm15", "harm19"]
+                            "pipe": ["harm12", "harm15", "harm19", "harm22"]
                         }
                     ]
                 },
