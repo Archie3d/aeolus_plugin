@@ -204,9 +204,6 @@ void AeolusAudioProcessorEditor::resized()
 
     _panicButton.setBounds(_volumeSlider.getRight() + 40, margin, 50, 20);
 
-    constexpr int W = 120;
-    constexpr int H = 30;
-    constexpr int S = 5;
     constexpr int T = margin * 2 + 20;
     constexpr int sequencerHeight = 26;
     constexpr int keyboardHeight = 70;

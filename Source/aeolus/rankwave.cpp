@@ -394,8 +394,7 @@ Rankwave::Rankwave(Addsynth& model, const Scale& scale)
     , _scale(scale)
     , _pipes{}
 {
-    const int numPipes = _noteMax - _noteMin + 1;
-    jassert(numPipes > 0);
+    jassert(_noteMax - _noteMin + 1 > 0);
 
     const auto fn = _model.getFn();
     const auto fd = _model.getFd();

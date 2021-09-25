@@ -199,7 +199,6 @@ bool AeolusAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void AeolusAudioProcessor::processorLayoutsChanged()
 {
-    const auto numBuses = getBusCount(false);
 }
 
 #endif // JucePlugin_PreferredChannelConfigurations

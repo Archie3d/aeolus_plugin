@@ -48,15 +48,18 @@ var Parameters::toVar() const
 {
     Array<var> params;
 
-    for (int i = 0; i < processor.getNumParameters(); ++i) {
-        const auto id = processor.getParameterID(i);
-        const auto value = processor.getParameter(i);
+    for (auto* param : processor.getParameters()) {
+        if (auto* p = dynamic_cast<AudioProcessorParameterWithID*>(param))
+        {
+            const auto id = p->paramID;
+            const auto value = p->getValue();
 
-        auto* obj = new DynamicObject();
-        obj->setProperty("id", id);
-        obj->setProperty("value", value);
+            auto* obj = new DynamicObject();
+            obj->setProperty("id", id);
+            obj->setProperty("value", value);
 
-        params.add(var{obj});
+            params.add(var{obj});
+        }
     }
 
     return var{params};
