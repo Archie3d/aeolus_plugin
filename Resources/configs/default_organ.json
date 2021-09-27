@@ -95,7 +95,7 @@
                         },
                         {
                             "range": [84, 96],
-                            "pipe": ["harm1_2", "harm1", "harm5", "harm8", "harm12", "harm15", "harm19"]
+                            "pipe": ["harm1", "harm5", "harm8", "harm12", "harm15", "harm19", "harm22"]
                         }
                     ]
                 },
