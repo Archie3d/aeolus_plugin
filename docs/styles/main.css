@@ -28,5 +28,13 @@ img.screenshot {
 }
 
 table.playlist {
-    width: 800px;
+    width: 600px;
+}
+
+td.title {
+    width: 50%;
+}
+
+hr {
+    border: 1px solid grey;
 }

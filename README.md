@@ -13,11 +13,6 @@ This implementation contains additional improvements to the sound generation inc
 
 The original binary format for the pipe models and the organ configuration has been translated (partially) to JSON.
 
-## Demo
-:warning: These are a bit outdated.
-- [Pachelbel - Ciacona in Fm](demo/Pachelbel_Ciacona_in_Fm.mp3)
-- [Pachelbel - Chorale prelude](demo/Pachelbel_Chorale_prelude.mp3) 
-
 ## Implementation notes
 
 From the original implementation this project takes only `addsynth` and `rankwave` modules. These modules describe the 64-harmonics additive synth and organ pipes wavetables generation. Plus this repo includes the original `ae0` files that contain the harmonics tables for various pipes in binary format (these are embedded into the plugin's resources). All the new pipe models are in JSON.
