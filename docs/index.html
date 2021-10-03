@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="styles/main.css" rel="stylesheet"/>
+
+    <title>Aeolus</title>
+</head>
+<body>
+
+<h1>Aeolus</h1>
+
+<p>
+    Aeolus is a pipe organ synthesizer (VST plugin) inspired by the <a href="https://kokkinizita.linuxaudio.org/linuxaudio/aeolus/">original Aeolous</a> project.
+</p>
+
+<img class="screenshot" src="images/screenshot.png" width="1003" height="448" />
+
+<p>
+    The present implementation follows the pipes audio generation of the original Aeolous, but introduces a number of changes and improvements:
+
+    <ul>
+        <li>Pipe models can be composed of multiple pipes (to create proper mixtures);</li>
+        <li>Different pipes can be used across the keyboard compass (this enables mixtures breaking-back);</li>
+        <li>Pipes chiff noise is played on attack;</li>
+        <li>The plugin uses zero delay convolutional reverb with selectable IRs from <a href="https://www.openair.hosted.york.ac.uk/">OpenAir</a> library;</li>
+        <li>Registration presets also acts as a sequencer.</li>
+    </ul>
+</p>
+
+<h2>Download</h2>
+<a href="https://github.com/Archie3d/aeolus_plugin/releases">The latest plugin build can be downloaded here.</a>
+
+<h2>Recordings</h2>
+<p>
+The following pieces were performed by <a href="https://soundcloud.com/user-529417687">David Garner</a> using Aeolus plugin. He kindly provided me with these recordings.
+</p>
+
+<table class="playlist">
+    <tr>
+        <td>Walther - Herr Christ Der Ein</td>
+        <td><audio controls src="recordings/WalterHerChristDerEinigGottessohn20210803a.mp3" /></td>
+    </tr>
+    <tr>
+        <td>Danrieu - Dialogue</td>
+        <td><audio controls src="recordings/DandrieuDialogue20210819a.mp3" /></td>
+    </tr>
+    <tr>
+        <td>Boellmann - Interlude</td>
+        <td><audio controls src="recordings/BoellmannInterlude202010906a.mp3" /></td>
+    </tr>
+    <tr>
+        <td>Bach - Vom Himmel Hoch BWV606</td>
+        <td><audio controls src="recordings/BachVomHimmelHochBWV606_20210807a_WithAeolusOrgan.mp3" /></td>
+    </tr>
+</table>
+
+</body>
+</html>

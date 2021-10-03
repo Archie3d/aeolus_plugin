@@ -1,0 +1,32 @@
+body {
+    font-family: Verdana, Tahoma, Arial, Sans-serif;
+    font-size: 10pt;
+    line-height: 1.6;
+    color: #CCCCCC;
+    background-color: #333333;
+}
+
+h1 {
+    color: #FFFFFF;
+}
+
+h2 {
+    color: #EEEEEE;
+}
+
+a {
+    color: #6699FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img.screenshot {
+    box-shadow: 5px 5px 16px #000000;
+}
+
+table.playlist {
+    width: 800px;
+}
