@@ -49,7 +49,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
-    , _midiControlChannelLabel{{}, {"Conrol channel"}}
+    , _midiControlChannelLabel{{}, {"Control channel"}}
     , _midiControlChannelComboBox{}
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
