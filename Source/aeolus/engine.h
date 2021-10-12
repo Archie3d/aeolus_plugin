@@ -21,6 +21,7 @@
 
 #include "aeolus/globals.h"
 #include "aeolus/ringbuffer.h"
+#include "aeolus/scale.h"
 #include "aeolus/voice.h"
 #include "aeolus/addsynth.h"
 #include "aeolus/rankwave.h"
@@ -70,6 +71,12 @@ public:
 
     void updateStops(float sampleRate);
 
+    float getTuningFrequency() const noexcept { return _tuningFrequency; }
+    void setTuningFrequenct(float f) noexcept { _tuningFrequency = f; }
+
+    const Scale& getScale() const noexcept { return _scale; }
+    void setScaleType(Scale::Type type) noexcept { _scale.setType(type); }
+
     JUCE_DECLARE_SINGLETON (EngineGlobal, false)
 
 private:
@@ -84,6 +91,9 @@ private:
 
     std::vector<IR> _irs;
     int _longestIRLength;   ///< Longest IR length in samples
+
+    Scale _scale;
+    float _tuningFrequency;
 };
 
 //==============================================================================

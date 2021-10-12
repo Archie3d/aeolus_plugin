@@ -74,6 +74,10 @@ public:
 
     const Addsynth& getModel() const noexcept { return _model; }
 
+    // After changing the frequency of the pipe, the wavetable must be regenerated
+    // by calling prepareToPlay() method.
+    void setFrequency(float f) noexcept { _freq = f; }
+
     int getNote() const noexcept { return _note + _model.getNoteMin(); }
     float getFreqency() const noexcept { return _freq; }
     float getPipeFrequency() const noexcept;
@@ -122,7 +126,12 @@ private:
 class Rankwave
 {
 public:
-    Rankwave(Addsynth& model, const Scale& scale = Scale(Scale::EqualTemp));
+    Rankwave(Addsynth& model);
+
+    void createPipes(const Scale& scale, float tuningFreq);
+
+    // Recalculate pipes tuning based on the current global scale and A4 frequency.
+    void retunePipes(const Scale& scale, float tuningFreq);
 
     juce::String getStopName() const { return _model.getStopName(); }
     bool isForNote(int note) const noexcept { return note >= _noteMin && note <= _noteMax; }
@@ -137,7 +146,6 @@ private:
     Addsynth& _model;
     int _noteMin;
     int _noteMax;
-    Scale _scale;
 
     juce::OwnedArray<Pipewave> _pipes;
 };

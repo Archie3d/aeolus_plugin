@@ -33,7 +33,8 @@ public:
         : ThreadPoolJob(rw->getStopName())
         , _rankwave{rw}
         , _sampleRate{sampleRate}
-    {    
+
+    {
     }
 
     JobStatus runJob() override
@@ -52,6 +53,8 @@ private:
 
 EngineGlobal::EngineGlobal()
     : _rankwaves{}
+    , _scale(Scale::EqualTemp)
+    , _tuningFrequency(440.0f)
 {
     loadRankwaves();
     loadIRs();
@@ -108,6 +111,8 @@ void EngineGlobal::loadRankwaves()
         jassert(synth);
 
         auto rankwave = std::make_unique<Rankwave>(*synth);
+        rankwave->createPipes(_scale, _tuningFrequency);
+
         auto* ptr = rankwave.get();
         _rankwaves.add(rankwave.release());
         _rankwavesByName.set(ptr->getStopName(), ptr);

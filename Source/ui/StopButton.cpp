@@ -65,8 +65,8 @@ void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, b
     }
 
     g.setColour(color);
-    g.fillEllipse(bounds.getX() + offset, bounds.getY() + offset,
-                  bounds.getWidth() - 8, bounds.getHeight() - 8);
+    g.fillEllipse(float(bounds.getX() + offset), float(bounds.getY() + offset),
+                  float(bounds.getWidth() - 8), float(bounds.getHeight() - 8));
 
     Colour textColour = _stop.getType() == aeolus::Stop::Type::Reed
                                         ? (getToggleState() ? Colour(240, 40, 0) : Colour(128, 20, 0))

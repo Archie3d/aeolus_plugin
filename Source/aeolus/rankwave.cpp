@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------------------
 
 #include "rankwave.h"
+#include "engine.h"
 
 using namespace juce;
 
@@ -192,7 +193,6 @@ void Pipewave::play(Pipewave::State& state, float* out)
 void Pipewave::genwave()
 {
     thread_local static Random rnd;
-
 
     const float sampleRate_r = 1.0f / _sampleRate;
 
@@ -387,26 +387,44 @@ void Pipewave::attgain(float* att, int n, float p)
 
 //==============================================================================
 
-Rankwave::Rankwave(Addsynth& model, const Scale& scale)
+Rankwave::Rankwave(Addsynth& model)
     : _model(model)
     , _noteMin(model.getNoteMin())
     , _noteMax(model.getNoteMax())
-    , _scale(scale)
     , _pipes{}
 {
     jassert(_noteMax - _noteMin + 1 > 0);
+}
+
+void Rankwave::createPipes(const Scale& scale, float tuningFrequency)
+{
+    _pipes.clear();
 
     const auto fn = _model.getFn();
     const auto fd = _model.getFd();
-    const auto& s = scale.getTable();
 
-    float fbase = 440.0f;
-    fbase *= fn / (fd * s[9]);
+    const auto& s = scale.getTable();
+    float fbase = tuningFrequency * fn / (fd * s[9]);
 
     for (int i = _noteMin; i <= _noteMax; ++i) {
         auto pipe = std::make_unique<Pipewave>(_model, i - _noteMin, ldexpf(fbase * s[i % 12], i/12 - 5));
 
         _pipes.add(pipe.release());
+    }
+}
+
+void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
+{
+    const auto fn = _model.getFn();
+    const auto fd = _model.getFd();
+
+    const auto& s = scale.getTable();
+    float fbase = tuningFrequency * fn / (fd * s[9]);
+
+    for (int i = _noteMin; i <= _noteMax; ++i) {
+        Pipewave* pipe = _pipes[i - _noteMin];
+        pipe->setFrequency(ldexpf(fbase * s[i % 12], i/12 - 5));
+
     }
 }
 
@@ -421,6 +439,9 @@ Pipewave::State Rankwave::trigger(int note)
 {
     if (note < _noteMin || note > _noteMax)
         return {};
+
+    int index = note - _noteMin;
+    jassert(index >= 0 && index < (int)_pipes.size());
 
     Pipewave* pipe = _pipes[note - _noteMin];
     return pipe->trigger();
