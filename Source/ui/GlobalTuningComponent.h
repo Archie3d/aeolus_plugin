@@ -19,48 +19,34 @@
 
 #pragma once
 
+#include <functional>
 #include "aeolus/globals.h"
 
-#include <array>
+namespace ui {
 
-AEOLUS_NAMESPACE_BEGIN
-
-class Scale
+class GlobalTuningComponent : public juce::Component
 {
 public:
-    enum Type {
-        First = 0,
+    GlobalTuningComponent();
 
-        Pythagorean = 0,
-        MeanQuart,
-        Werckm3,
-        Kirnberg3,
-        WellTemp,
-        EqualTemp,
-        Ahrend,
-        Vallotti,
-        Kellner,
-        Lehman,
-        Pure,
+    float getTuningFrequency() const;
+    aeolus::Scale::Type getTuningScaleType() const;
 
-        Total
-    };
+    void resized() override;
 
-    using Table = std::array<float, 12>;
-    using Map = std::map<Type, Table>;
-
-    Scale(Type type = EqualTemp);
-    Type getType() const noexcept { return _type; }
-    void setType(Type t) noexcept { _type = t; }
-
-    const Table& getTable() const;
-
-    static juce::String getNameForType(Type type);
+    std::function<void()> onOk{};
+    std::function<void()> onCancel{};
 
 private:
-    Type _type;
+    juce::Label _globalTuningLabel;
+    juce::Label _tuningFrequencyLabel;
+    juce::Slider _tuningFrequencySlider;
+    juce::Label _scaleLabel;
+    juce::ComboBox _scaleComboBox;
 
-    const static Map _scales;
+    juce::TextButton _defaultButton;
+    juce::TextButton _okButton;
+    juce::TextButton _cancelButton;
 };
 
-AEOLUS_NAMESPACE_END
+} // namespace ui

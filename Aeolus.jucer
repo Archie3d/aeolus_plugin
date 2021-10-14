@@ -72,6 +72,10 @@
         <FILE id="ABDlK8" name="DivisionView.cpp" compile="1" resource="0"
               file="Source/ui/DivisionView.cpp"/>
         <FILE id="oWzSbD" name="DivisionView.h" compile="0" resource="0" file="Source/ui/DivisionView.h"/>
+        <FILE id="uSLj0t" name="GlobalTuningComponent.cpp" compile="1" resource="0"
+              file="Source/ui/GlobalTuningComponent.cpp"/>
+        <FILE id="LrvnWd" name="GlobalTuningComponent.h" compile="0" resource="0"
+              file="Source/ui/GlobalTuningComponent.h"/>
         <FILE id="si86HY" name="LevelIndicator.cpp" compile="1" resource="0"
               file="Source/ui/LevelIndicator.cpp"/>
         <FILE id="neJNeV" name="LevelIndicator.h" compile="0" resource="0"

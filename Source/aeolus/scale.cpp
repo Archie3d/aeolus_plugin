@@ -224,4 +224,28 @@ const Scale::Table& Scale::getTable() const
     return it->second;
 }
 
+juce::String Scale::getNameForType(Type type)
+{
+    static const std::map<Type, juce::String> names {
+        { Pythagorean, "Pythagorean" },
+        { MeanQuart,   "Meantone" },
+        { Werckm3,     "Werckmeister" },
+        { Kirnberg3,   "Kirnberger" },
+        { WellTemp,    "Well tempered" },
+        { EqualTemp,   "Equal temperament" },
+        { Ahrend,      "Ahrend" },
+        { Vallotti,    "Vallotti" },
+        { Kellner,     "Kellner" },
+        { Lehman,      "Lehman" },
+        { Pure,        "Just intonation / C" }
+    };
+
+    const auto it = names.find(type);
+
+    if (it != names.end())
+        return it->second;
+
+    return {};
+}
+
 AEOLUS_NAMESPACE_END

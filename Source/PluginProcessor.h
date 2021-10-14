@@ -29,18 +29,24 @@
 /**
 */
 class AeolusAudioProcessor : public juce::AudioProcessor,
-                                    juce::MidiKeyboardState::Listener
+                                    juce::MidiKeyboardState::Listener,
+                                    aeolus::EngineGlobal::ProcessorProxy
 {
 public:
     //==============================================================================
     AeolusAudioProcessor();
     ~AeolusAudioProcessor() override;
 
-    aeolus::Engine& getEngine() noexcept { return _engine; }
-
     Parameters& getParametersContainer() noexcept { return _parameters; }
 
     void panic() noexcept { _panicRequest = true; }
+
+    //==============================================================================
+    // aeolus::EngineGlobal::ProcessorProxy
+    juce::AudioProcessor* getAudioProcessor() override { return this; }
+    aeolus::Engine& getEngine() override { return _engine; }
+    void killAllVoices() override { panic(); }
+    int getNumberOfActiveVoices() override { return _engine.getVoiceCount(); }
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;

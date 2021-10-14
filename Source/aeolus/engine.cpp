@@ -60,6 +60,19 @@ EngineGlobal::EngineGlobal()
     loadIRs();
 }
 
+void EngineGlobal::registerProcessorProxy(ProcessorProxy* proxy)
+{
+    jassert(proxy != nullptr);
+    _processors.addIfNotAlreadyThere(proxy);
+}
+
+void EngineGlobal::unregisterProcessorProxy(ProcessorProxy* proxy)
+{
+    jassert(proxy != nullptr);
+    _processors.removeAllInstancesOf(proxy);
+}
+
+
 StringArray EngineGlobal::getAllStopNames() const
 {
     StringArray names;
@@ -80,6 +93,8 @@ Rankwave* EngineGlobal::getStopByName(const String& name)
 
 void EngineGlobal::updateStops(float sampleRate)
 {
+    _sampleRate = sampleRate;
+
     ThreadPool threadPool;
     std::atomic<int> done((int)_rankwaves.size());
     WaitableEvent wait;
@@ -100,6 +115,35 @@ void EngineGlobal::updateStops(float sampleRate)
     for (auto* rw : _rankwaves)
         rw->prepareToPlay(sampleRate);
 */
+}
+
+void EngineGlobal::rebuildRankwaves()
+{
+    // Prepare all the rankwaves to be retuned
+    for (auto* rw : _rankwaves) {
+        rw->retunePipes(_scale, _tuningFrequency);
+    }
+
+    // Kill all the active voices
+    int numActiveVoices = 0;
+
+    for (auto* processor : _processors) {
+        processor->killAllVoices();
+        numActiveVoices += processor->getNumberOfActiveVoices();
+    }
+
+    Thread::sleep(10);
+
+    // Wait for the voices to stop
+    while (numActiveVoices > 0) {
+        numActiveVoices = 0;
+        for (auto* processor : _processors) {
+            numActiveVoices += processor->getNumberOfActiveVoices();
+            Thread::sleep(100);
+        }
+    }
+
+    updateStops(_sampleRate);
 }
 
 void EngineGlobal::loadRankwaves()

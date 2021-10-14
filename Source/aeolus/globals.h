@@ -82,6 +82,12 @@ constexpr static float TREMULANT_LEVEL = 1.0f;
 /// Number of steps in the sequencer.
 constexpr static int SEQUENCER_N_STEPS = 16;
 
+/// mid-A tuning frequency.
+constexpr static float TUNING_FREQUENCY_MIN = 350.0f;
+constexpr static float TUNING_FREQUENCY_MAX = 550.0f;
+constexpr static float TUNING_FREQUENCY_STEP = 1.0f;
+constexpr static float TUNING_FREQUENCY_DEFAULT = 440.0f;
+
 //==============================================================================
 
 // MIDI controls

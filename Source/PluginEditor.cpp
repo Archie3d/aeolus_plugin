@@ -19,6 +19,7 @@
 
 #include "aeolus/engine.h"
 #include "ui/CustomLookAndFeel.h"
+#include "ui/GlobalTuningComponent.h"
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -47,6 +48,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeSlider{*p.getParametersContainer().volume, juce::Slider::LinearHorizontal}
     , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
+    , _tuningButton{"Tune"}
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
     , _midiControlChannelLabel{{}, {"Control channel"}}
@@ -105,6 +107,31 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     addAndMakeVisible(_volumeSlider);
     _volumeSlider.setSkewFactor(0.5f);
     _volumeSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
+
+    addAndMakeVisible(_tuningButton);
+    _tuningButton.onClick = [this] {
+        auto content = std::make_unique<ui::GlobalTuningComponent>();
+        content->setSize(240, 140);
+        auto* contentPtr = content.get();
+
+        auto& box = CallOutBox::launchAsynchronously(std::move(content), _tuningButton.getBounds(), this);
+        contentPtr->onCancel = [&box] { box.dismiss(); };
+        contentPtr->onOk = [&box, contentPtr] {
+            const float freq = contentPtr->getTuningFrequency();
+            const auto scaleType = contentPtr->getTuningScaleType();
+
+            auto* g = aeolus::EngineGlobal::getInstance();
+            const bool changed = (g->getTuningFrequency() != freq) || (g->getScale().getType() != scaleType);
+
+            if (changed) {
+                g->setTuningFrequency(freq);
+                g->setScaleType(scaleType);
+                g->rebuildRankwaves();
+            }
+
+            box.dismiss();
+        };
+    };
 
     _panicButton.setColour(TextButton::textColourOffId, Colour(0xFF, 0xFF, 0xFF));
     _panicButton.setColour(TextButton::buttonColourId, Colour(0xCC, 0x33, 0x00));
@@ -185,7 +212,7 @@ void AeolusAudioProcessorEditor::resized()
 
     constexpr int margin = 5;
 
-    _versionLabel.setBounds(getWidth() - 60, margin, 60 - margin, 20);
+    _versionLabel.setBounds(getWidth() - 60, getHeight() - 20, 60 - margin, 20);
 
     _cpuLoadLabel.setBounds(margin, margin, 70, 20);
     _cpuLoadValueLabel.setBounds(_cpuLoadLabel.getRight() + margin, margin, 36, 20);
@@ -202,7 +229,9 @@ void AeolusAudioProcessorEditor::resized()
     _volumeLevelL.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + 2, _volumeSlider.getWidth() - 10, 2);
     _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
 
-    _panicButton.setBounds(_volumeSlider.getRight() + 40, margin, 50, 20);
+    _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin, 60, 20);
+
+    _panicButton.setBounds(getWidth() - 90, margin, 50, 20);
 
     constexpr int T = margin * 2 + 20;
     constexpr int sequencerHeight = 26;

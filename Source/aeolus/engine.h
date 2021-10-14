@@ -36,6 +36,8 @@
 
 AEOLUS_NAMESPACE_BEGIN
 
+class Engine;
+
 /**
  * @brief A global shared instance of the organ engine.
  * 
@@ -44,6 +46,18 @@ AEOLUS_NAMESPACE_BEGIN
 class EngineGlobal : public juce::DeletedAtShutdown
 {
 public:
+
+    class ProcessorProxy
+    {
+    public:
+        virtual juce::AudioProcessor* getAudioProcessor() = 0;
+        virtual Engine& getEngine() = 0;
+        virtual void killAllVoices() = 0;
+        virtual int getNumberOfActiveVoices() = 0;
+    };
+
+    void registerProcessorProxy(ProcessorProxy* proxy);
+    void unregisterProcessorProxy(ProcessorProxy* proxy);
 
     /**
      * Impulse response descriptor for IRs embedded as binary resources.
@@ -72,10 +86,12 @@ public:
     void updateStops(float sampleRate);
 
     float getTuningFrequency() const noexcept { return _tuningFrequency; }
-    void setTuningFrequenct(float f) noexcept { _tuningFrequency = f; }
+    void setTuningFrequency(float f) noexcept { _tuningFrequency = f; }
 
     const Scale& getScale() const noexcept { return _scale; }
     void setScaleType(Scale::Type type) noexcept { _scale.setType(type); }
+
+    void rebuildRankwaves();
 
     JUCE_DECLARE_SINGLETON (EngineGlobal, false)
 
@@ -86,12 +102,15 @@ private:
     void loadRankwaves();
     void loadIRs();
 
+    juce::Array<ProcessorProxy*> _processors;
+
     juce::OwnedArray<Rankwave> _rankwaves;
     juce::HashMap<juce::String, Rankwave*> _rankwavesByName;
 
     std::vector<IR> _irs;
     int _longestIRLength;   ///< Longest IR length in samples
 
+    float _sampleRate;
     Scale _scale;
     float _tuningFrequency;
 };

@@ -77,6 +77,8 @@ public:
     // After changing the frequency of the pipe, the wavetable must be regenerated
     // by calling prepareToPlay() method.
     void setFrequency(float f) noexcept { _freq = f; }
+    void setNeedsToBeRebuilt(bool v) noexcept { _needsToBeRebuilt = v; }
+    bool doesNeedToBeRebuilt() const noexcept { return _needsToBeRebuilt.load(); }
 
     int getNote() const noexcept { return _note + _model.getNoteMin(); }
     float getFreqency() const noexcept { return _freq; }
@@ -99,6 +101,10 @@ private:
     int _note;
     float _freq;
     float _sampleRate;
+
+    // Tells whether this pipewave needs to be re-generated.
+    // This is required for example when changing the tuninig.
+    std::atomic<bool> _needsToBeRebuilt;
 
     int _attackLength;          // _l0
     int _loopLength;            // _l1

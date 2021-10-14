@@ -33,12 +33,16 @@ AeolusAudioProcessor::AeolusAudioProcessor()
     , _panicRequest{false}
 {
     _engine.getMidiKeyboardState().addListener(this);
+
+    aeolus::EngineGlobal::getInstance()->registerProcessorProxy(this);
 }
 
 AeolusAudioProcessor::~AeolusAudioProcessor()
 {
     // If we don't do this there is a leaked AccessibilityHandler instance detected.
     _engine.getMidiKeyboardState().removeListener(this);
+
+    aeolus::EngineGlobal::getInstance()->unregisterProcessorProxy(this);
 }
 
 //==============================================================================

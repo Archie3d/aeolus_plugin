@@ -30,6 +30,7 @@ Pipewave::Pipewave(Addsynth& model, int note, float freq)
     : _model(model)
     , _note(note)
     , _freq(freq)
+    , _needsToBeRebuilt{true}
 {
 
 }
@@ -41,7 +42,7 @@ float Pipewave::getPipeFrequency() const noexcept
 
 void Pipewave::prepateToPlay(float sampleRate)
 {
-    if (_wavetable.size() == 0 || _sampleRate != sampleRate) {
+    if (_wavetable.size() == 0 || _sampleRate != sampleRate || _needsToBeRebuilt.load()) {
         _sampleRate = sampleRate;
 
         genwave();
@@ -51,8 +52,12 @@ void Pipewave::prepateToPlay(float sampleRate)
 Pipewave::State Pipewave::trigger()
 {
     Pipewave::State state = {};
-    state.pipewave = this;
-    state.env = Pipewave::Attack;
+
+    if (!_needsToBeRebuilt.load()) {
+        state.pipewave = this;
+        state.env = Pipewave::Attack;
+    }
+
     return state;
 }
 
@@ -312,6 +317,8 @@ void Pipewave::genwave()
 
     for (int i = 0; i < _sampleStep * (SUB_FRAME_LENGTH + 4); ++i)
         _attackStartPtr[i + _attackLength + _loopLength] = _attackStartPtr[i + _attackLength];
+
+    _needsToBeRebuilt = false;
 }
 
 void Pipewave::looplen(float f, float sampleRate, int lmax, int& aa, int& bb)
@@ -424,7 +431,7 @@ void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
     for (int i = _noteMin; i <= _noteMax; ++i) {
         Pipewave* pipe = _pipes[i - _noteMin];
         pipe->setFrequency(ldexpf(fbase * s[i % 12], i/12 - 5));
-
+        pipe->setNeedsToBeRebuilt(true);
     }
 }
 
