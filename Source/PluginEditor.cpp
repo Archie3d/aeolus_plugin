@@ -124,7 +124,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     _tuningButton.onClick = [this] {
         auto content = std::make_unique<ui::GlobalTuningComponent>();
-        content->setSize(240, 140);
+        content->setSize(240, 144);
         auto* contentPtr = content.get();
 
         auto& box = CallOutBox::launchAsynchronously(std::move(content), _tuningButton.getBounds(), this);
@@ -243,7 +243,7 @@ void AeolusAudioProcessorEditor::resized()
     _volumeLevelL.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + 2, _volumeSlider.getWidth() - 10, 2);
     _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
 
-    _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin - 2, 60, 24);
+    _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin - 2, 24, 24);
 
     _panicButton.setBounds(getWidth() - 90, margin, 50, 20);
 

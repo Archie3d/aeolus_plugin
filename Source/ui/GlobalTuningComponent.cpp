@@ -30,7 +30,7 @@ GlobalTuningComponent::GlobalTuningComponent()
     : _globalTuningLabel {{}, "Global tuning settings"}
     , _tuningFrequencyLabel {{}, "Mid-A frequency"}
     , _tuningFrequencySlider{Slider::IncDecButtons, Slider::TextBoxLeft}
-    , _scaleLabel{{}, "Tuning"}
+    , _scaleLabel{{}, "Scale"}
     , _scaleComboBox{}
     , _defaultButton{"Default"}
     , _okButton{"OK"}
@@ -92,7 +92,7 @@ aeolus::Scale::Type GlobalTuningComponent::getTuningScaleType() const
 
 void GlobalTuningComponent::resized()
 {
-    constexpr int margin = 5;
+    constexpr int margin = 6;
 
     auto bounds = getLocalBounds();
     bounds.reduce(margin, margin);

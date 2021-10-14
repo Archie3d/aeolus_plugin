@@ -232,7 +232,7 @@ juce::String Scale::getNameForType(Type type)
         { Werckm3,     "Werckmeister" },
         { Kirnberg3,   "Kirnberger" },
         { WellTemp,    "Well tempered" },
-        { EqualTemp,   "Equal temperament" },
+        { EqualTemp,   "Equal tempered" },
         { Ahrend,      "Ahrend" },
         { Vallotti,    "Vallotti" },
         { Kellner,     "Kellner" },
