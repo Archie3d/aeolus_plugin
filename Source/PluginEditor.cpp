@@ -48,7 +48,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeSlider{*p.getParametersContainer().volume, juce::Slider::LinearHorizontal}
     , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
-    , _tuningButton{"Tune"}
+    , _tuningButton{"tuningButton", DrawableButton::ImageFitted}
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
     , _midiControlChannelLabel{{}, {"Control channel"}}
@@ -109,6 +109,19 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _volumeSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
     addAndMakeVisible(_tuningButton);
+
+    auto loadSVG = [](const char* data, size_t size) -> std::unique_ptr<Drawable> {
+        if (auto xml = parseXML(String::fromUTF8(data, (int)size))) {
+            return Drawable::createFromSVG(*xml);
+        }
+        return nullptr;
+    };
+
+    auto normalIcon = loadSVG(BinaryData::tuningfork_svg, BinaryData::tuningfork_svgSize);
+    auto hoverIcon = loadSVG(BinaryData::tuningforkhover_svg, BinaryData::tuningforkhover_svgSize);
+    _tuningButton.setImages(normalIcon.get(), hoverIcon.get());
+    _tuningButton.setMouseCursor(MouseCursor::PointingHandCursor);
+
     _tuningButton.onClick = [this] {
         auto content = std::make_unique<ui::GlobalTuningComponent>();
         content->setSize(240, 140);
@@ -127,6 +140,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
                 g->setTuningFrequency(freq);
                 g->setScaleType(scaleType);
                 g->rebuildRankwaves();
+                g->saveSettings();
             }
 
             box.dismiss();
@@ -229,7 +243,7 @@ void AeolusAudioProcessorEditor::resized()
     _volumeLevelL.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + 2, _volumeSlider.getWidth() - 10, 2);
     _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
 
-    _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin, 60, 20);
+    _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin - 2, 60, 24);
 
     _panicButton.setBounds(getWidth() - 90, margin, 50, 20);
 

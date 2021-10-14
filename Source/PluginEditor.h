@@ -89,7 +89,7 @@ private:
     ui::LevelIndicator _volumeLevelL;
     ui::LevelIndicator _volumeLevelR;
 
-    juce::TextButton _tuningButton;
+    juce::DrawableButton _tuningButton;
 
     /// Kill all active voices button
     juce::TextButton _panicButton;

@@ -74,6 +74,9 @@ public:
         juce::AudioBuffer<float> waveform;
     };
 
+    void loadSettings();
+    void saveSettings();
+
     int getStopsCount() const noexcept { return _rankwaves.size(); }
     Rankwave* getStop(int i) { return _rankwaves[i]; }
 
@@ -97,7 +100,7 @@ public:
 
 private:
     EngineGlobal();
-    ~EngineGlobal() override  { clearSingletonInstance(); }
+    ~EngineGlobal() override;
 
     void loadRankwaves();
     void loadIRs();
@@ -113,6 +116,8 @@ private:
     float _sampleRate;
     Scale _scale;
     float _tuningFrequency;
+
+    juce::ApplicationProperties _globalProperties;
 };
 
 //==============================================================================

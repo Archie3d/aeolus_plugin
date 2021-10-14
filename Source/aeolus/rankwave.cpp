@@ -447,8 +447,12 @@ Pipewave::State Rankwave::trigger(int note)
     if (note < _noteMin || note > _noteMax)
         return {};
 
-    int index = note - _noteMin;
-    jassert(index >= 0 && index < (int)_pipes.size());
+    const int index = note - _noteMin;
+
+    if (!isPositiveAndBelow(index, _pipes.size())) {
+        jassertfalse;
+        return {};
+    }
 
     Pipewave* pipe = _pipes[note - _noteMin];
     return pipe->trigger();

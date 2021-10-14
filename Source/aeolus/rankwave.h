@@ -64,6 +64,7 @@ public:
         float chiffGain = 0.0f;
 
         void release() { if (pipewave != nullptr) pipewave->release(*this); }
+        bool isTriggered() const noexcept { return pipewave != nullptr && env == Attack; }
         bool isIdle() const noexcept { return env == Idle; }
         bool isOver() const noexcept { return env == Over; }
         void reset() { pipewave = nullptr; env = Idle;}

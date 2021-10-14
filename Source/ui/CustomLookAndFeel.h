@@ -45,6 +45,7 @@ public:
 
     int getSliderThumbRadius(juce::Slider&) override { return 6; }
 
+    void drawCallOutBoxBackground(juce::CallOutBox&, juce::Graphics&, const juce::Path&, juce::Image&) override;
 
     static const juce::Font& getStopButtonFont();
 

@@ -109,6 +109,11 @@
             file="Source/PluginProcessor.h"/>
     </GROUP>
     <GROUP id="{9E90580A-EE5A-EE88-9338-83E8FEECB687}" name="Resources">
+      <GROUP id="{818AC889-AD97-87EC-B3B9-6F634DCD9936}" name="images">
+        <FILE id="wvRCwD" name="tuning-fork-hover.svg" compile="0" resource="1"
+              file="Resources/images/tuning-fork-hover.svg"/>
+        <FILE id="MIIEWv" name="tuning-fork.svg" compile="0" resource="1" file="Resources/images/tuning-fork.svg"/>
+      </GROUP>
       <GROUP id="{D8B82854-C2FA-AA1F-D5C8-36DAC5781517}" name="icons">
         <FILE id="LO441C" name="icon64.png" compile="0" resource="1" file="Resources/icons/icon64.png"/>
         <FILE id="WQXHsa" name="icon256.png" compile="0" resource="1" file="Resources/icons/icon256.png"/>

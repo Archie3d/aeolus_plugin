@@ -64,6 +64,9 @@ CustomLookAndFeel::CustomLookAndFeel()
 
     setColour(TextButton::buttonOnColourId, Colours::lightgrey);
     setColour(TextButton::textColourOnId,   Colours::white);
+
+    getCurrentColourScheme().setUIColour(ColourScheme::UIColour::widgetBackground, Colour(0x33, 0x33, 0x33));
+    getCurrentColourScheme().setUIColour(ColourScheme::UIColour::outline, Colour(0x66, 0x66, 0x66));
 }
 
 void CustomLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width, int height,
@@ -183,6 +186,26 @@ void CustomLookAndFeel::drawRoundThumb(Graphics& g, float x, float y, float diam
 
     g.setColour(colour.brighter());
     g.strokePath(p, PathStrokeType (outlineThickness));
+}
+
+void CustomLookAndFeel::drawCallOutBoxBackground(CallOutBox& box, Graphics& g, const Path& path, Image& cachedImage)
+{
+    if (cachedImage.isNull())
+    {
+        cachedImage = { Image::ARGB, box.getWidth(), box.getHeight(), true };
+        Graphics g2 (cachedImage);
+
+        DropShadow (Colours::black.withAlpha (0.8f), 8, { 2, 2 }).drawForPath (g2, path);
+    }
+
+    g.setColour (Colours::black);
+    g.drawImageAt (cachedImage, 0, 0);
+
+    g.setColour (getCurrentColourScheme().getUIColour (ColourScheme::UIColour::widgetBackground).withAlpha (0.8f));
+    g.fillPath (path);
+
+    g.setColour (getCurrentColourScheme().getUIColour (ColourScheme::UIColour::outline).withAlpha (0.8f));
+    g.strokePath (path, PathStrokeType (1.0f));
 }
 
 } // namespace ui

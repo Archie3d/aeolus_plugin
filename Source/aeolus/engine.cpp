@@ -51,13 +51,36 @@ private:
 
 //==============================================================================
 
+namespace settings {
+const static char* tuningFrequency = "tuningFrequency";
+const static char* tuningTemperament = "tuningTemperament";
+}
+
 EngineGlobal::EngineGlobal()
     : _rankwaves{}
     , _scale(Scale::EqualTemp)
-    , _tuningFrequency(440.0f)
+    , _tuningFrequency(TUNING_FREQUENCY_DEFAULT)
+    , _globalProperties{}
 {
+    PropertiesFile::Options options{};
+
+    options.applicationName = ProjectInfo::projectName;
+    options.filenameSuffix = ".settings";
+    options.osxLibrarySubFolder = "~/Library/Application Support";
+    options.storageFormat = PropertiesFile::storeAsXML;
+
+    _globalProperties.setStorageParameters(options);
+
+    loadSettings();
+
     loadRankwaves();
     loadIRs();
+}
+
+EngineGlobal::~EngineGlobal()
+{
+    saveSettings();
+    clearSingletonInstance();
 }
 
 void EngineGlobal::registerProcessorProxy(ProcessorProxy* proxy)
@@ -72,6 +95,26 @@ void EngineGlobal::unregisterProcessorProxy(ProcessorProxy* proxy)
     _processors.removeAllInstancesOf(proxy);
 }
 
+void EngineGlobal::loadSettings()
+{
+    if (auto* propertiesFile = _globalProperties.getUserSettings()) {
+        _tuningFrequency = (float) propertiesFile->getDoubleValue(settings::tuningFrequency, TUNING_FREQUENCY_DEFAULT);
+        int scaleType = propertiesFile->getIntValue(settings::tuningTemperament, (int)Scale::EqualTemp);
+        if (scaleType >= (int)Scale::First && scaleType < (int)Scale::Total) {
+            _scale.setType(static_cast<Scale::Type>(scaleType));
+        }
+    }
+}
+
+void EngineGlobal::saveSettings()
+{
+    if (auto* propertiesFile = _globalProperties.getUserSettings()) {
+        propertiesFile->setValue(settings::tuningFrequency, _tuningFrequency);
+        propertiesFile->setValue(settings::tuningTemperament, (int)_scale.getType());
+    }
+
+    _globalProperties.saveIfNeeded();
+}
 
 StringArray EngineGlobal::getAllStopNames() const
 {
@@ -132,12 +175,13 @@ void EngineGlobal::rebuildRankwaves()
         numActiveVoices += processor->getNumberOfActiveVoices();
     }
 
-    Thread::sleep(10);
+    Thread::sleep(100);
 
-    // Wait for the voices to stop
+    // Wait for the voices to release
     while (numActiveVoices > 0) {
         numActiveVoices = 0;
         for (auto* processor : _processors) {
+            processor->killAllVoices();
             numActiveVoices += processor->getNumberOfActiveVoices();
             Thread::sleep(100);
         }

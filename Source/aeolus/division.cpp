@@ -335,11 +335,16 @@ void Division::noteOn(int note, int midiChannel)
             if (zone.isForKey(note)) {
                 for (auto* rw : zone.rankwaves) {
                     auto state = rw->trigger(note);
-                    state.gain = stop.getGain();
-                    state.chiffGain = stop.getChiffGain();
 
-                    if (auto* voice = _engine.getVoicePool().trigger(state))
-                        _activeVoices.append(voice);
+                    // Rankwave may be in the middle of construction, in this case
+                    // we don't trigger a voice.
+                    if (state.isTriggered()) {
+                        state.gain = stop.getGain();
+                        state.chiffGain = stop.getChiffGain();
+
+                        if (auto* voice = _engine.getVoicePool().trigger(state))
+                            _activeVoices.append(voice);
+                    }
                 }
             }
         }

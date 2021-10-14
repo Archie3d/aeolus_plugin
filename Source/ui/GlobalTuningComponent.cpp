@@ -40,6 +40,7 @@ GlobalTuningComponent::GlobalTuningComponent()
 
     addAndMakeVisible(_globalTuningLabel);
     _globalTuningLabel.setJustificationType(Justification::centred);
+    _globalTuningLabel.setColour(Label::textColourId, Colours::lightyellow);
     auto font = _globalTuningLabel.getFont();
     font.setHeight(font.getHeight() * 1.2f);
     _globalTuningLabel.setFont(font);
@@ -73,6 +74,10 @@ GlobalTuningComponent::GlobalTuningComponent()
     _cancelButton.onClick = [this] {
         if (onCancel) onCancel();
     };
+
+    _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
+    _okButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
+    _defaultButton.setColour(TextButton::buttonColourId, Colour(0x46, 0x60, 0x16));
 }
 
 float GlobalTuningComponent::getTuningFrequency() const
@@ -94,7 +99,7 @@ void GlobalTuningComponent::resized()
 
     _globalTuningLabel.setBounds(bounds.removeFromTop(20));
 
-    bounds.removeFromTop(2 * margin);
+    bounds.removeFromTop(3 * margin);
     auto row = bounds.removeFromTop(20);
     _tuningFrequencyLabel.setBounds(row.removeFromLeft(120));
     _tuningFrequencySlider.setBounds(row.removeFromLeft(110));
