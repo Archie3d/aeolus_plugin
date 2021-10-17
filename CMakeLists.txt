@@ -31,7 +31,7 @@ set(plugin_formats
 )
 
 juce_add_plugin(${PROJECT_NAME}
-    VERSION "0.1.11"
+    VERSION "0.1.12"
     PLUGIN_MANUFACTURER_CODE "Arbe"
     PLUGIN_CODE "E6he"
     PLUGIN_DESCRIPTION "Aeolus"
