@@ -232,6 +232,7 @@ public:
      */
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
 
+    // Multibus version of the processing (does not include the convolver).
     void process(juce::AudioBuffer<float>& out, bool isNonRealtime = false);
 
     /**

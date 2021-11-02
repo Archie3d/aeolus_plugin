@@ -27,6 +27,7 @@ AEOLUS_NAMESPACE_BEGIN
 Voice::Voice(Engine& engine)
     : _engine(engine)
     , _state{}
+    , _stopIndex{-1}
     , _buffer{0}
     , _delayLine{SAMPLE_RATE}
     , _delay{0.0f}
@@ -93,6 +94,7 @@ void Voice::release()
 void Voice::reset()
 {
     _state.reset();
+    _stopIndex = -1;
 
     memset(_buffer, 0, sizeof(float) * SUB_FRAME_LENGTH);
 
@@ -138,6 +140,11 @@ void Voice::process(float* outL, float* outR)
 bool Voice::isOver() const noexcept
 {
     return (_state.env == Pipewave::Over) && _postReleaseCounter == 0;
+}
+
+bool Voice::isActive() const noexcept
+{
+    return _state.env == Pipewave::Attack;
 }
 
 bool Voice::isForNote(int note) const noexcept

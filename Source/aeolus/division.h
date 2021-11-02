@@ -29,6 +29,7 @@
 
 #include <atomic>
 #include <vector>
+#include <bitset>
 
 AEOLUS_NAMESPACE_BEGIN
 
@@ -141,6 +142,9 @@ public:
     bool process(juce::AudioBuffer<float>& targetBuffer, juce::AudioBuffer<float>& voiceBuffer);
     void modulate(juce::AudioBuffer<float>& targetBuffer, const juce::AudioBuffer<float>& tremulantBuffer);
 
+    void releaseVoicesOfDisabledStops();
+    void triggerVoicesOfEnabledStops();
+
     List<Voice>& getActiveVoices() noexcept { return _activeVoices; }
 
     /**
@@ -157,6 +161,8 @@ public:
     void clearTriggerFlag() noexcept { _triggerFlag = false; }
 
 private:
+
+    bool triggerVoicesForStop(int stopIndex, int note);
 
     Engine& _engine;
 
@@ -189,6 +195,8 @@ private:
     std::vector<Stop> _stops;   ///< All the stops this division has.
 
     List<Voice> _activeVoices;  ///< Active voices on this division.
+
+    std::bitset<128> _keysState; ///< MIDI keys state 1 = on, 0 = off.
 
     /// Tells whether this division has been triggered.
     /// This is used to avoid a division to be triggered multiple

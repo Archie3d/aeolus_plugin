@@ -48,7 +48,11 @@ public:
     void reset();
     void process(float* outL, float* outR);
     bool isOver() const noexcept;
+    bool isActive() const noexcept;
     bool isForNote(int note) const noexcept;
+
+    void setStopIndex(int idx) noexcept { _stopIndex = idx; }
+    int stopIndex() const noexcept { return _stopIndex; }
 
     void resetAndReturnToPool();
 
@@ -57,6 +61,10 @@ public:
 private:
     Engine& _engine;
     Pipewave::State _state; ///< Pipe state associated with this voice.
+    
+    /// Index of the stop associated with this voice.
+    /// This is used to tell which stops are voiced.
+    int _stopIndex;
 
     float _buffer[SUB_FRAME_LENGTH];
 

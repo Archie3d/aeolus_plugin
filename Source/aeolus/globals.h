@@ -66,6 +66,9 @@ constexpr static int NOTE_MIN = 36;
 /// Highest possible note.
 constexpr static int NOTE_MAX = 96;
 
+/// Total number of MIDI notes.
+constexpr static int TOTAL_NOTES = 128;
+
 /// Maxumim number of pipes in combined stops (like mixtures)
 constexpr static int MAX_RANK = 5;
 

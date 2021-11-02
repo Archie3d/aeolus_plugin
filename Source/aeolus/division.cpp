@@ -44,6 +44,7 @@ Division::Division(Engine& engine, const String& name)
     , _swellFilterStateR{}
     , _stops{}
     , _activeVoices{}
+    , _keysState{}
     , _triggerFlag{}
     , _volumeLevel{}
 {
@@ -327,28 +328,10 @@ void Division::noteOn(int note, int midiChannel)
 
     _triggerFlag = true;
 
-    for (const auto& stop : _stops) {
-        if (!stop.isEnabled())
-            continue;
+    for (int stopIndex = 0; stopIndex < (int)_stops.size(); ++stopIndex)
+        triggerVoicesForStop(stopIndex, note);
 
-        for (const auto& zone : stop.getZones()) {
-            if (zone.isForKey(note)) {
-                for (auto* rw : zone.rankwaves) {
-                    auto state = rw->trigger(note);
-
-                    // Rankwave may be in the middle of construction, in this case
-                    // we don't trigger a voice.
-                    if (state.isTriggered()) {
-                        state.gain = stop.getGain();
-                        state.chiffGain = stop.getChiffGain();
-
-                        if (auto* voice = _engine.getVoicePool().trigger(state))
-                            _activeVoices.append(voice);
-                    }
-                }
-            }
-        }
-    }
+    _keysState.set(note);
 
     // Forward to the linked divisions
     for (auto& link : _linkedDivisions) {
@@ -377,6 +360,8 @@ void Division::noteOff(int note, int midiChannel)
         voice = voice->next();
     }
 
+    _keysState.reset(note);
+
     // Forward to the linked divisions
     for (auto& link : _linkedDivisions) {
         if (link.enabled) {
@@ -387,6 +372,8 @@ void Division::noteOff(int note, int midiChannel)
 
 void Division::allNotesOff()
 {
+    _keysState.reset();
+
     auto* voice = _activeVoices.first();
 
     while (voice != nullptr) {
@@ -399,6 +386,9 @@ bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voi
 {
     jassert(targetBuffer.getNumSamples() == SUB_FRAME_LENGTH);
     jassert(voiceBuffer.getNumSamples() == SUB_FRAME_LENGTH);
+
+    releaseVoicesOfDisabledStops();
+    triggerVoicesOfEnabledStops();
 
     auto* voice = _activeVoices.first();
 
@@ -498,6 +488,92 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
         dsp::BiquadFilter::process(_swellFilterSpec, _swellFilterStateR, outR, outR, SUB_FRAME_LENGTH);
     }
 #endif
+}
+
+void Division::releaseVoicesOfDisabledStops()
+{
+    auto* voice = _activeVoices.first();
+
+    while (voice != nullptr) {
+        if (voice->isActive()) {
+            const int stopIndex = voice->stopIndex();
+
+            if (isPositiveAndBelow(stopIndex, _stops.size())) {
+                const auto& stop = _stops[stopIndex];
+
+                if (!stop.isEnabled())
+                    voice->release();
+            }
+        }
+
+        voice = voice->next();
+    }
+}
+
+void Division::triggerVoicesOfEnabledStops()
+{
+    for (int stopIndex = 0; stopIndex < _stops.size(); ++stopIndex) {
+        auto& stop = _stops[stopIndex];
+
+        if (!stop.isEnabled())
+            continue;
+
+        bool hasVoices = false;
+
+        auto* voice = _activeVoices.first();
+
+        while (voice != nullptr) {
+            if (voice->stopIndex() == stopIndex) {
+                hasVoices = true;
+                break;
+            }
+
+            voice = voice->next();
+        }
+
+        // Trigger voices for enabled stops
+        if (!hasVoices) {
+            for (int note = 0; note < _keysState.size(); ++note) {
+                if (_keysState[note])
+                    triggerVoicesForStop(stopIndex, note);
+            }
+        }
+    }
+}
+
+bool Division::triggerVoicesForStop(int stopIndex, int note)
+{
+    jassert(isPositiveAndBelow(stopIndex, _stops.size()));
+
+    const auto& stop = _stops[stopIndex];
+
+    if (!stop.isEnabled())
+        return false;
+
+    bool voiceTriggered = false;
+
+    for (const auto& zone : stop.getZones()) {
+        if (zone.isForKey(note)) {
+            for (auto* rw : zone.rankwaves) {
+                auto state = rw->trigger(note);
+
+                // Rankwave may be in the middle of construction, in this case
+                // we don't trigger a voice.
+                if (state.isTriggered()) {
+                    state.gain = stop.getGain();
+                    state.chiffGain = stop.getChiffGain();
+
+                    if (auto* voice = _engine.getVoicePool().trigger(state)) {
+                        voice->setStopIndex(stopIndex);
+                        _activeVoices.append(voice);
+                        voiceTriggered = true;
+                    }
+                }
+            }
+        }
+    }
+
+    return voiceTriggered;
 }
 
 AEOLUS_NAMESPACE_END
