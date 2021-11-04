@@ -35,13 +35,15 @@ Division::Division(Engine& engine, const String& name)
     , _midiChannel{0}
     , _tremulantEnabled{false}
     , _tremulantLevel{0.0f}
-    , _tremulantMaxLevel{1.0f}
+    , _tremulantMaxLevel{TREMULANT_TARGET_LEVEL}
     , _tremulantTargetLevel{0.0f}
     , _paramGain{nullptr}
     , _params{Division::NUM_PARAMS}
     , _swellFilterSpec{}
     , _swellFilterStateL{}
     , _swellFilterStateR{}
+    , _tremulantDelayL(TREMULANT_DELAY_LENGTH)
+    , _tremulantDelayR(TREMULANT_DELAY_LENGTH)
     , _stops{}
     , _activeVoices{}
     , _keysState{}
@@ -313,7 +315,7 @@ float Division::getTremulantLevel(bool update)
     const auto level = _tremulantLevel;
 
     if (update)
-        _tremulantLevel += 0.5f * (_tremulantTargetLevel - _tremulantLevel);
+        _tremulantLevel += 0.1f * (_tremulantTargetLevel - _tremulantLevel);
 
     return level;
 }
@@ -473,9 +475,20 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
     jassert(outR != nullptr);
 
     for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
+        _tremulantDelayL.write(outL[i]);
+        _tremulantDelayR.write(outR[i]);
+
         const float g = (1.0f + gain[i] * lvl) * paramGain.nextValue();
-        outL[i] *= g;
-        outR[i] *= g;
+
+        constexpr float freqModCenter = TREMULANT_DELAY_LENGTH * 0.5f;
+        constexpr float freqModAmp = TREMULANT_DELAY_LENGTH * 0.5f * TREMULANT_DELAY_MODULATION_LEVEL;
+
+        const float p = freqModCenter + freqModAmp * (0.5f - gain[i] * lvl);
+        outL[i] = _tremulantDelayL.read(p) * g;
+        outR[i] = _tremulantDelayR.read(p) * g;
+
+        //outL[i] *= g;
+        //outR[i] *= g;
     }
 
     // Apply swell filter

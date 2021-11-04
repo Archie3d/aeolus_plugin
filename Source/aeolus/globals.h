@@ -81,6 +81,9 @@ constexpr static float TREMULANT_PHASE_INCREMENT = juce::MathConstants<float>::t
 
 /// Tremulant OSC wavetable amplitude.
 constexpr static float TREMULANT_LEVEL = 1.0f;
+constexpr static float TREMULANT_TARGET_LEVEL = 0.5f; // Amplitude modulation level.
+constexpr static size_t TREMULANT_DELAY_LENGTH = 32; // Frequency modulation delay line length (in samples).
+constexpr static float TREMULANT_DELAY_MODULATION_LEVEL = 0.9f; // Frequency modulation level.
 
 /// Number of steps in the sequencer.
 constexpr static int SEQUENCER_N_STEPS = 16;
