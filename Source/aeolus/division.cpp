@@ -486,9 +486,6 @@ void Division::modulate(juce::AudioBuffer<float>& targetBuffer, const juce::Audi
         const float p = freqModCenter + freqModAmp * (0.5f - gain[i] * lvl);
         outL[i] = _tremulantDelayL.read(p) * g;
         outR[i] = _tremulantDelayR.read(p) * g;
-
-        //outL[i] *= g;
-        //outR[i] *= g;
     }
 
     // Apply swell filter
