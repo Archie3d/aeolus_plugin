@@ -355,7 +355,7 @@ namespace sse {
     }
 
     namespace fma {
-
+#if 0
         void mul_const_add(float* out, const float* in, const float k, size_t size)
         {
             assert ((size & 0x3) == 0);
@@ -501,11 +501,12 @@ namespace sse {
                 _mm_store_ps ((float*)&data[i], r2);
             }
         }
-
+#endif
     } // namespace fma
 
 } // namespace sse
 
+#if 0
 namespace avx {
 
     void add(float* out, const float* in, size_t size)
@@ -947,6 +948,7 @@ namespace avx {
     } // namespace fma
 
 } // namespace avx
+#endif
 
 #endif // SIMD
 
@@ -979,6 +981,7 @@ static const bool simd_map = []() -> bool {
         simd::complex_mul_conj     = &sse::complex_mul_conj;
         simd::fft_step             = &sse::fft_step;
 
+#if 0
         if (cpu.fma) {
             simd::mul_const_add        = &sse::fma::mul_const_add;
             simd::mul_reduce           = &sse::fma::mul_reduce;
@@ -987,8 +990,10 @@ static const bool simd_map = []() -> bool {
             simd::complex_mul_conj     = &sse::fma::complex_mul_conj;
             simd::fft_step             = &sse::fma::fft_step;
         }
+#endif
     }
 
+#if 0
     if (cpu.avx) {
         simd::add                  = &avx::add;
         simd::mul_const_add        = &avx::mul_const_add;
@@ -1009,6 +1014,7 @@ static const bool simd_map = []() -> bool {
             simd::fft_step             = &avx::fma::fft_step;
         }
     }
+#endif
 
     return true;
 }();

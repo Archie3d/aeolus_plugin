@@ -491,7 +491,7 @@ private:
 
         bool dephase = false;
         size_t preconvolveIndex = 0;
-        std::atomic<bool> preconvolved = false;
+        std::atomic<bool> preconvolved {false};
 
         Block()
         {

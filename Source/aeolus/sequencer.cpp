@@ -34,7 +34,7 @@ var Sequencer::DivisionState::getPersistentState() const
     Array<var> stopsArr;
 
     for (const auto& s : stops)
-        stopsArr.add(s);
+        stopsArr.add(var(s));
 
     obj->setProperty("stops", stopsArr);
     obj->setProperty("tremulant", tremulant);
@@ -42,7 +42,7 @@ var Sequencer::DivisionState::getPersistentState() const
     Array<var> linksArr;
 
     for (const auto& l : links)
-        linksArr.add(l);
+        linksArr.add(var(l));
 
     obj->setProperty("links", linksArr);
 

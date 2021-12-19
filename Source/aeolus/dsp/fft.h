@@ -68,7 +68,29 @@ struct DanielsonLanczos
 {
     using Next = DanielsonLanczos<N / 2, T>;
 
-    inline static std::array<float, N> w alignas(32) = []() {
+    const static std::array<float, N> w alignas(32);
+
+    inline static void apply(T* data)
+    {
+        Next::apply(data);
+        Next::apply(data + N);
+
+        simd::fft_step(data, w.data(), N);
+    }
+
+    inline static void apply_real(T* data)
+    {
+        apply(data);
+    }
+
+    inline static void apply_real_padded(T* data)
+    {
+        apply (data);
+    }
+};
+
+template<unsigned N, typename T>
+    const std::array<float, N> DanielsonLanczos<N, T>::w alignas(32) = []() {
         std::array<float, N> w;
 
         w[0] = 1.0f;
@@ -89,28 +111,9 @@ struct DanielsonLanczos
             wr += wr * wpr - wi * wpi;
             wi += wi * wpr + wtemp * wpi;
         }
-
+        
         return w;
     }();
-
-    inline static void apply(T* data)
-    {
-        Next::apply(data);
-        Next::apply(data + N);
-
-        simd::fft_step(data, w.data(), N);
-    }
-
-    inline static void apply_real(T* data)
-    {
-        apply(data);
-    }
-
-    inline static void apply_real_padded(T* data)
-    {
-        apply (data);
-    }
-};
 
 template<typename T>
 struct DanielsonLanczos<4, T>

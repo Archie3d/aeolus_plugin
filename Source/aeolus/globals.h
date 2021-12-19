@@ -147,7 +147,7 @@ template<unsigned M, unsigned N, unsigned B, unsigned A>
 struct SinCosSeries
 {
     constexpr static double value =
-        1.0 - (A * juce::MathConstants<double>::pi / B) * ( A * juce::MathConstants<double>::pi / B) / M / (M + 1)
+    1.0 - (A * juce::MathConstants<double>::pi / B) * ( A * juce::MathConstants<double>::pi / B) / M / (M + 1)
         * SinCosSeries<M + 2, N, B, A>::value;
 };
 
