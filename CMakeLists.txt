@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 3.16)
 project(Aeolus)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "Runtime Library")
@@ -31,7 +32,7 @@ set(plugin_formats
 )
 
 juce_add_plugin(${PROJECT_NAME}
-    VERSION "0.1.12"
+    VERSION "0.1.13"
     PLUGIN_MANUFACTURER_CODE "Arbe"
     PLUGIN_CODE "E6he"
     PLUGIN_DESCRIPTION "Aeolus"
