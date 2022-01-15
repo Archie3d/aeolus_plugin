@@ -40,6 +40,11 @@ jobs:
       if: matrix.config.os == 'windows-latest'
       uses: seanmiddleditch/gha-setup-ninja@master
 
+    - name: Install Linux dependencies
+      if: matrix.congig.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get install libx11-dev libfreetype-dev libasound2-dev libxrandr-dev libxinerama-dev libxcursor-dev
+
     - name: Compile
       if: matrix.config.os == 'windows-latest'
       run: |
