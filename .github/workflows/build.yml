@@ -31,15 +31,25 @@ jobs:
             }
 
     steps:
-    - name: Install Ninja
-      uses: seanmiddleditch/gha-setup-ninja@master
-
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Install Ninja
+      if: matrix.config.os == 'windows-latest'
+      uses: seanmiddleditch/gha-setup-ninja@master
+
     - name: Compile
+      if: matrix.config.os == 'windows-latest'
       run: |
         mkdir build
         cd build
         cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+        cmake --build .
+
+    - name: Compile
+      if: matrix.config.os == 'ubuntu-latest'
+      run: |
+        mkdir -p build
+        cd build
+        cmake ../ -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
         cmake --build .
