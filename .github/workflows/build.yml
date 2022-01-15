@@ -28,8 +28,6 @@ jobs:
         mkdir build
         cd build
         cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=Release
-      run: |
-        cd build
         cmake --build .
 
   ubuntu-gcc-build:
@@ -48,6 +46,4 @@ jobs:
         mkdir -p build
         cd build
         cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=Release
-      run: |
-        cd build
         cmake --build .
