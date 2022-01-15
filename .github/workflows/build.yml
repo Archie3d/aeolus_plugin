@@ -1,0 +1,56 @@
+name: Build Aeolus plugin
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+
+jobs:
+  windows-msvc-build:
+    timeout-miutes: 30
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    build_type: "Release"
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Compile
+      uses: seanmiddleditch/gha-setup-ninja@master
+      shell: powershell
+      run: |
+        mkdir -Force build
+        cd build
+        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ build_type }}
+      run: |
+        cd build
+        cmake --build .
+
+  ubuntu-gcc-build:
+    timeout-miutes: 30
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    build_type: "Release"
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Compile
+      uses: seanmiddleditch/gha-setup-ninja@master
+      run: |
+        mkdir -p build
+        cd build
+        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ build_type }}
+      run: |
+        cd build
+        cmake --build .
