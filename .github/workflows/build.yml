@@ -47,6 +47,7 @@ jobs:
 
     - name: Compile Windows
       if: matrix.config.os == 'windows-latest'
+      shell: cmd
       run: |
         mkdir build
         cd build
