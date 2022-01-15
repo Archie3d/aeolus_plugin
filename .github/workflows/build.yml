@@ -22,10 +22,7 @@ jobs:
           - {
               name: "Windows Latest",
               os: windows-latest,
-              build_type: Release,
-              cc: cl,
-              cxx: cl,
-              environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+              build_type: Release
             }
           - {
               name: "Ubuntu Latest",
@@ -53,6 +50,7 @@ jobs:
       run: |
         mkdir build
         cd build
+        call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
         cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
         cmake --build .
 
