@@ -1,3 +1,5 @@
+![build](https://github.com/Archie3d/aeolus_plugin/actions/workflows/build.yml/badge.svg)
+
 ![aeolus](Resources/icons/icon256.png)
 # Aeolus
 Pipe organ emulator using additive synthesis as a VST plugin (or a stand-alone executable).
