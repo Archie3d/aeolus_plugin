@@ -24,6 +24,8 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "Runtime Library")
 endif()
 
+option(WITH_ASIO "Enable ASIO audio interface" ON)
+
 add_subdirectory(JUCE)
 
 set(plugin_formats
@@ -64,7 +66,6 @@ juce_generate_juce_header(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source"
-        "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk_2.3.3_2019-06-14/common"
 )
 
 file(GLOB_RECURSE src
@@ -81,12 +82,22 @@ target_sources(${PROJECT_NAME} PRIVATE ${src})
 
 target_compile_definitions(${PROJECT_NAME}
     PUBLIC
-        JUCE_ASIO=1
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_DISPLAY_SPLASH_SCREEN=0
 )
+
+if(WITH_ASIO)
+    target_include_directories(${PROJECT_NAME}
+        PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk_2.3.3_2019-06-14/common"
+    )
+
+    target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=1)
+else()
+    target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=0)
+endif()
 
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_AU=1)

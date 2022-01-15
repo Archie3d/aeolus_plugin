@@ -52,7 +52,7 @@ jobs:
         mkdir build
         cd build
         call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+        cmake ../ -G Ninja -D WITH_ASIO=OFF -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
         cmake --build .
 
     - name: Compile Linux
@@ -60,5 +60,5 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cmake ../ -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+        cmake ../ -D WITH_ASIO=OFF -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
         cmake --build .
