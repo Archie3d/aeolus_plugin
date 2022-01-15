@@ -13,7 +13,7 @@ on:
 
 jobs:
   windows-msvc-build:
-    timeout-miutes: 30
+    timeout-minutes: 30
     runs-on: windows-latest
     strategy:
       fail-fast: true
@@ -35,7 +35,7 @@ jobs:
         cmake --build .
 
   ubuntu-gcc-build:
-    timeout-miutes: 30
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
