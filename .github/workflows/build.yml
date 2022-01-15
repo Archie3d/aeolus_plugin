@@ -17,7 +17,6 @@ jobs:
     runs-on: windows-latest
     strategy:
       fail-fast: true
-    build_type: "Release"
 
     steps:
     - name: Checkout
@@ -25,11 +24,10 @@ jobs:
 
     - name: Compile
       uses: seanmiddleditch/gha-setup-ninja@master
-      shell: powershell
       run: |
-        mkdir -Force build
+        mkdir build
         cd build
-        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ build_type }}
+        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=Release
       run: |
         cd build
         cmake --build .
@@ -39,7 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-    build_type: "Release"
 
     steps:
     - name: Checkout
@@ -50,7 +47,7 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=${{ build_type }}
+        cmake ../ -G Ninja -D CMAKE_BUILD_TYPE=Release
       run: |
         cd build
         cmake --build .
