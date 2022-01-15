@@ -38,7 +38,6 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Compile
-      uses: seanmiddleditch/gha-setup-ninja@master
       run: |
         mkdir build
         cd build
