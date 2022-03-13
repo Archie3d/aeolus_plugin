@@ -98,11 +98,15 @@ void EngineGlobal::unregisterProcessorProxy(ProcessorProxy* proxy)
 void EngineGlobal::loadSettings()
 {
     if (auto* propertiesFile = _globalProperties.getUserSettings()) {
-        _tuningFrequency = (float) propertiesFile->getDoubleValue(settings::tuningFrequency, TUNING_FREQUENCY_DEFAULT);
-        int scaleType = propertiesFile->getIntValue(settings::tuningTemperament, (int)Scale::EqualTemp);
-        if (scaleType >= (int)Scale::First && scaleType < (int)Scale::Total) {
+        const float tuningFreq = (float)propertiesFile->getDoubleValue(settings::tuningFrequency, TUNING_FREQUENCY_DEFAULT);
+
+        if (tuningFreq >= TUNING_FREQUENCY_MIN && tuningFreq <= TUNING_FREQUENCY_MAX)
+            _tuningFrequency = tuningFreq;
+
+        const int scaleType = propertiesFile->getIntValue(settings::tuningTemperament, (int)Scale::EqualTemp);
+
+        if (scaleType >= (int)Scale::First && scaleType < (int)Scale::Total)
             _scale.setType(static_cast<Scale::Type>(scaleType));
-        }
     }
 }
 
