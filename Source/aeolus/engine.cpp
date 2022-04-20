@@ -66,7 +66,8 @@ EngineGlobal::EngineGlobal()
 
     options.applicationName = ProjectInfo::projectName;
     options.filenameSuffix = ".settings";
-    options.osxLibrarySubFolder = "~/Library/Application Support";
+    //options.osxLibrarySubFolder = "~/Library/Application Support";
+    options.osxLibrarySubFolder = "Application Support";
     options.storageFormat = PropertiesFile::storeAsXML;
 
     _globalProperties.setStorageParameters(options);

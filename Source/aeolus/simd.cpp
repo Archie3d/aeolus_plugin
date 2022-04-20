@@ -25,7 +25,7 @@
 #   undef SIMD
 #endif
 
-#if defined (__APPLE__)
+#if defined (__APPLE__) && !defined (__arm64__)
 #   include <x86intrin.h>
 #   define SIMD
 #elif defined (_MSC_VER)
@@ -42,7 +42,7 @@ static void cpuid_func(uint32_t* regs, unsigned funcId)
 {
 #if defined _WIN32
     __cpuid((int*) regs, (int) funcId);
-#else
+#elif !defined(__arm64__)
     asm volatile
         ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
             : "a" (funcId), "c" (0));
@@ -62,7 +62,7 @@ CPUTraits CPUTraits::get()
         edx = 3
     };
 
-    uint32_t regs[4];
+    uint32_t regs[4] = {0};
 
     cpuid_func (regs, 1);
     cpu.sse3     = (regs[ecx] & (1 <<  0)) != 0;
@@ -86,6 +86,7 @@ CPUTraits CPUTraits::get()
 
 //------------------------------------------------------------------------------
 
+[[maybe_unused]]
 static inline bool is_aligned(const void *pointer, size_t byte_count)
 {
     return (uintptr_t)pointer % byte_count == 0;

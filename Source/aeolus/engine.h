@@ -50,6 +50,7 @@ public:
     class ProcessorProxy
     {
     public:
+        virtual ~ProcessorProxy() = default;
         virtual juce::AudioProcessor* getAudioProcessor() = 0;
         virtual Engine& getEngine() = 0;
         virtual void killAllVoices() = 0;
