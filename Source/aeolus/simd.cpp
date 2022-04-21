@@ -25,7 +25,8 @@
 #   undef SIMD
 #endif
 
-#if defined (__APPLE__) && !defined (__arm64__)
+
+#if defined (__APPLE__) && defined (__x86_64__) && TARGET_OS_OSX
 #   include <x86intrin.h>
 #   define SIMD
 #elif defined (_MSC_VER)
@@ -42,11 +43,13 @@ static void cpuid_func(uint32_t* regs, unsigned funcId)
 {
 #if defined _WIN32
     __cpuid((int*) regs, (int) funcId);
-#elif !defined(__arm64__)
+#elif defined(SIMD) && !defined(__arm64__)
     asm volatile
         ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
             : "a" (funcId), "c" (0));
     // ECX is set to zero for CPUID function 4
+#else
+    *regs = 0;
 #endif
 }
 

@@ -197,7 +197,10 @@ void Pipewave::play(Pipewave::State& state, float* out)
 
 void Pipewave::genwave()
 {
-    thread_local static Random rnd;
+#if ! TARGET_OS_IPHONE
+    thread_local
+#endif
+    static Random rnd;
 
     const float sampleRate_r = 1.0f / _sampleRate;
 

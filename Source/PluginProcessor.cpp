@@ -243,7 +243,7 @@ void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
     _engine.setReverbWet(_parameters.reverbWet->get());
     _engine.setVolume(_parameters.volume->get());
-    _engine.process(outL, outR, (size_t) buffer.getNumSamples(), isNonRealtime());
+    _engine.process(outL, outR, buffer.getNumSamples(), isNonRealtime());
 
 #endif // AEOLUS_MULTIBUS_OUTPUT
 
