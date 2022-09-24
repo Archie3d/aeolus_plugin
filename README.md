@@ -29,3 +29,11 @@ Sequencer steps are controlled via the program change messages sent on the contr
 Control MIDI channel:
 - `CC 7` controls the global volume;
 - `CC 91` controls the reverb output level;
+
+## Custom organ configuration
+_* Since version 0.1.13_
+
+Custom organ configuration will be loaded by the plugin if found at `Documents/Aeolus/organ_config.json` location.
+> The `Documents` folder exact location depends on the operating system used.
+
+To create the `organ_config.json` start with [default one embedded into the plugin](Resources/configs/default_organ.json) by copying it to `Documents/Aeolus` folder and renaming to `organ_config.json`.
