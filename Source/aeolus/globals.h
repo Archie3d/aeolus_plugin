@@ -114,6 +114,13 @@ namespace deprecated {
 
 //==============================================================================
 
+/// Returns a location of a custom organ configuration file.
+/// Currently it's <My Documents>/Aeolus/organ_config.json
+/// @note This function does not check the file exists.
+juce::File getCustomOrganConfigFile();
+
+//==============================================================================
+
 namespace math {
 
 float exp2ap(float x);

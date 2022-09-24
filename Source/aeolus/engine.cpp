@@ -664,8 +664,7 @@ void Engine::setPersistentState(const var& state)
 
 void Engine::populateDivisions()
 {
-    auto wd = File::getCurrentWorkingDirectory();
-    auto configFile = wd.getChildFile("organ_config.json");
+    const auto configFile = getCustomOrganConfigFile();
 
     if (configFile.exists()) {
         FileInputStream stream(configFile);

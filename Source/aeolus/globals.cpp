@@ -21,6 +21,15 @@
 
 AEOLUS_NAMESPACE_BEGIN
 
+juce::File getCustomOrganConfigFile()
+{
+    return juce::File::getSpecialLocation(juce::File::userDocumentsDirectory)
+        .getChildFile("Aeolus")
+        .getChildFile("organ_config.json");
+}
+
+//==============================================================================
+
 namespace math {
 
 float exp2ap(float x)
