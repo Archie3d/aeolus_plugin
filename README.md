@@ -31,9 +31,9 @@ Control MIDI channel:
 - `CC 91` controls the reverb output level;
 
 ## Custom organ configuration
-_* Since version 0.1.13_
+:warning: _Since version 0.1.13_
 
 Custom organ configuration will be loaded by the plugin if found at `Documents/Aeolus/organ_config.json` location.
-> The `Documents` folder exact location depends on the operating system used.
+> :point_right: The `Documents` folder's exact location depends on the operating system.
 
 To create the `organ_config.json` start with [default one embedded into the plugin](Resources/configs/default_organ.json) by copying it to `Documents/Aeolus` folder and renaming to `organ_config.json`.
