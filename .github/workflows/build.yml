@@ -1,5 +1,9 @@
 name: Build Aeolus plugin
 
+defaults:
+  run:
+    shell: bash
+
 on:
   workflow_dispatch:
   pull_request:
