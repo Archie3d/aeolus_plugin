@@ -27,15 +27,15 @@ jobs:
           - os: ubuntu-latest
             name: linux
             generator: Ninja Multi-Config
-            path: ${{ env.dir_build }}/${{ env.type }}
+            path: ./build/Release
           - os: macos-latest
             name: mac
             generator: Ninja Multi-Config
-            path: ${{ env.dir_build }}/${{ env.type }}
+            path: ./build/Release
           - os: windows-latest
             name: win
             generator: Ninja Multi-Config
-            path: ${{ env.dir_build }}/${{ env.type }}
+            path: ./build/Release
 
     steps:
     - name: Install Linux dependencies
