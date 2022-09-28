@@ -31,15 +31,15 @@ jobs:
           - os: ubuntu-latest
             name: linux
             generator: Ninja Multi-Config
-            path: ./build/Release
+            path: ./build/Aeolus_artefacts/Release
           - os: macos-latest
             name: mac
             generator: Ninja Multi-Config
-            path: ./build/Release
+            path: ./build/Aeolus_artefacts/Release
           - os: windows-latest
             name: win
             generator: Ninja Multi-Config
-            path: ./build/Release
+            path: ./build/Aeolus_artefacts/Release
 
     steps:
     - name: Install Linux dependencies
