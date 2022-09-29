@@ -81,6 +81,8 @@ jobs:
         name: aeolus-${{ matrix.name }}
         path: |
           ${{ matrix.path }}/Standalone
+          ${{ matrix.path }}/AU
           ${{ matrix.path }}/VST3
           !${{ matrix.path }}/VST3/*.exp
           !${{ matrix.path }}/VST3/*.lib
+        if-no-files-found: ignore
