@@ -33,6 +33,10 @@ set(plugin_formats
     Standalone
 )
 
+if(APPLE)
+    list(APPEND plugin_formats AU)
+endif()
+
 juce_add_plugin(${PROJECT_NAME}
     VERSION "0.1.13"
     PLUGIN_MANUFACTURER_CODE "Arbe"
