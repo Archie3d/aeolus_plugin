@@ -1,5 +1,9 @@
 name: Build Aeolus plugin
 
+defaults:
+  run:
+    shell: bash
+
 on:
   workflow_dispatch:
   pull_request:
@@ -11,54 +15,68 @@ on:
     paths-ignore:
       - 'docs/**'
 
+env:
+  type: Release
+  dir_build: ./build
+  dir_source: .
+
 jobs:
   build:
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    name: All platforms
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
       matrix:
-        config:
-          - {
-              name: "Windows Latest",
-              os: windows-latest,
-              build_type: Release
-            }
-          - {
-              name: "Ubuntu Latest",
-              os: ubuntu-latest,
-              build_type: Release
-            }
+        os: [ubuntu-latest, macos-latest, windows-2019]
+        include:
+          - os: ubuntu-latest
+            name: linux
+            generator: Unix Makefiles
+            path: ./build/Aeolus_artefacts
+          - os: macos-latest
+            name: mac
+            generator: Unix Makefiles
+            path: ./build/Aeolus_artefacts
+          - os: windows-2019
+            name: win
+            generator: Visual Studio 16 2019
+            path: ./build/Aeolus_artefacts/Release
 
     steps:
-    - name: Checkout
+    - name: Install Linux dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get update && sudo apt-get install ninja-build libx11-dev libfreetype-dev libasound2-dev libxrandr-dev libxinerama-dev libxcursor-dev
+
+    - name: Install macOS dependencies
+      if: matrix.os == 'macos-latest'
+      run: brew install ninja
+
+    - name: Install Windows dependencies
+      if: matrix.os == 'windows-2019'
+      run: choco install ninja
+
+    - name: Checkout code
       uses: actions/checkout@v2
       with:
         submodules: recursive
 
-    - name: Install Ninja
-      if: matrix.config.os == 'windows-latest'
-      uses: seanmiddleditch/gha-setup-ninja@master
-
-    - name: Install Linux dependencies
-      if: matrix.config.os == 'ubuntu-latest'
+    - name: Build plugin
       run: |
-        sudo apt-get install libx11-dev libfreetype-dev libasound2-dev libxrandr-dev libxinerama-dev libxcursor-dev
+        cmake \
+          -G "${{ matrix.generator }}" \
+          -DWITH_ASIO=OFF \
+          -S "${{ env.dir_source }}" \
+          -B "${{ env.dir_build }}"
+        cmake --build "${{ env.dir_build }}" --config "${{ env.type }}"
 
-    - name: Compile Windows
-      if: matrix.config.os == 'windows-latest'
-      shell: cmd
-      run: |
-        mkdir build
-        cd build
-        call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-        cmake ../ -G Ninja -D WITH_ASIO=OFF -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
-        cmake --build .
+    - name: List errors
+      run: cat "${{ env.dir_build }}/CMakeFiles/CMakeError.log" || true
 
-    - name: Compile Linux
-      if: matrix.config.os == 'ubuntu-latest'
+    - name: List files generated
       run: |
-        mkdir -p build
-        cd build
-        cmake ../ -D WITH_ASIO=OFF -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
-        cmake --build .
+        cd ${{ matrix.path }}
+        find "$(pwd)"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: aeolus-${{ matrix.name }}
+        path: ${{ matrix.path }}
