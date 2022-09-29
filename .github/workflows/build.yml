@@ -30,15 +30,15 @@ jobs:
         include:
           - os: ubuntu-latest
             name: linux
-            generator: Ninja Multi-Config
+            generator: Unix Makefiles
             path: ./build/Aeolus_artefacts/Release
           - os: macos-latest
             name: mac
-            generator: Ninja Multi-Config
+            generator: Unix Makefiles
             path: ./build/Aeolus_artefacts/Release
           - os: windows-latest
             name: win
-            generator: Ninja Multi-Config
+            generator: Visual Studio 16 2019
             path: ./build/Aeolus_artefacts/Release
 
     steps:
