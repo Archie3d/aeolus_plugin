@@ -36,9 +36,9 @@ jobs:
             name: mac
             generator: Unix Makefiles
             path: ./build/Aeolus_artefacts/Release
-          - os: windows-latest
+          - os: windows-2019
             name: win
-            generator: Visual Studio 17 2022
+            generator: Visual Studio 16 2019
             path: ./build/Aeolus_artefacts/Release
 
     steps:
