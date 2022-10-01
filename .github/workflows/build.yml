@@ -31,12 +31,12 @@ jobs:
           - os: ubuntu-latest
             name: linux
             generator: Unix Makefiles
-            path: ./build/Aeolus_artefacts
+            path: ./build/Aeolus_artefacts/Release
             asio: OFF
           - os: macos-latest
             name: mac
             generator: Unix Makefiles
-            path: ./build/Aeolus_artefacts
+            path: ./build/Aeolus_artefacts/Release
             asio: OFF
           - os: windows-2019
             name: win
