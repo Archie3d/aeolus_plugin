@@ -32,14 +32,17 @@ jobs:
             name: linux
             generator: Unix Makefiles
             path: ./build/Aeolus_artefacts
+            asio: OFF
           - os: macos-latest
             name: mac
             generator: Unix Makefiles
             path: ./build/Aeolus_artefacts
+            asio: OFF
           - os: windows-2019
             name: win
             generator: Visual Studio 16 2019
             path: ./build/Aeolus_artefacts/Release
+            asio: ON
 
     steps:
     - name: Install Linux dependencies
@@ -59,11 +62,20 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Download ASIO SDK
+      if: matrix.os == 'windows-2019'
+      shell: cmake -P {0}
+      env:
+        ASIOSDK_URL: 'https://download.steinberg.net/sdk_downloads/asiosdk_2.3.3_2019-06-14.zip'
+      run: |
+        file(DOWNLOAD $ENV{ASIOSDK_URL} $ENV{GITHUB_WORKSPACE}/asiosdk.zip)
+        execute_process(COMMAND 7z x $ENV{GITHUB_WORKSPACE}/asiosdk.zip -o$ENV{GITHUB_WORKSPACE})
+
     - name: Build plugin
       run: |
         cmake \
           -G "${{ matrix.generator }}" \
-          -DWITH_ASIO=OFF \
+          -DWITH_ASIO=${{ matrix.asio }} \
           -S "${{ env.dir_source }}" \
           -B "${{ env.dir_build }}"
         cmake --build "${{ env.dir_build }}" --config "${{ env.type }}"
