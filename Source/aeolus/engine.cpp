@@ -498,9 +498,10 @@ void Engine::process(AudioBuffer<float>& out, bool isNonRealtime)
         while (_remainedSamples > 0 && _interpolator.canWrite()) {
             for (int ch = 0; ch < numChannels; ++ch)
                 _interpolator.writeUnchecked(_subFrameBuffer.getReadPointer(ch)[idx], (size_t) ch);
+
             _interpolator.writeIncrement();
 
-            --_remainedSamples;
+            _remainedSamples -= 1;
             idx += 1;
         }
 

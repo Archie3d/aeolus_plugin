@@ -219,12 +219,12 @@ public:
     Level& getVolumeLevel() noexcept { return _volumeLevel; }
 
     /**
-     * Assign MIDI channel to be used to control the organ stops and sequencer.
+     * Returns currently set MIDI control channel.
      */
     int getMIDIControlChannel() const noexcept { return _midiControlChannel; }
 
     /**
-     * Returns currently set MIDI control channel.
+     * Assign MIDI channel to be used to control the organ stops and sequencer.
      */
     void setMIDIControlChannel(int c) noexcept { _midiControlChannel = c; }
 

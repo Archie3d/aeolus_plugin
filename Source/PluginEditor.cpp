@@ -75,6 +75,10 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _voiceCountValueLabel.setColour(Label::textColourId, Colours::lightyellow);
     addAndMakeVisible(_voiceCountValueLabel);
 
+#if !AEOLUS_MULTIBUS_OUTPUT
+
+    // Mutlibus configuration does not have a reverb
+
     addAndMakeVisible(_reverbLabel);
 
     addAndMakeVisible(_reverbComboBox);
@@ -97,6 +101,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     };
 
     addAndMakeVisible(_reverbSlider);
+
+#endif // !AEOLUS_MULTIBUS_OUTPUT
 
     _volumeLevelL.setSkew(0.5f);
     addAndMakeVisible(_volumeLevelL);
@@ -233,11 +239,19 @@ void AeolusAudioProcessorEditor::resized()
     _voiceCountLabel.setBounds(150, margin, 56, 20);
     _voiceCountValueLabel.setBounds(_voiceCountLabel.getRight() + margin, margin, 30, 20);
 
+#if !AEOLUS_MULTIBUS_OUTPUT
     _reverbLabel.setBounds(_voiceCountValueLabel.getRight() + 40, margin, 60, 20);
     _reverbComboBox.setBounds(_reverbLabel.getRight() + margin, margin, 220, 20);
     _reverbSlider.setBounds(_reverbComboBox.getRight() + margin, margin, 100, 20);
 
     _volumeLabel.setBounds(_reverbSlider.getRight() + 40, margin, 60, 20);
+
+#else
+
+    _volumeLabel.setBounds(_voiceCountValueLabel.getRight() + 430, margin, 60, 20);
+
+#endif
+
     _volumeSlider.setBounds(_volumeLabel.getRight() + margin, margin, 100, 20);
 
     _volumeLevelL.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + 2, _volumeSlider.getWidth() - 10, 2);

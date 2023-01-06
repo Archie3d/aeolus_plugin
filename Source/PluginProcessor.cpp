@@ -173,7 +173,7 @@ bool AeolusAudioProcessor::canApplyBusCountChange(bool isInput, bool isAdding, B
 #endif
 }
 
-bool AeolusAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool AeolusAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
     static_assert(!JucePlugin_IsMidiEffect, "This plugin is not a MIDI effect");
     static_assert(JucePlugin_IsSynth, "This plugin is a synthesizer");
@@ -207,7 +207,7 @@ void AeolusAudioProcessor::processorLayoutsChanged()
 
 #endif // JucePlugin_PreferredChannelConfigurations
 
-void AeolusAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     using namespace std::chrono;
 
@@ -274,7 +274,7 @@ void AeolusAudioProcessor::processMidi(juce::MidiBuffer& midiMessages)
 
         if ((ch == 0 || _engine.getMIDIControlChannel() == 0 || ch == _engine.getMIDIControlChannel())
             && msg.isController()) {
-            
+
             int cc = msg.getControllerNumber();
             const float value = float(msg.getControllerValue()) / 127.0f;
 
@@ -306,7 +306,7 @@ juce::AudioProcessorEditor* AeolusAudioProcessor::createEditor()
 }
 
 //==============================================================================
-void AeolusAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void AeolusAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     auto state = _engine.getPersistentState();
 
@@ -318,7 +318,7 @@ void AeolusAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     JSON::writeToStream(stream, state);
 }
 
-void AeolusAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void AeolusAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     MemoryInputStream stream(data, sizeInBytes, false);
 

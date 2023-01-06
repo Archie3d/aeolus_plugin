@@ -26,6 +26,8 @@ endif()
 
 option(WITH_ASIO "Enable ASIO audio interface" ON)
 
+option(WITH_MULTIBUS_OUTPUT "Enable multibus output" OFF)
+
 add_subdirectory(JUCE)
 
 set(plugin_formats
@@ -37,12 +39,25 @@ if(APPLE)
     list(APPEND plugin_formats AU)
 endif()
 
-juce_add_plugin(${PROJECT_NAME}
+if(WITH_MULTIBUS_OUTPUT)
+    set(TARGET "${PROJECT_NAME}-multibus")
+    set(PRODUCT_NAME "${PROJECT_NAME}-multibus")
+    set(PLUGIN_DESCRIPTION "${PRODUCT_NAME} multibus")
+    set(PLUGIN_CODE "E6hf")
+else()
+    set(TARGET "${PROJECT_NAME}")
+    set(PRODUCT_NAME "${PROJECT_NAME}")
+    set(PLUGIN_DESCRIPTION "${PRODUCT_NAME} stereo")
+    set(PLUGIN_CODE "E6he")
+endif()
+
+
+juce_add_plugin(${TARGET}
     VERSION "0.1.13"
     PLUGIN_MANUFACTURER_CODE "Arbe"
-    PLUGIN_CODE "E6he"
-    PLUGIN_DESCRIPTION "Aeolus"
-    PRODUCT_NAME "Aeolus"
+    PLUGIN_CODE ${PLUGIN_CODE}
+    PLUGIN_DESCRIPTION ${PLUGIN_DESCRIPTION}
+    PRODUCT_NAME ${PRODUCT_NAME}
     COMPANY_NAME "Arthur Benilov"
     IS_SYNTH TRUE
     IS_MIDI_EFFECT FALSE
@@ -52,7 +67,7 @@ juce_add_plugin(${PROJECT_NAME}
     ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET}
     PRIVATE
         juce::juce_core
         juce::juce_data_structures
@@ -65,9 +80,9 @@ target_link_libraries(${PROJECT_NAME}
         juce::juce_recommended_config_flags
 )
 
-juce_generate_juce_header(${PROJECT_NAME})
+juce_generate_juce_header(${TARGET})
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${TARGET}
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source"
 )
@@ -79,12 +94,12 @@ file(GLOB_RECURSE src
 
 file(GLOB_RECURSE res "${CMAKE_CURRENT_SOURCE_DIR}/Resources/*.*")
 
-juce_add_binary_data(${PROJECT_NAME}_res SOURCES ${res})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_NAME}_res)
+juce_add_binary_data(${TARGET}_res SOURCES ${res})
+target_link_libraries(${TARGET} PUBLIC ${TARGET}_res)
 
-target_sources(${PROJECT_NAME} PRIVATE ${src})
+target_sources(${TARGET} PRIVATE ${src})
 
-target_compile_definitions(${PROJECT_NAME}
+target_compile_definitions(${TARGET}
     PUBLIC
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
@@ -93,17 +108,23 @@ target_compile_definitions(${PROJECT_NAME}
 )
 
 if(WITH_ASIO)
-    target_include_directories(${PROJECT_NAME}
+    target_include_directories(${TARGET}
         PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk_2.3.3_2019-06-14/common"
     )
 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=1)
+    target_compile_definitions(${TARGET} PUBLIC JUCE_ASIO=1)
 else()
-    target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=0)
+    target_compile_definitions(${TARGET} PUBLIC JUCE_ASIO=0)
+endif()
+
+if(WITH_MULTIBUS_OUTPUT)
+    target_compile_definitions(${TARGET} PUBLIC AEOLUS_MULTIBUS_OUTPUT=1)
+else()
+    target_compile_definitions(${TARGET} PUBLIC AEOLUS_MULTIBUS_OUTPUT=0)
 endif()
 
 if(APPLE)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_AU=1)
-    target_compile_options(${PROJECT_NAME} PRIVATE "-mfma")
+    target_compile_definitions(${TARGET} PUBLIC JUCE_AU=1)
+    target_compile_options(${TARGET} PRIVATE "-mfma")
 endif()
