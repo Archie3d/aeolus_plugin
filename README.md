@@ -31,16 +31,14 @@ Control MIDI channel:
 - `CC 91` controls the reverb output level;
 
 ## Custom organ configuration
-:warning: _Since version 0.1.13_
-
 Custom organ configuration will be loaded by the plugin if found at `Documents/Aeolus/organ_config.json` location.
-> :point_right: The `Documents` folder's exact location depends on the operating system.
+> :point_right: The `Documents` folder's exact location depends on the operating system and the user profile.
 
 To create the `organ_config.json` start with [default one embedded into the plugin](Resources/configs/default_organ.json) by copying it to `Documents/Aeolus` folder and renaming to `organ_config.json`.
 
-## Multibus output
-:warning: _Since version 0.1.13_
+It is also possible to use custom pipe configs in `.ae0` or `.json` format. These have to be placed to the `Documents/Aeolus` folder for then can be referenced from the `organ_config.json` (use pipe file name without the extension in the`"pipe"`attribute of the `organ_config.json`).
 
+## Multibus output
 When compiled with the `WITH_MULTIBUS_OUTPUT` CMake option enabled, the generated plugin will ouput to the `8` separate _monofonic_ buses. Each bus corresponds to the pipes groups placement in space according to the internal horizontal arrangement of the pipes.
 
 In multibus configuration there is no reverb applied, and there is no spatialization performed.
