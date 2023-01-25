@@ -28,15 +28,15 @@ using namespace juce;
 Parameters::Parameters(AeolusAudioProcessor& proc)
     : processor(proc)
 {
-    processor.addParameter(reverbWet = new AudioParameterFloat("reverb_wet", "Reverb", 0.0f, 1.0f, 0.25f));
-    processor.addParameter(volume = new AudioParameterFloat("volume", "Volume", 0.0f, 1.0f, 0.5f));
+    processor.addParameter(reverbWet = new AudioParameterFloat(ParameterID{"reverb_wet", 1}, "Reverb", 0.0f, 1.0f, 0.25f));
+    processor.addParameter(volume = new AudioParameterFloat(ParameterID{"volume", 1}, "Volume", 0.0f, 1.0f, 0.5f));
 
     auto& engine = proc.getEngine();
 
     for (int i = 0; i < engine.getDivisionCount(); ++i) {
         auto* division = engine.getDivisionByIndex(i);
 
-        auto param = std::make_unique<AudioParameterFloat>(String("gain_") + String(i), division->getName() + " gain", 0.0f, 1.0f, 0.5f);
+        auto param = std::make_unique<AudioParameterFloat>(ParameterID{String("gain_") + String(i), 1}, division->getName() + " gain", 0.0f, 1.0f, 0.5f);
         auto* ptr = param.get();
         processor.addParameter(param.release());
         divisionsGain.push_back(ptr);

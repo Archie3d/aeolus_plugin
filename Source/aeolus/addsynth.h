@@ -114,6 +114,7 @@ public:
     juce::Result read(juce::InputStream& stream);
 
     juce::Result readFromResource(const juce::String& name);
+    juce::Result readFromFile(const juce::File& file);
 
     float getNoteVolume(int n) const noexcept { return _n_vol[n]; }
     float getNoteAttack(int n) const noexcept { return _n_att[n]; }
@@ -194,6 +195,10 @@ public:
 private:
     Model();
     ~Model() override  { clearSingletonInstance(); }
+
+    void loadExternalPipes();
+    void loadEmbeddedPipes();
+    void addSynth(std::unique_ptr<Addsynth>&& synth);
 
     juce::OwnedArray<Addsynth> _synths;
     std::map<juce::String, Addsynth*> _nameToSynthMap;

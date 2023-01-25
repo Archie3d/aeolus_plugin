@@ -552,11 +552,90 @@ Result Addsynth::readFromResource(const String& name)
     return read(stream);
 }
 
+Result Addsynth::readFromFile(const File& file)
+{
+    if (!file.exists())
+        return Result::fail("File does not exist");
+
+    const auto ext{ file.getFileExtension().toLowerCase() };
+
+    if (ext == ".ae0") {
+        FileInputStream stream(file);
+        return read(stream);
+    }
+
+    if (ext == ".json") {
+        FileInputStream stream(file);
+        auto stop = JSON::parse(stream);
+        // @todo We don't handle JSON parsing errors currently
+        fromVar(stop);
+        return Result::ok();
+    }
+
+    return Result::fail("Unknown file format");
+}
+
 //==============================================================================
 
 Model::Model()
     : _synths()
     , _nameToSynthMap()
+{
+    loadExternalPipes();
+    loadEmbeddedPipes();
+}
+
+StringArray Model::getStopNames() const
+{
+    StringArray stops;
+
+    for (const auto* synth : _synths) {
+        stops.add(synth->getStopName());
+    }
+
+    return stops;
+}
+
+Addsynth* Model::getStopByName(const juce::String& name)
+{
+    auto it = _nameToSynthMap.find(name);
+
+    if (it == _nameToSynthMap.end())
+        return nullptr;
+
+    return it->second;
+}
+
+void Model::loadExternalPipes()
+{
+    File configFile{ aeolus::getCustomOrganConfigFile() };
+    const String configFileName{ configFile.getFileName() };
+    File configFolder{ configFile.getParentDirectory() };
+    
+    if (!configFolder.exists())
+        return;
+
+    for (DirectoryEntry entry : RangedDirectoryIterator(configFolder, true)) {
+        auto file{ entry.getFile() };
+        const auto ext{ file.getFileExtension().toLowerCase() };
+
+        if ((ext == ".json" && file.getFileName() != configFileName) || (ext == ".ae0")) {
+            auto synth = std::make_unique<Addsynth>();
+            const auto res{ synth->readFromFile(file) };
+
+            if (res.wasOk()) {
+                String stopName{ file.getFileNameWithoutExtension() };
+                synth->setStopName(stopName);
+
+                addSynth(std::move(synth));
+            } else {
+                DBG("Failed to read: " << res.getErrorMessage());
+            }
+        }
+    }
+}
+
+void Model::loadEmbeddedPipes()
 {
     for (int i = 0; i < BinaryData::namedResourceListSize; ++i) {
         String filename(BinaryData::originalFilenames[i]);
@@ -590,34 +669,27 @@ Model::Model()
         }
 
         if (ok) {
-            auto* ptr = synth.get();
-            ptr->setStopName(stopName);
-
-            _synths.add(synth.release());
-            _nameToSynthMap[stopName] = ptr;
+            synth->setStopName(stopName);
+            addSynth(std::move(synth));
         }
     }
 }
 
-StringArray Model::getStopNames() const
+void Model::addSynth(std::unique_ptr<Addsynth>&& synthToAdd)
 {
-    StringArray stops;
+    std::unique_ptr<Addsynth> synth{ std::move(synthToAdd) };
+    const String stopName{ synth->getStopName() };
 
-    for (const auto* synth : _synths) {
-        stops.add(synth->getStopName());
+    if (_nameToSynthMap.find(stopName) == _nameToSynthMap.end()) {
+        auto* ptr = synth.get();
+        ptr->setStopName(stopName);
+
+        _synths.add(synth.release());
+        _nameToSynthMap[stopName] = ptr;
+    } else {
+        // Pipe with this name already exists - it won't be added again
+        DBG("Pipe " << stopName << " duplicate found");
     }
-
-    return stops;
-}
-
-Addsynth* Model::getStopByName(const juce::String& name)
-{
-    auto it = _nameToSynthMap.find(name);
-
-    if (it == _nameToSynthMap.end())
-        return nullptr;
-
-    return it->second;
 }
 
 JUCE_IMPLEMENT_SINGLETON(Model)
