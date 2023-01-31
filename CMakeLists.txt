@@ -13,7 +13,7 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 project(Aeolus)
 
@@ -53,7 +53,7 @@ endif()
 
 
 juce_add_plugin(${TARGET}
-    VERSION "0.1.13"
+    VERSION "0.2.0"
     PLUGIN_MANUFACTURER_CODE "Arbe"
     PLUGIN_CODE ${PLUGIN_CODE}
     PLUGIN_DESCRIPTION ${PLUGIN_DESCRIPTION}
