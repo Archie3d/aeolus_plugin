@@ -25,9 +25,10 @@ namespace ui {
 
 const Font& CustomLookAndFeel::getStopButtonFont()
 {
+ 
     static Font font(Typeface::createSystemTypefaceFor(BinaryData::WignersFriendRoman1GY8e_ttf,
                                                        BinaryData::WignersFriendRoman1GY8e_ttfSize));
-
+  
     return font;
 }
 

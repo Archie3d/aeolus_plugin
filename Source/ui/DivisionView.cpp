@@ -27,7 +27,7 @@ namespace ui {
 
 constexpr int paddingTop = 30;
 constexpr int paddingBottom = 5;
-constexpr int buttonSize = 80;
+constexpr int buttonSize = 86;
 
 DivisionView::DivisionView(aeolus::Division* division)
     : onStateChanged{}

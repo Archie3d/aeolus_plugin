@@ -302,7 +302,21 @@ bool AeolusAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* AeolusAudioProcessor::createEditor()
 {
-    return new AeolusAudioProcessorEditor (*this);
+    auto* editor{ new AeolusAudioProcessorEditor (*this) };
+
+    // Use native title bar for a stand-alone window
+    if (wrapperType == wrapperType_Standalone) {
+        if (TopLevelWindow::getNumTopLevelWindows() == 1) {
+            if (TopLevelWindow* topWindow = TopLevelWindow::getTopLevelWindow(0)) {
+                if (auto* w { dynamic_cast<DocumentWindow*>(topWindow) }) {
+                    w->setTitleBarButtonsRequired(DocumentWindow::allButtons, false);
+                }
+
+            }
+        }
+    }
+
+    return editor;
 }
 
 //==============================================================================

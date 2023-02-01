@@ -56,7 +56,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
-    setSize (1340, 600);
+    setSize (1420, 640);
     setResizeLimits(1024, 600, 4096, 4096);
 
     addAndMakeVisible(_versionLabel);

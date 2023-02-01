@@ -27,7 +27,8 @@ namespace ui {
 /**
  * @brief Toggle button associated with a particular stop on a division.
  */
-class StopButton final : public juce::Button
+class StopButton final : public juce::Button,
+                         private juce::Timer
 {
 public:
     StopButton(aeolus::Division& division, int stopIndex);
@@ -42,11 +43,20 @@ protected:
 
 private:
 
+    // juce::Timer
+    void timerCallback() override;
+
+    void updateColourFromState();
+    void startColourAnimation();
+
     aeolus::Division& _division;
     int _stopIndex;
     aeolus::Stop& _stop;
 
-    int _margin;
+    int _margin{};
+
+    juce::Colour targetColour{};
+    juce::Colour colour{};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StopButton)
 };

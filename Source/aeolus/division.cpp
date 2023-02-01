@@ -522,6 +522,11 @@ void Division::releaseVoicesOfDisabledStops()
 
 void Division::triggerVoicesOfEnabledStops()
 {
+    if (_keysState.none()) {
+        // No keys are pressed
+        return;
+    }
+
     for (int stopIndex = 0; stopIndex < _stops.size(); ++stopIndex) {
         auto& stop = _stops[stopIndex];
 
