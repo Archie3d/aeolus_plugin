@@ -32,6 +32,8 @@ SpatialSource::SpatialSource()
     , _listenerOrientation{0.0f}
     , _listenerLeftRightDistance{0.3f}
     , _delayLine{}
+    , _leftDelay{}
+    , _rightDelay{}
     , _filterSpec{}
     , _filterState{}
 {
@@ -50,8 +52,8 @@ void SpatialSource::tick(float x, float& l, float& r)
 {
     _delayLine.write(x);
 
-    l = BiquadFilter::tick(_filterSpec[0], _filterState[0], _delayLine.read(_leftDelay) * _leftAttenuation);
-    r = BiquadFilter::tick(_filterSpec[1], _filterState[1], _delayLine.read(_rightDelay) * _rightAttenuation);
+    l = BiquadFilter::tick(_filterSpec[0], _filterState[0], _delayLine.readNearest(_leftDelay) * _leftAttenuation);
+    r = BiquadFilter::tick(_filterSpec[1], _filterState[1], _delayLine.readNearest(_rightDelay) * _rightAttenuation);
 }
 
 void SpatialSource::process(float* in, float* outL, float* outR, int numFrames)
@@ -92,8 +94,8 @@ void SpatialSource::recalculate()
 
     _delayLine.resize(delayLengthInSamples);
 
-    _leftDelay = leftDistance * _sampleRate / speedOfSound;
-    _rightDelay = rightDistance * _sampleRate / speedOfSound;
+    _leftDelay = (int) roundf(leftDistance * _sampleRate / speedOfSound);
+    _rightDelay = (int) roundf(rightDistance * _sampleRate / speedOfSound);
 
     constexpr float att = 0.7f; // [0..1]
 

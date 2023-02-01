@@ -54,7 +54,12 @@ StopButton::StopButton(aeolus::Division& division, int stopIndex)
 
 void StopButton::update()
 {
-    setToggleState(_division.isStopEnabled(_stopIndex), juce::dontSendNotification);
+    const auto targetState{ _division.isStopEnabled(_stopIndex) };
+
+    if (getToggleState() != targetState) {
+        setToggleState(_division.isStopEnabled(_stopIndex), juce::dontSendNotification);
+        startColourAnimation();
+    }
 }
 
 void StopButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)

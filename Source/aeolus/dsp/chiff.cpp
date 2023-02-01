@@ -109,6 +109,27 @@ void Chiff::process(float* out, int numFrames)
     if (!isActive())
         return;
 
+    if (_noiseEnvelope.state() == dsp::Envelope::Sustain && _envelope.state() == dsp::Envelope::Sustain) {
+        const float noiseLevel{ _noiseEnvelope.level() };
+        const float envelopeLevel{ _envelope.level() * _gain };
+
+        if (envelopeLevel < 1e-4f)
+            return; // Noise is too quiet
+
+        for (int i = 0; i < numFrames; ++i) {
+            const float x0{ 2.0f * rnd.nextFloat() - 1.0f };
+            const float x{ x0 * noiseLevel };
+            float y{ _pipeResonator.read(_pipeDelay) };
+            y = BiquadFilter::tick(_lpSpec, _lpState, y);
+            y += x;
+            _pipeResonator.write(y);
+
+            out[i] += y * envelopeLevel;
+        }
+
+        return;
+    }
+
     for (int i = 0; i < numFrames; ++i) {
         float x0 = 2.0f * rnd.nextFloat() - 1.0f;
         float x = x0 * _noiseEnvelope.next();

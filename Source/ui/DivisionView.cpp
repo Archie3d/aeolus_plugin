@@ -82,7 +82,7 @@ void DivisionView::cancelAllStops()
         auto* button = _stopButtons.getUnchecked(i);
 
         stop.setEnabled(false);
-        button->setToggleState(false, dontSendNotification);
+        button->update();
     }
 }
 

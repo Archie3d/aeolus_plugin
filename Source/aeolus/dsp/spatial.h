@@ -90,8 +90,8 @@ private:
     float _listenerLeftRightDistance;
 
     DelayLine _delayLine;
-    float _leftDelay;
-    float _rightDelay;
+    int _leftDelay;
+    int _rightDelay;
     float _leftAttenuation;
     float _rightAttenuation;
 

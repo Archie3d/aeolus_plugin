@@ -39,6 +39,7 @@ public:
     void reset();
     void write(float x);
     float read(float delay) const;
+    float readNearest(int delay) const;
 
     size_t size() const { return _buffer.size(); }
 

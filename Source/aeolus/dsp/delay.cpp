@@ -63,6 +63,12 @@ float DelayLine::read (float delay) const
     return math::lerp(a, b, frac);
 }
 
+float DelayLine::readNearest(int delay) const
+{
+    const int index{ int ((delay + _writeIndex) % _buffer.size()) };
+    return _buffer[index];
+}
+
 } // namespace dsp
 
 AEOLUS_NAMESPACE_END
