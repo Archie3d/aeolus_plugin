@@ -30,7 +30,7 @@ Voice::Voice(Engine& engine)
     , _stopIndex{-1}
     , _buffer{0}
     , _delayLine{SAMPLE_RATE}
-    , _delay{0.0f}
+    , _delay{0}
     , _chiff{}
     , _panPosition{0.0f}
     , _spatialSource{}
@@ -47,7 +47,7 @@ void Voice::trigger(const Pipewave::State& state)
     const auto dt = 1.0f / freq;
 
     // Delay pipe harmonic signal so that chiff noise builds up first
-    _delay = jmin((float)_delayLine.size(), 0.5f * dt * SAMPLE_RATE_F);
+    _delay = (int) jmin((float)_delayLine.size(), 0.5f * dt * SAMPLE_RATE_F);
 
     _chiff.setAttack(5.0f * dt);
     _chiff.setDecay(100.0f * dt);
@@ -77,7 +77,7 @@ void Voice::trigger(const Pipewave::State& state)
     _spatialSource.setSampleRate(SAMPLE_RATE_F);
     _spatialSource.setSourcePosition(x, 5.0f);
     _spatialSource.recalculate();
-    _postReleaseCounter = _spatialSource.getPostFxSamplesCount() + int(2 * _delay + TREMULANT_DELAY_LENGTH + 0.5f);
+    _postReleaseCounter = _spatialSource.getPostFxSamplesCount() + 2 * _delay + (int)TREMULANT_DELAY_LENGTH;
 }
 
 void Voice::release()
@@ -114,7 +114,7 @@ void Voice::process(float* outL, float* outR)
 
         for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
             _delayLine.write(0.0f);
-            _buffer[i] = _delayLine.read(_delay) * gain;
+            _buffer[i] = _delayLine.readNearest(_delay) * gain;
         }
 
     } else {
@@ -123,7 +123,7 @@ void Voice::process(float* outL, float* outR)
 
         for (int i = 0; i < SUB_FRAME_LENGTH; ++i) {
             _delayLine.write(_buffer[i]);
-            _buffer[i] = _delayLine.read(_delay) * gain;
+            _buffer[i] = _delayLine.readNearest(_delay) * gain;
         }
     }
 

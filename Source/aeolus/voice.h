@@ -70,7 +70,7 @@ private:
 
     /// Delay after chiff.
     dsp::DelayLine _delayLine;
-    float _delay;
+    int _delay{};
 
     /// Attack chiff.
     dsp::Chiff _chiff;

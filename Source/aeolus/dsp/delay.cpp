@@ -38,7 +38,7 @@ void DelayLine::resize (size_t size)
 void DelayLine::reset()
 {
     _writeIndex = 0;
-    ::memset (_buffer.data(), 0, sizeof (float) * _buffer.size());
+    ::memset(_buffer.data(), 0, sizeof (float) * _buffer.size());
 }
 
 void DelayLine::write (float x)
@@ -51,9 +51,9 @@ void DelayLine::write (float x)
     _buffer[_writeIndex] = x;
 }
 
-float DelayLine::read (float delay) const
+float DelayLine::read(float delay) const
 {
-    int index = (int)std::floor (delay);
+    int index = (int)std::floor(delay);
     float frac = delay - (float)index;
 
     index = (index + _writeIndex) % (int) _buffer.size();
