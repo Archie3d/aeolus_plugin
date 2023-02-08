@@ -23,6 +23,17 @@ AEOLUS_NAMESPACE_BEGIN
 
 juce::File getCustomOrganConfigFile()
 {
+    const static String organConfigJSON{ "organ_config.json" };
+
+    // Try current working directory first
+    auto file{ juce::File::File::getCurrentWorkingDirectory()
+        .getChildFile(organConfigJSON)
+    };
+
+    if (file.existsAsFile())
+        return file;
+
+    // Fall back onto the global configuiration
     return juce::File::getSpecialLocation(juce::File::userDocumentsDirectory)
         .getChildFile("Aeolus")
         .getChildFile("organ_config.json");
