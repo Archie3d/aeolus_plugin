@@ -77,16 +77,20 @@ void SequencerView::removeListener(Listener* listener)
     _listeners.remove(listener);
 }
 
-void SequencerView::resized()
+int SequencerView::getOptimalWidth() const
 {
-    constexpr int buttonWidth = 25;
-    constexpr int buttonPadding = 3;
-
     int buttonsWidth = buttonWidth * _sequencer->getStepsCount()
         + buttonPadding * (_sequencer->getStepsCount() - 1);
 
     // Account for the set and advance button
-    buttonsWidth += 4 * (buttonWidth + buttonPadding) + 2 * buttonPadding;
+    buttonsWidth += 4 * (buttonWidth + buttonPadding) + buttonPadding;
+
+    return buttonsWidth;
+}
+
+void SequencerView::resized()
+{
+    const int buttonsWidth{ getOptimalWidth() };
 
     int x = (getWidth() - buttonsWidth) / 2;
 

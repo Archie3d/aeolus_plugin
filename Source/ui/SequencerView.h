@@ -47,8 +47,13 @@ public:
     void addListener(Listener* listener);
     void removeListener(Listener* listener);
 
+    int getOptimalWidth() const;
+
     // juce::Component
     void resized() override;
+
+    constexpr static int buttonWidth = 25;
+    constexpr static int buttonPadding = 3;
 
 private:
 

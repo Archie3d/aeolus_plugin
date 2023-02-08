@@ -279,7 +279,9 @@ void AeolusAudioProcessorEditor::resized()
     int keyboardWidth = jmin((int)_midiKeyboard.getTotalKeyboardWidth(), getWidth());
     _midiKeyboard.setBounds((getWidth() - keyboardWidth) / 2, getHeight() - keyboardHeight, keyboardWidth, keyboardHeight);
 
-    _sequencerView.setBounds(_midiKeyboard.getX(), _midiKeyboard.getY() - sequencerHeight, _midiKeyboard.getWidth(), sequencerHeight);
+    const float sequencerWidth{ (float)_sequencerView.getOptimalWidth() };
+    const float sequencerX{ 0.5f * (getWidth() - sequencerWidth) };
+    _sequencerView.setBounds(sequencerX, _midiKeyboard.getY() - sequencerHeight, sequencerWidth, sequencerHeight);
 
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _cancelButton.setBounds((_midiKeyboard.getX() - 60)/2, getHeight() - 60, 60, 35);

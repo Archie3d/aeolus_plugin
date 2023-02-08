@@ -86,7 +86,7 @@ constexpr static size_t TREMULANT_DELAY_LENGTH = 32; // Frequency modulation del
 constexpr static float TREMULANT_DELAY_MODULATION_LEVEL = 0.9f; // Frequency modulation level.
 
 /// Number of steps in the sequencer.
-constexpr static int SEQUENCER_N_STEPS = 16;
+constexpr static int SEQUENCER_N_STEPS = 32;
 
 /// mid-A tuning frequency.
 constexpr static float TUNING_FREQUENCY_MIN = 350.0f;
