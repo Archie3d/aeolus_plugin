@@ -27,7 +27,8 @@ Sequencer steps are controlled via the program change messages sent on the contr
 > In a DAW use `Program` parameter to control the sequencer steps.
 
 Control MIDI channel:
-- `CC 7` controls the global volume;
+- `CC 1` modulation wheel enables/disables tremulant;
+- `CC 7` controls the global volume and the volume of each division;
 - `CC 91` controls the reverb output level;
 
 ## Custom organ configuration

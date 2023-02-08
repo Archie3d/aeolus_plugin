@@ -159,7 +159,7 @@ void EngineGlobal::updateStops(float sampleRate)
         wait.wait();
 
 /*
-    // Single-thread equivalent   
+    // Single-thread equivalent
     for (auto* rw : _rankwaves)
         rw->prepareToPlay(sampleRate);
 */
@@ -536,11 +536,20 @@ void Engine::processMIDIMessage(const MidiMessage& message)
 {
     const int ch = getMIDIControlChannel();
 
-    if (ch == 0 || message.getChannel() == 0 || message.getChannel() == getMIDIControlChannel())
+    // Process global CCs
+    if (ch == 0 || message.getChannel() == 0 || message.getChannel() == getMIDIControlChannel()) {
         processControlMIDIMessage(message);
-    
-    if (message.isNoteOnOrOff())
+    }
+
+    if (message.isController()) {
+        // Process divisions CCs
+        for (auto* division : _divisions)
+            division->handleControlMessage(message);
+    } else if (message.isNoteOnOrOff()) {
+        // Notes on/off
         _midiKeyboardState.processNextMidiEvent(message);
+        return;
+    }
 }
 
 void Engine::noteOn(int note, int midiChannel)
@@ -585,7 +594,7 @@ Range<int> Engine::getMidiKeyboardRange() const
                 maxNote = max;
         }
     }
-    
+
     return Range<int>(minNote, maxNote);
 }
 

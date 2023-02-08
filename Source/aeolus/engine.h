@@ -40,7 +40,7 @@ class Engine;
 
 /**
  * @brief A global shared instance of the organ engine.
- * 
+ *
  * This class in a singleton which is shared among all the plugin instances.
  */
 class EngineGlobal : public juce::DeletedAtShutdown

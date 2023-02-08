@@ -37,7 +37,7 @@ class Engine;
 
 /**
  * @brief Single keyboard division.
- * 
+ *
  * A division may have multiple stops available, which can be enabled or
  * disabled individually.
  */
@@ -72,7 +72,7 @@ public:
 
     /**
      * @brief Load the division configuration from a JSON object.
-     * 
+     *
      * This will configure the division from an organ configuration data.
      */
     void initFromVar(const juce::var& v);
@@ -138,6 +138,8 @@ public:
     void noteOn(int note, int midiChannel);
     void noteOff(int note, int midiChannel);
     void allNotesOff();
+
+    void handleControlMessage(const juce::MidiMessage& msg);
 
     bool process(juce::AudioBuffer<float>& targetBuffer, juce::AudioBuffer<float>& voiceBuffer);
     void modulate(juce::AudioBuffer<float>& targetBuffer, const juce::AudioBuffer<float>& tremulantBuffer);

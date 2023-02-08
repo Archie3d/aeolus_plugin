@@ -98,6 +98,7 @@ constexpr static float TUNING_FREQUENCY_DEFAULT = 440.0f;
 
 // MIDI controls
 enum {
+    CC_MODULATION = 1,
     CC_VOLUME = 7,
     CC_REVERB = 91
 };

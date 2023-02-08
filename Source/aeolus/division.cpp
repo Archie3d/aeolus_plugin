@@ -84,7 +84,7 @@ void Division::initFromVar(const var& v)
             for (int i = 0; i < arr->size(); ++i) {
                 Stop stop{};
                 stop.initFromVar(arr->getUnchecked(i));
-                
+
                 if (!stop.getZones().empty())
                     _stops.push_back(stop);
             }
@@ -382,6 +382,28 @@ void Division::allNotesOff()
         voice->release();
         voice = voice->next();
     }
+}
+
+void Division::handleControlMessage(const juce::MidiMessage& msg)
+{
+    if (!isForMIDIChannel(msg.getChannel()))
+        return;
+
+    int cc = msg.getControllerNumber();
+    const float value{ float(msg.getControllerValue()) / 127.0f };
+
+    switch (cc) {
+    case aeolus::CC_MODULATION:
+        if (hasTremulant())
+            setTremulantEnabled(value > 0.5f);
+        break;
+    case aeolus::CC_VOLUME:
+        *_paramGain = value;
+        break;
+    default:
+        break;
+    }
+
 }
 
 bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voiceBuffer)
