@@ -260,6 +260,8 @@ public:
 
     juce::Range<int> getMidiKeyboardRange() const;
 
+    std::set<int> getKeySwitches() const;
+
     VoicePool& getVoicePool() noexcept { return _voicePool; }
 
     int getDivisionCount() const noexcept { return _divisions.size(); }
@@ -306,6 +308,9 @@ private:
     juce::OwnedArray<Division> _divisions;
 
     std::unique_ptr<Sequencer> _sequencer;
+
+    int _sequencerStepBackwardKeySwitch{ SEQUENCER_BACKWARD_MIDI_KEY };
+    int _sequencerStepForwardKeySwitch{ SEQUENCER_FORWARD_MIDI_KEY };
 
     juce::AudioBuffer<float> _subFrameBuffer;
     juce::AudioBuffer<float> _divisionFrameBuffer;

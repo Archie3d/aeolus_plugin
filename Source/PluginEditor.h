@@ -59,6 +59,7 @@ private:
 
     void updateMeters();
     void updateMidiKeyboardRange();
+    void updateMidiKeyboardKeySwitches();
     void updateDivisionViews();
     void updateSequencerView();
     void updateMidiControlChannel();

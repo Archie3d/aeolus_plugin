@@ -71,6 +71,7 @@ public:
 
     void setStep(int index, bool captureCurrentState = true);
 
+    void stepBackward();
     void stepForward();
 
     void setCurrentStepDirty() noexcept { _dirty = true; }

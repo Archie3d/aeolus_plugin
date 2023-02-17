@@ -24,6 +24,7 @@ using namespace juce;
 CustomMidiKeyboard::CustomMidiKeyboard(juce::MidiKeyboardState& state, juce::MidiKeyboardComponent::Orientation orientation)
     : MidiKeyboardComponent(state, orientation)
     , _playableRange(getRangeStart(), getRangeEnd())
+    , _keySwitches{}
 {
     //setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colours::pink);
     //setColour(MidiKeyboardComponent::keyDownOverlayColourId,      Colours::red);
@@ -37,12 +38,21 @@ void CustomMidiKeyboard::setPlayableRange(int noteMin, int noteMax)
     }
 }
 
+void CustomMidiKeyboard::setKeySwitches(const std::set<int> keySwitches)
+{
+    _keySwitches = keySwitches;
+    repaint();
+}
+
 void CustomMidiKeyboard::drawWhiteNote (int midiNoteNumber,
     Graphics& g, Rectangle<float> area,
     bool isDown, bool isOver,
     Colour lineColour, Colour textColour)
 {
-    if (!isNoteWithinPlayableRange(midiNoteNumber)) {
+    if (isNoteKeySwitch(midiNoteNumber)) {
+        g.setColour(Colours::lightgreen);
+        g.fillRect (area);
+    } else if (!isNoteWithinPlayableRange(midiNoteNumber)) {
         g.setColour(Colours::lightgrey.darker());
         g.fillRect (area);
     }
@@ -57,7 +67,9 @@ void CustomMidiKeyboard::drawBlackNote (int midiNoteNumber,
 {
     auto colour = noteFillColour;
 
-    if (!isNoteWithinPlayableRange(midiNoteNumber)) {
+    if (isNoteKeySwitch(midiNoteNumber)) {
+        colour = Colours::lightgreen.darker();
+    } else if (!isNoteWithinPlayableRange(midiNoteNumber)) {
         colour = Colours::darkgrey.darker();
     }
 
@@ -67,4 +79,9 @@ void CustomMidiKeyboard::drawBlackNote (int midiNoteNumber,
 bool CustomMidiKeyboard::isNoteWithinPlayableRange(int note) const noexcept
 {
     return note >= _playableRange.getStart() && note <= _playableRange.getEnd();
+}
+
+bool CustomMidiKeyboard::isNoteKeySwitch(int note) const noexcept
+{
+    return _keySwitches.find(note) != _keySwitches.end();
 }

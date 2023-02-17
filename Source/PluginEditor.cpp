@@ -177,7 +177,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     populateDivisions();
 
     _midiKeyboard.setScrollButtonsVisible(false);
-    _midiKeyboard.setAvailableRange(24, 108);
+    _midiKeyboard.setAvailableRange(21, 108);
     addAndMakeVisible(_midiKeyboard);
 
     _midiControlChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
@@ -323,6 +323,7 @@ void AeolusAudioProcessorEditor::refresh()
     updateDivisionViews();
     updateSequencerView();
     updateMidiKeyboardRange();
+    updateMidiKeyboardKeySwitches();
     updateMidiControlChannel();
 }
 
@@ -343,6 +344,12 @@ void AeolusAudioProcessorEditor::updateMidiKeyboardRange()
         _midiKeyboard.setPlayableRange(0, 0);
     else
         _midiKeyboard.setPlayableRange(range.getStart(), range.getEnd());
+}
+
+void AeolusAudioProcessorEditor::updateMidiKeyboardKeySwitches()
+{
+    const auto keySwitches{ _audioProcessor.getEngine().getKeySwitches() };
+    _midiKeyboard.setKeySwitches(keySwitches);
 }
 
 void AeolusAudioProcessorEditor::updateDivisionViews()

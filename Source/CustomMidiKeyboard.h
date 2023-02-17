@@ -20,6 +20,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <set>
 
 class CustomMidiKeyboard : public juce::MidiKeyboardComponent
 {
@@ -27,6 +28,8 @@ public:
     CustomMidiKeyboard(juce::MidiKeyboardState& state, juce::MidiKeyboardComponent::Orientation orientation);
 
     void setPlayableRange(int noteMin, int noteMax);
+
+    void setKeySwitches(const std::set<int> keySwitches);
 
 protected:
 
@@ -45,5 +48,8 @@ private:
 
     bool isNoteWithinPlayableRange(int note) const noexcept;
 
+    bool isNoteKeySwitch(int note) const noexcept;
+
     juce::Range<int> _playableRange;
+    std::set<int> _keySwitches;
 };

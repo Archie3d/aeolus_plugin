@@ -537,7 +537,7 @@ void Engine::processMIDIMessage(const MidiMessage& message)
     const int ch = getMIDIControlChannel();
 
     // Process global CCs
-    if (ch == 0 || message.getChannel() == 0 || message.getChannel() == getMIDIControlChannel()) {
+    if (ch == 0 || message.getChannel() == 0 || message.getChannel() == ch) {
         processControlMIDIMessage(message);
     }
 
@@ -556,6 +556,17 @@ void Engine::noteOn(int note, int midiChannel)
 {
     clearDivisionsTriggerFlag();
 
+    const int ch{ getMIDIControlChannel() };
+
+    // Handle key switches
+    if (ch == 0 || midiChannel == 0 || midiChannel == ch) {
+        if (note == _sequencerStepBackwardKeySwitch)
+            _sequencer->stepBackward();
+        else if (note == _sequencerStepForwardKeySwitch)
+            _sequencer->stepForward();
+    }
+
+    // Handle keys
     for (auto* division : _divisions)
         division->noteOn(note, midiChannel);
 }
@@ -596,6 +607,16 @@ Range<int> Engine::getMidiKeyboardRange() const
     }
 
     return Range<int>(minNote, maxNote);
+}
+
+std::set<int> Engine::getKeySwitches() const
+{
+    std::set<int> keySwitches{};
+
+    keySwitches.insert(_sequencerStepBackwardKeySwitch);
+    keySwitches.insert(_sequencerStepForwardKeySwitch);
+
+    return keySwitches;
 }
 
 Division* Engine::getDivisionByName(const String& name)
@@ -705,6 +726,14 @@ void Engine::loadDivisionsFromConfig(InputStream& stream)
                 _divisions.add(division.release());
             }
         }
+    }
+
+    if (auto* sequencer = config.getProperty("sequencer", {}).getDynamicObject()) {
+        if (var v = sequencer->getProperty("backward_key"); v.isInt())
+            _sequencerStepBackwardKeySwitch = (int)v;
+
+        if (var v = sequencer->getProperty("forward_key"); v.isInt())
+            _sequencerStepForwardKeySwitch = (int)v;
     }
 }
 

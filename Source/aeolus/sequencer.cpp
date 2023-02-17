@@ -176,6 +176,12 @@ void Sequencer::setStep(int index, bool captureCurrentState)
     _dirty = false;
 }
 
+void Sequencer::stepBackward()
+{
+    if (_currentStep > 0)
+        setStep(_currentStep - 1);
+}
+
 void Sequencer::stepForward()
 {
     if (_currentStep < (int)_steps.size() - 1)
@@ -234,7 +240,7 @@ void Sequencer::recallState(const OrganState& organState)
         jassert(organState.divisions[divIdx].stops.size() == division->getStopsCount());
 
         // Restore stops
-        for (int i = 0; i < division->getStopsCount(); ++i) 
+        for (int i = 0; i < division->getStopsCount(); ++i)
             division->enableStop(i, organState.divisions[divIdx].stops[i]);
 
         // Restore tremulant
