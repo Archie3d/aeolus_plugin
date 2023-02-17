@@ -67,7 +67,8 @@ private:
     juce::OwnedArray<juce::TextButton> _stepButtons;
 
     juce::TextButton _setButton;
-    juce::TextButton _advanceButton;
+    juce::TextButton _backwardButton;
+    juce::TextButton _forwardButton;
 
     bool _programMode;
 

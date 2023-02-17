@@ -28,7 +28,8 @@ SequencerView::SequencerView(aeolus::Sequencer* sequencer)
     , _sequencer{sequencer}
     , _stepButtons{}
     , _setButton{"Set"}
-    , _advanceButton{">>"}
+    , _forwardButton{">>"}
+    , _backwardButton{"<<"}
     , _programMode{false}
     , _listeners{}
 {
@@ -40,12 +41,19 @@ SequencerView::SequencerView(aeolus::Sequencer* sequencer)
             enterProgramMode();
         };
 
-    _advanceButton.setColour(TextButton::buttonColourId, Colour(0x46, 0x60, 0x16));
-    _advanceButton.onClick = [this]() {
+    _backwardButton.setColour(TextButton::buttonColourId, Colour(0x46, 0x60, 0x16));
+    _backwardButton.onClick = [this]() {
+            _sequencer->stepBackward();
+        };
+
+    _forwardButton.setColour(TextButton::buttonColourId, Colour(0x46, 0x60, 0x16));
+    _forwardButton.onClick = [this]() {
             _sequencer->stepForward();
         };
+
     addAndMakeVisible(_setButton);
-    addAndMakeVisible(_advanceButton);
+    addAndMakeVisible(_backwardButton);
+    addAndMakeVisible(_forwardButton);
 }
 
 void SequencerView::update()
@@ -60,7 +68,8 @@ void SequencerView::cancelProgramMode()
 {
     _programMode = false;
     _setButton.setEnabled(true);
-    _advanceButton.setEnabled(true);
+    _backwardButton.setEnabled(true);
+    _forwardButton.setEnabled(true);
 
     _listeners.call([](Listener& listener){ listener.onSequencerLeaveProgramMode(); });
 }
@@ -82,8 +91,10 @@ int SequencerView::getOptimalWidth() const
     int buttonsWidth = buttonWidth * _sequencer->getStepsCount()
         + buttonPadding * (_sequencer->getStepsCount() - 1);
 
+    const int navigationButtonWidth{ 3 * buttonWidth / 2 };
+
     // Account for the set and advance button
-    buttonsWidth += 4 * (buttonWidth + buttonPadding) + buttonPadding;
+    buttonsWidth += 4 * (navigationButtonWidth + buttonPadding) + buttonPadding;
 
     return buttonsWidth;
 }
@@ -91,6 +102,7 @@ int SequencerView::getOptimalWidth() const
 void SequencerView::resized()
 {
     const int buttonsWidth{ getOptimalWidth() };
+    const int navigationButtonWidth{ 3 * buttonWidth / 2 };
 
     int x = (getWidth() - buttonsWidth) / 2;
 
@@ -105,7 +117,10 @@ void SequencerView::resized()
 
     x += buttonPadding;
 
-    _advanceButton.setBounds(x, buttonPadding, 2 * buttonWidth, getHeight() - 2 * buttonPadding);
+    _backwardButton.setBounds(x, buttonPadding, navigationButtonWidth, getHeight() - 2 * buttonPadding);
+    x += navigationButtonWidth + buttonPadding;
+
+    _forwardButton.setBounds(x, buttonPadding, navigationButtonWidth, getHeight() - 2 * buttonPadding);
 }
 
 void SequencerView::populateStepButtons()
@@ -145,7 +160,8 @@ void SequencerView::enterProgramMode()
 {
     _programMode = true;
     _setButton.setEnabled(false);
-    _advanceButton.setEnabled(false);
+    _backwardButton.setEnabled(false);
+    _forwardButton.setEnabled(false);
 
     _listeners.call([](Listener& listener){ listener.onSequencerEnterProgramMode(); });
 }
