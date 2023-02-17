@@ -28,7 +28,7 @@ Sequencer steps are controlled via the program change messages sent on the contr
 
 Control MIDI channel:
 - `CC 1` modulation wheel enables/disables tremulant;
-- `CC 7` controls the global volume and the volume of each division;
+- `CC 7` controls the global volume and the volume of each division which has `swell` enabled;
 - `CC 91` controls the reverb output level;
 
 ## Custom organ configuration

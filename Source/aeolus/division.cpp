@@ -398,7 +398,8 @@ void Division::handleControlMessage(const juce::MidiMessage& msg)
             setTremulantEnabled(value > 0.5f);
         break;
     case aeolus::CC_VOLUME:
-        *_paramGain = value;
+        if (_hasSwell)
+            *_paramGain = value;
         break;
     default:
         break;

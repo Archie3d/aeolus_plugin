@@ -55,7 +55,7 @@
             "name": "Manual II",
             "mnemonic": "II",
             "link": ["Manual III"],
-            "swell": true,
+            "swell": false,
             "tremulant": true,
             "tremulant_level": 0.2,
             "stops": [
