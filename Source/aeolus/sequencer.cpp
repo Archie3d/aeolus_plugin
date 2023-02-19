@@ -122,6 +122,7 @@ var Sequencer::getPersistentState() const
 
     sequencerObj->setProperty("steps", stepsArr);
     sequencerObj->setProperty("current_step", getCurrentStep());
+    sequencerObj->setProperty("dirty", _dirty);
 
     return var{sequencerObj};
 }
@@ -144,6 +145,11 @@ void Sequencer::setPersistentState(const var& v)
             // and should not go into the sequencer.
             setStep(currentStep, false);
         }
+
+        setCurrentStepDirty();
+
+        if (auto&& v = sequencerObj->getProperty("dirty"); v.isBool())
+            _dirty = (bool)v;
     }
 }
 

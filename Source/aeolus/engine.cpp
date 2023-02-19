@@ -672,9 +672,6 @@ void Engine::setPersistentState(const var& state)
         // Restore the sequencer
         _sequencer->setPersistentState(obj->getProperty("sequencer"));
 
-        // The divisions state may be different from the sequencer, so we mark it dirty
-        _sequencer->setCurrentStepDirty();
-
         // Restore the divisions after the sequencer (in case we are restoring
         // from a state that did not have a sequencer before).
         if (const auto* divisions = obj->getProperty("divisions").getArray()) {
