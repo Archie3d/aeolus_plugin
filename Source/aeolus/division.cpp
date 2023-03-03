@@ -412,22 +412,14 @@ void Division::handleControlMessage(const juce::MidiMessage& msg)
         if (_hasSwell && cc == aeolus::CC_VOLUME) {
             *_paramGain = value;
         }
-
     }
 
     // Hange manual channel specific controls
     if (!isForMIDIChannel(msg.getChannel()))
         return;
 
-    switch (cc) {
-    case aeolus::CC_MODULATION:
-        if (hasTremulant())
-            setTremulantEnabled(value > 0.5f);
-        break;
-    default:
-        break;
-    }
-
+    if (cc == aeolus::CC_MODULATION && hasTremulant())
+        setTremulantEnabled(value > 0.5f);
 }
 
 bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voiceBuffer)
