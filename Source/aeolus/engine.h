@@ -229,6 +229,16 @@ public:
     void setMIDIControlChannel(int c) noexcept { _midiControlChannel = c; }
 
     /**
+    * Returns currently set MIDI control channel.
+    */
+    int getMIDISwellChannel() const noexcept { return _midiSwellChannel; }
+
+    /**
+    * Assign MIDI channel to be used to control the organ stops and sequencer.
+    */
+    void setMIDISwellChannel(int c) noexcept { _midiSwellChannel = c; }
+
+    /**
      * Generate audio.
      */
     void process(float* outL, float* outR, int numFrames, bool isNonRealtime = false);
@@ -333,6 +343,7 @@ private:
     Level _volumeLevel;
 
     std::atomic<int> _midiControlChannel;
+    std::atomic<int> _midiSwellChannel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Engine)
 };

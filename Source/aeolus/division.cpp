@@ -400,20 +400,29 @@ void Division::allNotesOff()
 
 void Division::handleControlMessage(const juce::MidiMessage& msg)
 {
-    if (!isForMIDIChannel(msg.getChannel()))
+    const int cc{ msg.getControllerNumber() };
+
+    if (cc != aeolus::CC_MODULATION && cc != aeolus::CC_VOLUME)
         return;
 
-    int cc = msg.getControllerNumber();
+    const int swellCh{ _engine.getMIDISwellChannel() };
     const float value{ float(msg.getControllerValue()) / 127.0f };
+
+    if (swellCh == 0 || swellCh == msg.getChannel() || msg.getChannel() == 0) {
+        if (_hasSwell && cc == aeolus::CC_VOLUME) {
+            *_paramGain = value;
+        }
+
+    }
+
+    // Hange manual channel specific controls
+    if (!isForMIDIChannel(msg.getChannel()))
+        return;
 
     switch (cc) {
     case aeolus::CC_MODULATION:
         if (hasTremulant())
             setTremulantEnabled(value > 0.5f);
-        break;
-    case aeolus::CC_VOLUME:
-        if (_hasSwell)
-            *_paramGain = value;
         break;
     default:
         break;

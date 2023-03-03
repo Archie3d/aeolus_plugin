@@ -102,5 +102,9 @@ private:
     juce::Label _midiControlChannelLabel;
     juce::ComboBox _midiControlChannelComboBox;
 
+    /// MIDI swell channel selection
+    juce::Label _midiSwellChannelLabel;
+    juce::ComboBox _midiSwellChannelComboBox;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

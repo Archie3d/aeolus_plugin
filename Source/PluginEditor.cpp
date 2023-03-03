@@ -53,6 +53,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _cancelButton{"Cancel"}
     , _midiControlChannelLabel{{}, {"Control channel"}}
     , _midiControlChannelComboBox{}
+    , _midiSwellChannelLabel{{}, {"Swell channel"}}
+    , _midiSwellChannelComboBox{}
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
@@ -181,11 +183,17 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     addAndMakeVisible(_midiKeyboard);
 
     _midiControlChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
+    _midiSwellChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
+
     addAndMakeVisible(_midiControlChannelLabel);
+    addAndMakeVisible(_midiSwellChannelLabel);
 
     _midiControlChannelComboBox.addItem("All", 1);
+    _midiSwellChannelComboBox.addItem("All", 1);
+
     for (int i = 1; i <= 16; ++i) {
         _midiControlChannelComboBox.addItem(String(i), i + 1);
+        _midiSwellChannelComboBox.addItem(String(i), i + 1);
     }
 
     _midiControlChannelComboBox.setSelectedId(1 + _audioProcessor.getEngine().getMIDIControlChannel(), juce::dontSendNotification);
@@ -193,7 +201,13 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
         _audioProcessor.getEngine().setMIDIControlChannel(_midiControlChannelComboBox.getSelectedId() - 1);
     };
 
+    _midiSwellChannelComboBox.setSelectedId(1 + _audioProcessor.getEngine().getMIDISwellChannel(), juce::dontSendNotification);
+    _midiSwellChannelComboBox.onChange = [this]() {
+        _audioProcessor.getEngine().setMIDISwellChannel(_midiSwellChannelComboBox.getSelectedId() - 1);
+    };
+
     addAndMakeVisible(_midiControlChannelComboBox);
+    addAndMakeVisible(_midiSwellChannelComboBox);
 
     // Overlay and sequencer must go on the very top
 
@@ -287,9 +301,13 @@ void AeolusAudioProcessorEditor::resized()
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x33, 0x33, 0x33));
     _cancelButton.setBounds((_midiKeyboard.getX() - 120)/2, getHeight() - 60, 60, 35);
 
-    int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 100) / 2;
+    int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 200) / 2;
+
     _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY(), 100, 20);
-    _midiControlChannelComboBox.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 100, 20);
+    _midiControlChannelComboBox.setBounds(_midiControlChannelLabel.getRight() + 5, _midiControlChannelLabel.getY(), 100, 20);
+
+    _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 100, 20);
+    _midiSwellChannelComboBox.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 20);
 }
 
 void AeolusAudioProcessorEditor::timerCallback()

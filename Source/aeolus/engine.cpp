@@ -349,6 +349,7 @@ Engine::Engine()
     , _midiKeyboardState{}
     , _volumeLevel{}
     , _midiControlChannel{0}
+    , _midiSwellChannel{0}
 {
     populateDivisions();
 
@@ -635,6 +636,7 @@ var Engine::getPersistentState() const
 
     // Save control channel
     obj->setProperty("midi_ctrl_channel", getMIDIControlChannel());
+    obj->setProperty("midi_swell_channel", getMIDISwellChannel());
 
     // Save the IR.
     int irNum = _selectedIR;
@@ -658,6 +660,7 @@ void Engine::setPersistentState(const var& state)
     if (const auto* obj = state.getDynamicObject()) {
         // Restore control channel
         setMIDIControlChannel(obj->getProperty("midi_ctrl_channel"));
+        setMIDISwellChannel(obj->getProperty("midi_swell_channel"));
 
         // Restore the IR
         int irNum = obj->getProperty("ir");
