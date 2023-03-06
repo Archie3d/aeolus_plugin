@@ -55,6 +55,15 @@ DivisionView::DivisionView(aeolus::Division* division)
 
     populateStopButtons();
     populateLinkButtons();
+
+    // Shade swell-enabled divisions differently
+    if (_division->hasSwell()) {
+        _gradientColour[0] = Colour(0x40, 0x31, 0x2F);
+        _gradientColour[1] = Colour(0x24, 0x1F, 0x1F);
+    } else {
+        _gradientColour[0] = Colour(0x31, 0x2F, 0x2F);
+        _gradientColour[1] = Colour(0x1F, 0x1F, 0x1F);
+    }
 }
 
 void DivisionView::update()
@@ -154,7 +163,12 @@ void DivisionView::resized()
 
 void DivisionView::paint(Graphics& g)
 {
-    ColourGradient grad = ColourGradient::vertical(Colour(0x31, 0x2F, 0x2F), 0, Colour(0x1F, 0x1F, 0x1F), (float)getHeight());
+    const auto grad{
+        ColourGradient::vertical(
+            _gradientColour[0], 0,
+            _gradientColour[1], (float)getHeight()
+        )
+    };
     g.setGradientFill(grad);
     g.fillRect(getLocalBounds());
 }
@@ -178,7 +192,7 @@ void DivisionView::populateStopButtons()
 void DivisionView::populateLinkButtons()
 {
     jassert(_division != nullptr);
-    
+
     for (int i = 0; i < _division->getLinksCount(); ++i) {
         auto& link = _division->getLinkByIndex(i);
 

@@ -62,6 +62,8 @@ private:
     DivisionControlPanel _controlPanel;
     juce::OwnedArray<StopButton> _stopButtons;
 
+    juce::Colour _gradientColour[2]{};
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionView)
 };
 
