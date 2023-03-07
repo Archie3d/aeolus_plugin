@@ -103,7 +103,15 @@ constexpr static float TUNING_FREQUENCY_DEFAULT = 440.0f;
 enum {
     CC_MODULATION = 1,
     CC_VOLUME = 7,
-    CC_REVERB = 91
+    CC_REVERB = 91,
+    CC_STOP_BUTTONS = 98
+};
+
+enum class StopControlMode {
+    Disabled,   // 0b00
+    SetOff,     // 0b01
+    SetOn,      // 0b10
+    Toggle      // 0b11
 };
 
 //==============================================================================

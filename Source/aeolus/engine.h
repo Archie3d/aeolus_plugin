@@ -32,6 +32,7 @@
 #include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
 
+#include <optional>
 #include <vector>
 
 AEOLUS_NAMESPACE_BEGIN
@@ -304,7 +305,11 @@ private:
     void applyVolume(juce::AudioBuffer<float>& out);
     void applyVolume(float* outL, float* outR, int numFrames);
 
+    /// Process control MIDI messages: program change (sequencer) and stop buttons CC.
     void processControlMIDIMessage(const juce::MidiMessage& message);
+
+    /// Process stop buttons MIDI controls.
+    void processStopControlMessage();
 
     float _sampleRate;
 
@@ -313,6 +318,10 @@ private:
     VoicePool _voicePool;           ///< All the voices.
 
     AudioParameterPool _params;     ///< Internal parameters.
+
+    std::optional<StopControlMode> _stopControlMode{};
+    int _stopControlGroup{};
+    int _stopControlButton{};
 
     /// List of all divisions
     juce::OwnedArray<Division> _divisions;

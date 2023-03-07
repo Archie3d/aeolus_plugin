@@ -863,9 +863,9 @@ void Engine::applyVolume(float* outL, float* outR, int numFrames)
 
 void Engine::processControlMIDIMessage(const MidiMessage& message)
 {
-    // NOTE: VST3 will not pass the program change MIDI messages through.
-    // Instead program change must be handled at the processor level
-    // via the setCurrentProgram() method.
+    // @note VST3 will not pass the program change MIDI messages through.
+    //       Instead program change must be handled at the processor level
+    //       via the setCurrentProgram() method.
 
     // Here we handle the program change message nevertheless
     // in case of a non-VST3 or stand-alone plugin.
@@ -874,6 +874,71 @@ void Engine::processControlMIDIMessage(const MidiMessage& message)
 
         if (step >= 0 && step < _sequencer->getStepsCount())
             _sequencer->setStep(step);
+    } else if (message.isController() && message.getControllerNumber() == CC_STOP_BUTTONS) {
+        const auto value{ message.getControllerValue() };
+
+        if (value & 0xC8 == 0x40) {
+            // 01mm0ggg
+            StopControlMode mode { StopControlMode::Disabled };
+
+            const int modeValue{ (value >> 4) & 0x03 >> 4 };
+            switch (modeValue) {
+                case 0: mode = StopControlMode::Disabled; break;
+                case 1: mode = StopControlMode::SetOff; break;
+                case 2: mode = StopControlMode::SetOn; break;
+                case 3: mode = StopControlMode::Toggle; break;
+                default: break;
+            }
+
+            _stopControlMode = mode;
+            _stopControlGroup = value & 0x07;
+
+            if (_stopControlMode == StopControlMode::Disabled) {
+                // Disable message does not require a 2nd part and can be processed immeditely.
+                processStopControlMessage();
+
+                _stopControlMode.reset();
+            }
+        } else if (value & 0xE0 == 0) {
+            // 000bbbbb
+            if (_stopControlMode.has_value()) {
+                _stopControlButton = value & 0x1F;
+
+                processStopControlMessage();
+            }
+        } else {
+            _stopControlMode.reset();
+        }
+    }
+}
+
+void Engine::processStopControlMessage()
+{
+    if (!_stopControlMode.has_value())
+        return;
+
+    if (!juce::isPositiveAndBelow(_stopControlGroup, _divisions.size()))
+        return;
+
+    auto* division{ _divisions.getUnchecked(_stopControlGroup) };
+
+    const auto mode{ *_stopControlMode };
+
+    switch (mode) {
+        case StopControlMode::Disabled:
+            division->disableAllStops();
+            break;
+        case StopControlMode::SetOff:
+            division->enableStop(_stopControlButton, false);
+            break;
+        case StopControlMode::SetOn:
+            division->enableStop(_stopControlButton, true);
+            break;
+        case StopControlMode::Toggle:
+            division->enableStop(_stopControlButton, !division->isStopEnabled(_stopControlButton));
+            break;
+        default:
+            break;
     }
 }
 

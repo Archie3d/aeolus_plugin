@@ -23,13 +23,23 @@ The rest and the most of the code (including voicing, spatialisation, reverb, et
 The convolution reverb uses impulse responses from the [Open AIR](https://www.openair.hosted.york.ac.uk/) project database.
 
 ## MIDI Control
-Sequencer steps are controlled via the program change messages sent on the control MIDI channel (program 0 corresponds to the first step of the sequencer, 1 - to the second and so on).
-> In a DAW use `Program` parameter to control the sequencer steps.
+Sequencer steps are controlled via the program change messages sent on the control MIDI channel (program `0 `corresponds to the first step of the sequencer, `1` - to the second and so on).
+> In a DAW you may use `Program` parameter to control the sequencer steps.
 
-Control MIDI channel:
-- `CC 1` modulation wheel enables/disables tremulant;
-- `CC 7` controls the global volume and the volume of each division which has `swell` enabled;
-- `CC 91` controls the reverb output level;
+MIDI controllers (CCs):
+- `CC 1` modulation wheel enables/disables tremulant
+- `CC 7` controls the global volume (on the control MIDI channel) and the volume of each division which has `swell` config flag enabled (on the swell MIDI channel)
+- `CC 91` controls the reverb output level
+- `CC 98` Stops control
+
+> :point_right: The stops control follows the original Aeolus convention. The control mode is set by the message `01mm0ggg`, where `mm` is the control mode, and `ggg` is the control group (division number, counter from the top starting from `0`).
+> Control modes are:
+> - `00` Disable the division (all stops are off)
+> - `01` Set stop off
+> - `10` Set stop on
+> - `11` Toggle
+>
+> Once the control message is received the value of the format `000bbbbb` will execute the selected control mode action on specified stop buton `bbbbb`, counted from `0`.
 
 ## Custom organ configuration
 Custom organ configuration will be loaded by the plugin if found at `Documents/Aeolus/organ_config.json` location.
