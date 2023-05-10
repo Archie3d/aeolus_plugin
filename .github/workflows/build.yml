@@ -76,7 +76,7 @@ jobs:
         cmake \
           -G "${{ matrix.generator }}" \
           -DWITH_ASIO=${{ matrix.asio }} \
-          -DWITH_MULTIBUS_OUTPUT=YES \
+          -DWITH_MULTIBUS_OUTPUT=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
           -S "${{ env.dir_source }}" \
