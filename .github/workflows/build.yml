@@ -31,17 +31,17 @@ jobs:
           - os: ubuntu-latest
             name: linux
             generator: Unix Makefiles
-            path: ./build/Aeolus_artefacts/Release
+            path: ./build/Aeolus-multibus_artefacts/Release
             asio: OFF
           - os: macos-latest
             name: mac
             generator: Unix Makefiles
-            path: ./build/Aeolus_artefacts/Release
+            path: ./build/Aeolus-multibus_artefacts/Release
             asio: OFF
           - os: windows-2019
             name: win
             generator: Visual Studio 16 2019
-            path: ./build/Aeolus_artefacts/Release
+            path: ./build/Aeolus-multibus_artefacts/Release
             asio: ON
 
     steps:
