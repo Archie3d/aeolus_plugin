@@ -881,7 +881,7 @@ void Engine::processControlMIDIMessage(const MidiMessage& message)
             // 01mm0ggg
             StopControlMode mode { StopControlMode::Disabled };
 
-            const int modeValue{ (value >> 4) & 0x03 >> 4 };
+            const int modeValue{ (value >> 4) & 0x03 };
             switch (modeValue) {
                 case 0: mode = StopControlMode::Disabled; break;
                 case 1: mode = StopControlMode::SetOff; break;
