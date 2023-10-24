@@ -57,6 +57,23 @@ const Scale::Map Scale::_scales = {
         }
     },
     {
+        Scale::MeanSixth,
+        {
+            1.0000000f,
+            1.0525061f,
+            1.1203511f,
+            1.1925695f,
+            1.2551867f,
+            1.3360967f,
+            1.4062500f,
+            1.4968975f,
+            1.5754938f,
+            1.6770509f,
+            1.7851545f,
+            1.8788860f,
+        }
+    },
+    {
         Scale::Werckm3,
         {
             1.00000000f,
@@ -228,7 +245,8 @@ juce::String Scale::getNameForType(Type type)
 {
     static const std::map<Type, juce::String> names {
         { Pythagorean, "Pythagorean" },
-        { MeanQuart,   "Meantone" },
+        { MeanQuart,   "Meantone (1/4 comma)" },
+        { MeanSixth,   "Meantone (1/6 comma)" }, 
         { Werckm3,     "Werckmeister" },
         { Kirnberg3,   "Kirnberger" },
         { WellTemp,    "Well tempered" },

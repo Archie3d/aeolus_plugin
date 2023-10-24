@@ -33,6 +33,7 @@ public:
 
         Pythagorean = 0,
         MeanQuart,
+        MeanSixth,
         Werckm3,
         Kirnberg3,
         WellTemp,
