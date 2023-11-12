@@ -58,8 +58,12 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
+    loadUI();
+
     setSize (1420, 640);
     setResizeLimits(1024, 600, 4096, 4096);
+
+    // @todo Rework ...
 
     addAndMakeVisible(_versionLabel);
     _versionLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 10, Font::plain));
@@ -221,6 +225,9 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     addAndMakeVisible(_sequencerView);
 
+    // @todo We should keep only the view container as the top component
+    addAndMakeVisible(viewContainer);
+
     resized();
 
     startTimerHz(10);
@@ -242,6 +249,9 @@ void AeolusAudioProcessorEditor::paint (juce::Graphics& g)
 
 void AeolusAudioProcessorEditor::resized()
 {
+    viewContainer.setBounds(getLocalBounds());
+
+    // @todo Rework ...
     _overlay.setBounds(getLocalBounds());
 
     constexpr int margin = 5;
@@ -323,6 +333,17 @@ void AeolusAudioProcessorEditor::onSequencerEnterProgramMode()
 void AeolusAudioProcessorEditor::onSequencerLeaveProgramMode()
 {
     _overlay.setVisible(false);
+}
+
+void AeolusAudioProcessorEditor::loadUI()
+{
+    viewContainer.loadFromResource("view.xml", "style.scss");
+
+    auto* view{ viewContainer.getView() };
+    jassert(view != nullptr);
+
+    // @todo Here we should be able to access the UI elements like:
+    // if (auto el{ view->getElementtById("id") }) { ... }
 }
 
 void AeolusAudioProcessorEditor::populateDivisions()

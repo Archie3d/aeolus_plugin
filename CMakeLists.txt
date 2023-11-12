@@ -29,6 +29,7 @@ option(WITH_ASIO "Enable ASIO audio interface" ON)
 option(WITH_MULTIBUS_OUTPUT "Enable multibus output" OFF)
 
 add_subdirectory(JUCE)
+add_subdirectory(VITRO)
 
 set(plugin_formats
     VST3
@@ -76,8 +77,12 @@ target_link_libraries(${TARGET}
         juce::juce_audio_plugin_client
         juce::juce_gui_basics
         juce::juce_gui_extra
+        juce::juce_opengl
+
+        juce::vitro
     PUBLIC
         juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
 )
 
 juce_generate_juce_header(${TARGET})
@@ -126,5 +131,5 @@ endif()
 
 if(APPLE)
     target_compile_definitions(${TARGET} PUBLIC JUCE_AU=1)
-    target_compile_options(${TARGET} PRIVATE "-mfma")
+    #target_compile_options(${TARGET} PRIVATE "-mfma")
 endif()

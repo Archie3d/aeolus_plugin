@@ -1,0 +1,11 @@
+$backgroundColor: #1F1F1F;
+$textColor: #F0F0F0;
+
+View {
+    background-color: $backgroundColor;
+}
+
+Label {
+    color: $textColor;
+    min-height: 40;
+}

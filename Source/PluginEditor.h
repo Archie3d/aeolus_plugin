@@ -54,6 +54,8 @@ public:
 
 private:
 
+    void loadUI();
+
     void populateDivisions();
     void refresh();
 
@@ -65,6 +67,8 @@ private:
     void updateMidiControlChannel();
 
     AeolusAudioProcessor& _audioProcessor;
+
+    vitro::ViewContainer viewContainer{};
 
     juce::Viewport _divisionsViewport;
     juce::Component _divisionsComponent;
