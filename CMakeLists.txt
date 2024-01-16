@@ -37,6 +37,8 @@ set(plugin_formats
 
 if(APPLE)
     list(APPEND plugin_formats AU)
+elseif(UNIX AND NOT APPLE)
+    list(APPEND plugin_formats LV2)
 endif()
 
 if(WITH_MULTIBUS_OUTPUT)
@@ -64,6 +66,8 @@ juce_add_plugin(${TARGET}
     IS_MIDI_EFFECT FALSE
     NEEDS_MIDI_INPUT TRUE
     FORMATS ${plugin_formats}
+    LV2_URI "https://github.com/Archie3d/aeolus_plugin"
+    LV2_SHARED_LIBRARY_NAME ${PRODUCT_NAME}
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon256.png"
     ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
 )
