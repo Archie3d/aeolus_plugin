@@ -66,8 +66,7 @@ juce_add_plugin(${TARGET}
     IS_MIDI_EFFECT FALSE
     NEEDS_MIDI_INPUT TRUE
     FORMATS ${plugin_formats}
-    LV2_URI "https://github.com/Archie3d/aeolus_plugin"
-    LV2_SHARED_LIBRARY_NAME ${PRODUCT_NAME}
+    LV2URI "https://github.com/Archie3d/aeolus_plugin"
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon256.png"
     ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
 )
