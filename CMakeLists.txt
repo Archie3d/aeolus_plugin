@@ -38,6 +38,8 @@ set(plugin_formats
 
 if(APPLE)
     list(APPEND plugin_formats AU)
+elseif(UNIX AND NOT APPLE)
+    list(APPEND plugin_formats LV2)
 endif()
 
 if(WITH_MULTIBUS_OUTPUT)
@@ -54,16 +56,18 @@ endif()
 
 
 juce_add_plugin(${TARGET}
-    VERSION "0.2.0"
+    VERSION "0.2.1"
     PLUGIN_MANUFACTURER_CODE "Arbe"
     PLUGIN_CODE ${PLUGIN_CODE}
     PLUGIN_DESCRIPTION ${PLUGIN_DESCRIPTION}
     PRODUCT_NAME ${PRODUCT_NAME}
     COMPANY_NAME "Arthur Benilov"
+    BUNDLE_ID "com.ArthurBenilov.Aeolus"
     IS_SYNTH TRUE
     IS_MIDI_EFFECT FALSE
     NEEDS_MIDI_INPUT TRUE
     FORMATS ${plugin_formats}
+    LV2URI "https://github.com/Archie3d/aeolus_plugin"
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon256.png"
     ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
 )

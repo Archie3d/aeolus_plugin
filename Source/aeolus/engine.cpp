@@ -899,7 +899,7 @@ void Engine::processControlMIDIMessage(const MidiMessage& message)
 
                 _stopControlMode.reset();
             }
-        } else if (value & 0xE0 == 0) {
+        } else if ((value & 0xE0) == 0) {
             // 000bbbbb
             if (_stopControlMode.has_value()) {
                 _stopControlButton = value & 0x1F;
