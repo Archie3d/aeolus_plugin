@@ -877,7 +877,7 @@ void Engine::processControlMIDIMessage(const MidiMessage& message)
     } else if (message.isController() && message.getControllerNumber() == CC_STOP_BUTTONS) {
         const auto value{ message.getControllerValue() };
 
-        if (value & 0xC8 == 0x40) {
+        if ((value & 0xC8) == 0x40) {
             // 01mm0ggg
             StopControlMode mode { StopControlMode::Disabled };
 
@@ -899,7 +899,7 @@ void Engine::processControlMIDIMessage(const MidiMessage& message)
 
                 _stopControlMode.reset();
             }
-        } else if (value & 0xE0 == 0) {
+        } else if ((value & 0xE0) == 0) {
             // 000bbbbb
             if (_stopControlMode.has_value()) {
                 _stopControlButton = value & 0x1F;
