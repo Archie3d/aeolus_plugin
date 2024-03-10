@@ -96,6 +96,96 @@ file(GLOB_RECURSE src
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
 )
 
+source_group(Source
+    FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/PluginProcessor.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/PluginProcessor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/PluginEditor.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/PluginEditor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Parameters.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Parameters.cpp
+)
+
+source_group(Source\\ui
+    FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/CustomLookAndFeel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/CustomLookAndFeel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/CustomMidiKeyboard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/CustomMidiKeyboard.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/DivisionControlPanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/DivisionControlPanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/DivisionView.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/DivisionView.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/GlobalTuningComponent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/GlobalTuningComponent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/LevelIndicator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/LevelIndicator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/OverlayComponent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/OverlayComponent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/ParameterSlider.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/ParameterSlider.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/SequencerView.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/SequencerView.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/StopButton.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/StopButton.cpp
+)
+
+source_group(Source\\aeolus
+    FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/addsynth.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/addsynth.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/audioparam.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/audioparam.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/division.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/division.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/engine.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/engine.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/globals.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/globals.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/levelmeter.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/levelmeter.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/list.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/memory.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/rankwave.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/rankwave.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/ringbuffer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/scale.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/scale.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/sema.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/sema.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/sequencer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/sequencer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/simd.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/simd.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/stop.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/stop.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/voice.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/voice.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/worker.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/worker.cpp
+)
+
+source_group(Source\\aeolus\\dsp
+    FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/adsrenv.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/adsrenv.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/chiff.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/chiff.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/convolve.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/convolver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/convolver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/delay.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/delay.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/fft.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/fft.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/filter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/filter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/interpolator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/interpolator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/spatial.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/spatial.cpp
+)
+
 file(GLOB_RECURSE res "${CMAKE_CURRENT_SOURCE_DIR}/Resources/*.*")
 
 juce_add_binary_data(${TARGET}_res SOURCES ${res})
@@ -130,5 +220,5 @@ endif()
 
 if(APPLE)
     target_compile_definitions(${TARGET} PUBLIC JUCE_AU=1)
-    target_compile_options(${TARGET} PRIVATE "-mfma")
+    #target_compile_options(${TARGET} PRIVATE "-mfma")
 endif()

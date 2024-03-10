@@ -21,8 +21,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "CustomMidiKeyboard.h"
-
+#include "ui/CustomMidiKeyboard.h"
 #include "ui/LevelIndicator.h"
 #include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"

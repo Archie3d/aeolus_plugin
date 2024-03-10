@@ -17,7 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
-#include "CustomMidiKeyboard.h"
+#include "ui/CustomMidiKeyboard.h"
 
 using namespace juce;
 
