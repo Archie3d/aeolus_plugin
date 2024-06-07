@@ -25,7 +25,7 @@ The convolution reverb uses impulse responses from the [Open AIR](https://www.op
 ## MIDI Control
 Sequencer steps are controlled via the program change messages sent on the control MIDI channel (program `0 `corresponds to the first step of the sequencer, `1` - to the second and so on).
 > In a DAW you may use `Program` parameter to control the sequencer steps.
-> Another way to control the sequencer is via key switches (MIDI notes). The default configuration uses keys `22` and `23` to control the sequencer.
+> Another way to control the sequencer is via key switches (MIDI notes). The default configuration uses keys `22` and `23` to control the sequencer. These can be changed via the organ configuration file (multiple keys can be assigned for forward and backward actions).
 
 ### CCs:
 - `CC 1` modulation wheel enables/disables tremulant

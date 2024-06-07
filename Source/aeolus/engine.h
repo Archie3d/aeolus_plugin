@@ -311,6 +311,9 @@ private:
     /// Process stop buttons MIDI controls.
     void processStopControlMessage();
 
+    bool isKeySwitchForward(int key) const;
+    bool isKeySwitchBackward(int key) const;
+
     float _sampleRate;
 
     RingBuffer<NoteEvent, 1024> _pendingNoteEvents;
@@ -328,8 +331,8 @@ private:
 
     std::unique_ptr<Sequencer> _sequencer;
 
-    int _sequencerStepBackwardKeySwitch{ SEQUENCER_BACKWARD_MIDI_KEY };
-    int _sequencerStepForwardKeySwitch{ SEQUENCER_FORWARD_MIDI_KEY };
+    std::vector<int> _sequencerStepBackwardKeySwitches{ SEQUENCER_BACKWARD_MIDI_KEY };
+    std::vector<int> _sequencerStepForwardKeySwitches{ SEQUENCER_FORWARD_MIDI_KEY };
 
     juce::AudioBuffer<float> _subFrameBuffer;
     juce::AudioBuffer<float> _divisionFrameBuffer;

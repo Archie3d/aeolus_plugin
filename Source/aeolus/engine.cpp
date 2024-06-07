@@ -559,17 +559,27 @@ void Engine::noteOn(int note, int midiChannel)
 
     const int ch{ getMIDIControlChannel() };
 
+    bool handled{ false };
+
     // Handle key switches
+    // @note If a key switch falls within the playable rande we need to make
+    //       sure we don't process corresponding note-on event, otherwise
+    //       navigating the sequencer will create a spurious sounds.
     if (ch == 0 || midiChannel == 0 || midiChannel == ch) {
-        if (note == _sequencerStepBackwardKeySwitch)
+        if (isKeySwitchBackward(note)) {
             _sequencer->stepBackward();
-        else if (note == _sequencerStepForwardKeySwitch)
+            handled = true;
+        } else if (isKeySwitchForward(note)) {
             _sequencer->stepForward();
+            handled = true;
+        }
     }
 
     // Handle keys
-    for (auto* division : _divisions)
-        division->noteOn(note, midiChannel);
+    if (!handled) {
+        for (auto* division : _divisions)
+            division->noteOn(note, midiChannel);
+    }
 }
 
 void Engine::noteOff(int note, int midiChannel)
@@ -614,8 +624,11 @@ std::set<int> Engine::getKeySwitches() const
 {
     std::set<int> keySwitches{};
 
-    keySwitches.insert(_sequencerStepBackwardKeySwitch);
-    keySwitches.insert(_sequencerStepForwardKeySwitch);
+    for (int key : _sequencerStepBackwardKeySwitches)
+        keySwitches.insert(key);
+
+    for (int key : _sequencerStepForwardKeySwitches)
+        keySwitches.insert(key);
 
     return keySwitches;
 }
@@ -711,6 +724,24 @@ void Engine::populateDivisions()
     }
 }
 
+// @internal Helper to populate key switches from a single number or a list
+static void populateKeySwitchesVector(std::vector<int>& switches, const var& v)
+{
+    if (v.isVoid())
+        return;
+    
+    switches.clear();
+
+    if (v.isInt()) {
+        switches.push_back((int)v);
+    } else if (v.isArray()) {
+        if (auto* a = v.getArray()) {
+            for (const auto& key : *a)
+                switches.push_back((int)key);
+        }
+    }
+}
+
 void Engine::loadDivisionsFromConfig(InputStream& stream)
 {
     // Load organ config JSON
@@ -729,11 +760,11 @@ void Engine::loadDivisionsFromConfig(InputStream& stream)
     }
 
     if (auto* sequencer = config.getProperty("sequencer", {}).getDynamicObject()) {
-        if (var v = sequencer->getProperty("backward_key"); v.isInt())
-            _sequencerStepBackwardKeySwitch = (int)v;
+        if (var v = sequencer->getProperty("backward_key"); !v.isVoid())
+            populateKeySwitchesVector(_sequencerStepBackwardKeySwitches, v);
 
-        if (var v = sequencer->getProperty("forward_key"); v.isInt())
-            _sequencerStepForwardKeySwitch = (int)v;
+        if (var v = sequencer->getProperty("forward_key"); !v.isVoid())
+            populateKeySwitchesVector(_sequencerStepForwardKeySwitches, v);
     }
 }
 
@@ -940,6 +971,20 @@ void Engine::processStopControlMessage()
         default:
             break;
     }
+}
+
+bool Engine::isKeySwitchForward(int key) const
+{
+    return std::find(_sequencerStepForwardKeySwitches.begin(),
+                     _sequencerStepForwardKeySwitches.end(),
+                     key) != _sequencerStepForwardKeySwitches.end();
+}
+
+bool Engine::isKeySwitchBackward(int key) const
+{
+    return std::find(_sequencerStepBackwardKeySwitches.begin(),
+                     _sequencerStepBackwardKeySwitches.end(),
+                     key) != _sequencerStepBackwardKeySwitches.end();
 }
 
 AEOLUS_NAMESPACE_END
