@@ -25,6 +25,30 @@ namespace ui {
 
 MidiChannelsSelectComponent::MidiChannelsSelectComponent()
 {
+	for (int i = 0; i < 16; ++i) {
+		auto checkBox = std::make_unique<ToggleButton>(String(i + 1));
+		addAndMakeVisible(checkBox.get());
+		_midiChannelButtons.push_back(std::move(checkBox));
+	}
+}
+
+void MidiChannelsSelectComponent::resized()
+{
+	auto bounds{ getLocalBounds() };
+
+	int idx = 0;
+
+	while (idx < _midiChannelButtons.size()) {
+		auto row = bounds.removeFromTop(32);
+		const auto w = row.getWidth() / 4;
+
+		for (int i = 0; i < 4; ++i) {
+			if (i < 3)
+				_midiChannelButtons[idx++]->setBounds(row.removeFromLeft(w));
+			else
+				_midiChannelButtons[idx++]->setBounds(row);
+		}
+	}
 }
 
 } // namespace ui

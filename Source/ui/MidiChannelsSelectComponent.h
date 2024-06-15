@@ -28,7 +28,12 @@ class MidiChannelsSelectComponent : public juce::Component
 public:
 	MidiChannelsSelectComponent();
 
+	// juce::Component
+	void resized() override;
+
 private:
+
+	std::vector<std::unique_ptr<juce::ToggleButton>> _midiChannelButtons{};
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidiChannelsSelectComponent)
 };

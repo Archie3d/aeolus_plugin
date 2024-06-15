@@ -48,7 +48,24 @@ MidiChannelsComponent::MidiChannelsComponent()
         content->setSize(240, 144);
         auto* contentPtr = content.get();
 
-        auto& box = CallOutBox::launchAsynchronously(std::move(content), _midiButton.getBounds(), this);
+        auto* parent = getParentComponent();
+        while (parent != nullptr && dynamic_cast<juce::AudioProcessorEditor*>(parent) == nullptr)
+            parent = parent->getParentComponent();
+
+        if (parent == nullptr)
+            parent = getTopLevelComponent();
+
+        jassert(parent != nullptr);
+
+        if (parent == nullptr)
+            return;
+
+        auto bounds = parent->getLocalArea(&_midiButton, _midiButton.getBounds());
+
+        auto& box = CallOutBox::launchAsynchronously(
+            std::move(content),
+            bounds,
+            parent);
     };
 
 }
