@@ -320,7 +320,7 @@ bool Division::isForMIDIChannel(int channel) const noexcept
     const int mask{_midiChannelsMask.load() };
 
     return channel == 0 // broadcast message
-        || (mask & (1 << channel)) != 0;
+        || (mask & (1 << (channel - 1))) != 0;
 }
 
 void Division::setTremulantEnabled(bool ena) noexcept

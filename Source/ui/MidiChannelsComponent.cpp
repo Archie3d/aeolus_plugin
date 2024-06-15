@@ -44,9 +44,21 @@ MidiChannelsComponent::MidiChannelsComponent()
     _midiButton.setMouseCursor(MouseCursor::PointingHandCursor);
 
     _midiButton.onClick = [this] {
-        auto content = std::make_unique<ui::MidiChannelsSelectComponent>();
-        content->setSize(240, 144);
+        int mask{};
+
+        if (currentChannelsMaskProvider)
+            mask = currentChannelsMaskProvider();
+
+        auto content = std::make_unique<ui::MidiChannelsSelectComponent>(mask);
+        content->setSize(240, 160);
         auto* contentPtr = content.get();
+        
+        content->onSelectionChanged = [this](int mask) {
+            if (onChannelsSelectionChanged)
+                onChannelsSelectionChanged(mask);
+
+            updateLabel();
+        };
 
         auto* parent = getParentComponent();
         while (parent != nullptr && dynamic_cast<juce::AudioProcessorEditor*>(parent) == nullptr)
@@ -76,8 +88,71 @@ void MidiChannelsComponent::resized()
 
     _midiButton.setBounds(bounds.removeFromLeft(32));
 
-    bounds.removeFromLeft(6);
     _channelsLabel.setBounds(bounds);
+}
+
+void MidiChannelsComponent::updateLabel()
+{
+    _channelsLabel.setText(getMidiChannelsAsText(), juce::dontSendNotification);
+}
+
+String MidiChannelsComponent::getMidiChannelsAsText() const
+{
+    if (!currentChannelsMaskProvider)
+        return {};
+
+    int midiChannelsMask = currentChannelsMaskProvider();
+
+    if (midiChannelsMask == 0)
+        return "None";
+
+    if (midiChannelsMask == ((1 << 16) - 1))
+        return "Any";
+
+    String text{};
+    int prevChannel = 0;
+    int prevCounter = 0;
+
+    for (int i = 0; i < 16; i++) {
+        int mask = 1 << i;
+
+        if ((midiChannelsMask & mask) == 0) {
+            if (prevCounter == 2)
+                text += "," + String(prevChannel + 1);
+            else if (prevCounter > 2)
+                text += "-" + String(prevChannel + 1);
+            prevCounter = 0;
+            continue;
+        }
+
+        if (prevCounter == 0) {
+            if (text.length() > 0)
+                text += ",";
+            text += String(i + 1);
+            prevChannel = i;
+            prevCounter = 1;
+        } else {
+            if (prevChannel == i - 1) {
+                prevChannel = i;
+                prevCounter += 1;
+            } else {
+                if (prevCounter < 2)
+                    text += ",";
+                else
+                    text += "-";
+                text += String(i + 1);
+                prevChannel = i;
+                prevCounter = 0;
+            }
+        }
+    }
+
+    if (prevCounter == 2)
+        text += "," + String(prevChannel + 1);
+    else if (prevCounter > 2)
+        text += "-" + String(prevChannel + 1);
+
+    return text;
 }
 
 } // namespace ui

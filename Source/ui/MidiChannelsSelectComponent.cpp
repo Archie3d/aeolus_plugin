@@ -23,18 +23,39 @@ using namespace juce;
 
 namespace ui {
 
-MidiChannelsSelectComponent::MidiChannelsSelectComponent()
+MidiChannelsSelectComponent::MidiChannelsSelectComponent(int midiChannelsMask)
+	: _midiChannelsMask{ midiChannelsMask }
+	, _selectAllButton{ "Select all" }
+	, _clearButton{ "Clear" }
 {
 	for (int i = 0; i < 16; ++i) {
 		auto checkBox = std::make_unique<ToggleButton>(String(i + 1));
+		checkBox->onStateChange = [this, i]() {
+				const bool selected{ _midiChannelButtons[i]->getToggleState() };
+				toggleChannel(i, selected);
+			};
+
 		addAndMakeVisible(checkBox.get());
 		_midiChannelButtons.push_back(std::move(checkBox));
 	}
+
+	addAndMakeVisible(_selectAllButton);
+	addAndMakeVisible(_clearButton);
+
+	_selectAllButton.onClick = [&]() { selectAll(); };
+	_clearButton.onClick = [&]() { clear(); };
+
+	_selectAllButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
+	_clearButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
+
+	updateToggleButtons();
 }
 
 void MidiChannelsSelectComponent::resized()
 {
 	auto bounds{ getLocalBounds() };
+
+	auto buttonsRow{ bounds.removeFromBottom(26).removeFromBottom(20) };
 
 	int idx = 0;
 
@@ -49,6 +70,60 @@ void MidiChannelsSelectComponent::resized()
 				_midiChannelButtons[idx++]->setBounds(row);
 		}
 	}
+
+	_clearButton.setBounds(buttonsRow.removeFromRight(60));
+	buttonsRow.removeFromRight(6);
+	_selectAllButton.setBounds(buttonsRow.removeFromRight(80));
+}
+
+void MidiChannelsSelectComponent::selectAll()
+{
+	_midiChannelsMask = (1 << _midiChannelButtons.size()) - 1;
+	updateToggleButtons();
+	notifySelectionChanged();
+}
+
+void MidiChannelsSelectComponent::clear()
+{
+	_midiChannelsMask = 0;
+	updateToggleButtons();
+	notifySelectionChanged();
+}
+
+void MidiChannelsSelectComponent::updateToggleButtons()
+{
+	int mask = 1;
+
+	for (auto& button : _midiChannelButtons) {
+		bool shouldBeOn{ (_midiChannelsMask & mask) != 0 };
+		button->setToggleState(shouldBeOn, juce::dontSendNotification);
+		mask = mask << 1;
+	}
+}
+
+void MidiChannelsSelectComponent::toggleChannel(int index, bool shouldBeSelected)
+{
+	const int mask{ 1 << index };
+
+	if (shouldBeSelected) {
+		if ((_midiChannelsMask & mask) != 0)
+			return;
+
+		_midiChannelsMask |= mask;
+	} else {
+		if ((_midiChannelsMask & mask) == 0)
+			return;
+
+		_midiChannelsMask &= ~(mask);
+	}
+
+	notifySelectionChanged();
+}
+
+void MidiChannelsSelectComponent::notifySelectionChanged()
+{
+	if (onSelectionChanged)
+		onSelectionChanged(_midiChannelsMask);
 }
 
 } // namespace ui

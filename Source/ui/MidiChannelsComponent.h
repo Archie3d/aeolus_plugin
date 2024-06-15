@@ -20,6 +20,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <functional>
 
 namespace ui {
 
@@ -29,10 +30,17 @@ public:
 
 	MidiChannelsComponent();
 
+	std::function<int()> currentChannelsMaskProvider{};
+	std::function<void(int)> onChannelsSelectionChanged{};
+
 	// juce::Component
 	void resized() override;
 
+	void updateLabel();
+
 private:
+
+	String getMidiChannelsAsText() const;
 
 	juce::DrawableButton _midiButton;
 	juce::Label _channelsLabel;

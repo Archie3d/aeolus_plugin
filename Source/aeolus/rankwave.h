@@ -34,7 +34,7 @@ AEOLUS_NAMESPACE_BEGIN
  * This class represents a single pipe mapped to a model (additive synth),
  * note, and frequency.
  */
-class Pipewave
+class Pipewave final
 {
 public:
 
@@ -72,6 +72,7 @@ public:
 
     Pipewave() = delete;
     Pipewave(Addsynth& model, int note, float freq);
+    ~Pipewave();
 
     const Addsynth& getModel() const noexcept { return _model; }
 

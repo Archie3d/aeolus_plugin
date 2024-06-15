@@ -20,20 +20,35 @@
 #pragma once
 
 #include  <JuceHeader.h>
+#include <functional>
 
 namespace ui {
 
 class MidiChannelsSelectComponent : public juce::Component
 {
 public:
-	MidiChannelsSelectComponent();
+	MidiChannelsSelectComponent(int midiChannelsMask = 0);
 
 	// juce::Component
 	void resized() override;
 
+	std::function<void(int)> onSelectionChanged{};
+
 private:
 
+	void selectAll();
+	void clear();
+	void updateToggleButtons();
+
+	void toggleChannel(int index, bool shouldBeSelected);
+	void notifySelectionChanged();
+
+	int _midiChannelsMask{};
+
 	std::vector<std::unique_ptr<juce::ToggleButton>> _midiChannelButtons{};
+
+	juce::TextButton _selectAllButton;
+	juce::TextButton _clearButton;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidiChannelsSelectComponent)
 };

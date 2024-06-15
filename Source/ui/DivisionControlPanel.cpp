@@ -41,21 +41,10 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _midiChannelLabel.setFont(f);
     addAndMakeVisible(_midiChannelLabel);
 
-    /* @todo remove
-    _midiChannelComboBox.addItem("All", 1);
-    for (int i = 1; i <= 16; ++i) {
-        _midiChannelComboBox.addItem(String(i), i + 1);
-    }
-
-    _midiChannelComboBox.setSelectedId(1 + _division->getMIDIChannel(), juce::dontSendNotification);
-    _midiChannelComboBox.onChange = [this]() {
-        _division->setMIDIChannel(_midiChannelComboBox.getSelectedId() - 1);
-    };
-
-    addAndMakeVisible(_midiChannelComboBox);
-    */
-
     addAndMakeVisible(_midiChannels);
+    _midiChannels.currentChannelsMaskProvider = [this]() -> int { return _division->getMIDIChannelsMask(); };
+    _midiChannels.onChannelsSelectionChanged = [this](int mask) { _division->setMIDIChannelsMask(mask); };
+    _midiChannels.updateLabel();
 
     _tremulantButton.setClickingTogglesState(true);
     _tremulantButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));

@@ -30,10 +30,11 @@ Pipewave::Pipewave(Addsynth& model, int note, float freq)
     : _model(model)
     , _note(note)
     , _freq(freq)
-    , _needsToBeRebuilt{true}
+    , _needsToBeRebuilt{ true }
 {
-
 }
+
+Pipewave::~Pipewave() = default;
 
 float Pipewave::getPipeFrequency() const noexcept
 {
