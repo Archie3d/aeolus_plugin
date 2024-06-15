@@ -50,7 +50,7 @@ MidiChannelsComponent::MidiChannelsComponent()
             mask = currentChannelsMaskProvider();
 
         auto content = std::make_unique<ui::MidiChannelsSelectComponent>(mask);
-        content->setSize(240, 160);
+        content->setSize(240, 190);
         auto* contentPtr = content.get();
         
         content->onSelectionChanged = [this](int mask) {
@@ -80,6 +80,11 @@ MidiChannelsComponent::MidiChannelsComponent()
             parent);
     };
 
+    _channelsLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0xCC));
+
+    auto f = _channelsLabel.getFont();
+    f.setHeight(14);
+    _channelsLabel.setFont(f);
 }
 
 void MidiChannelsComponent::resized()

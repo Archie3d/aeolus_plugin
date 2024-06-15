@@ -26,7 +26,6 @@ namespace ui {
 
 DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     : _division{ division }
-    , _midiChannelLabel{{}, "MIDI channel"}
     , _tremulantButton{ "Tremulant" }
     , _midiChannels{}
     , _gainSlider{ *division->getParamGain() }
@@ -35,12 +34,6 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 {
     jassert(division);
 
-    _midiChannelLabel.setColour(Label::textColourId, Colour(0x99, 0x99, 0x99));
-    auto f = _midiChannelLabel.getFont();
-    f.setHeight(14);
-    _midiChannelLabel.setFont(f);
-    addAndMakeVisible(_midiChannelLabel);
-
     addAndMakeVisible(_midiChannels);
     _midiChannels.currentChannelsMaskProvider = [this]() -> int { return _division->getMIDIChannelsMask(); };
     _midiChannels.onChannelsSelectionChanged = [this](int mask) { _division->setMIDIChannelsMask(mask); };
@@ -48,7 +41,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
 
     _tremulantButton.setClickingTogglesState(true);
     _tremulantButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
-    _tremulantButton.setColour(TextButton::buttonOnColourId, Colour(0x00, 0x66, 0x33));
+    _tremulantButton.setColour(TextButton::buttonOnColourId,  Colours::darkgreen);
     _tremulantButton.setToggleState(_division->isTremulantEnabled(), juce::dontSendNotification);
 
     _tremulantButton.onClick = [this]() {
@@ -86,10 +79,8 @@ void DivisionControlPanel::resized()
     _volumeLevelR.setBounds(_gainSlider.getX() + _gainSlider.getWidth() - 5, margin + 5, 2, _gainSlider.getHeight() - 10);
 
     int offset = _gainSlider.getRight();
-
-    _midiChannelLabel.setBounds(offset + margin, margin, itemWidth, 20);
-    
-    _midiChannels.setBounds(offset, 2 * margin + 20, itemWidth - margin, 20);
+   
+    _midiChannels.setBounds(offset, 3 * margin, itemWidth, 20);
 
     _tremulantButton.setBounds(offset + margin, 5*margin + 40, bounds.getRight() - 3 * margin - offset, 35);
 }

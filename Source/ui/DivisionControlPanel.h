@@ -42,7 +42,6 @@ private:
 
     aeolus::Division* _division;
 
-    juce::Label _midiChannelLabel;
     juce::TextButton _tremulantButton;
     ui::MidiChannelsComponent _midiChannels;
     ui::ParameterSlider _gainSlider;

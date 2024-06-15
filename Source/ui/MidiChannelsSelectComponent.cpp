@@ -25,6 +25,7 @@ namespace ui {
 
 MidiChannelsSelectComponent::MidiChannelsSelectComponent(int midiChannelsMask)
 	: _midiChannelsMask{ midiChannelsMask }
+	, _titleLabel{{}, "MIDI channels"}
 	, _selectAllButton{ "Select all" }
 	, _clearButton{ "Clear" }
 {
@@ -39,8 +40,11 @@ MidiChannelsSelectComponent::MidiChannelsSelectComponent(int midiChannelsMask)
 		_midiChannelButtons.push_back(std::move(checkBox));
 	}
 
+	addAndMakeVisible(_titleLabel);
 	addAndMakeVisible(_selectAllButton);
 	addAndMakeVisible(_clearButton);
+
+	_titleLabel.setJustificationType(juce::Justification::centred);
 
 	_selectAllButton.onClick = [&]() { selectAll(); };
 	_clearButton.onClick = [&]() { clear(); };
@@ -54,6 +58,9 @@ MidiChannelsSelectComponent::MidiChannelsSelectComponent(int midiChannelsMask)
 void MidiChannelsSelectComponent::resized()
 {
 	auto bounds{ getLocalBounds() };
+
+	_titleLabel.setBounds(bounds.removeFromTop(20));
+	bounds.removeFromTop(6);
 
 	auto buttonsRow{ bounds.removeFromBottom(26).removeFromBottom(20) };
 

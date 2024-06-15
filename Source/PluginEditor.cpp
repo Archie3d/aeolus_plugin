@@ -51,9 +51,9 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _tuningButton{"tuningButton", DrawableButton::ImageFitted}
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
-    , _midiControlChannelLabel{{}, {"Control channel"}}
+    , _midiControlChannelLabel{{}, {"Control"}}
     , _midiControlChannels{}
-    , _midiSwellChannelLabel{{}, {"Swell channel"}}
+    , _midiSwellChannelLabel{{}, {"Swell"}}
     , _midiSwellChannels{}
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
@@ -304,12 +304,12 @@ void AeolusAudioProcessorEditor::resized()
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x33, 0x33, 0x33));
     _cancelButton.setBounds((_midiKeyboard.getX() - 120)/2, getHeight() - 60, 60, 35);
 
-    int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 200) / 2;
+    int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 140) / 2;
 
-    _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY(), 100, 20);
+    _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY() + 5, 60, 20);
     _midiControlChannels.setBounds(_midiControlChannelLabel.getRight() + 5, _midiControlChannelLabel.getY(), 100, 20);
 
-    _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 100, 20);
+    _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 60, 20);
     _midiSwellChannels.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 20);
 }
 

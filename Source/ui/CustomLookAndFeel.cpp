@@ -53,10 +53,10 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(PopupMenu::highlightedBackgroundColourId, Colour(0x33, 0x30, 0x1F));
     setColour(PopupMenu::highlightedTextColourId,       Colour(0xFF, 0xFF, 0xFF));
 
-    setColour(Slider::thumbColourId,               Colour (240, 240, 240));
+    setColour(Slider::thumbColourId,               Colour(240, 240, 240));
     setColour(Slider::textBoxOutlineColourId,      Colours::transparentWhite);
-    setColour(Slider::trackColourId,               Colour (120, 120, 120));
-    setColour(Slider::rotarySliderFillColourId,    Colour (60, 255, 200));
+    setColour(Slider::trackColourId,               Colour(120, 120, 120));
+    setColour(Slider::rotarySliderFillColourId,    Colour(60, 255, 200));
     setColour(Slider::rotarySliderOutlineColourId, Colours::white);
     setColour(Slider::backgroundColourId,          Colours::transparentBlack);
 
@@ -65,6 +65,9 @@ CustomLookAndFeel::CustomLookAndFeel()
 
     setColour(TextButton::buttonOnColourId, Colours::lightgrey);
     setColour(TextButton::textColourOnId,   Colours::white);
+
+    setColour(ToggleButton::tickColourId, Colour(60, 255, 200));
+    setColour(ToggleButton::textColourId, Colour(204, 204, 204));
 
     getCurrentColourScheme().setUIColour(ColourScheme::UIColour::widgetBackground, Colour(0x33, 0x33, 0x33));
     getCurrentColourScheme().setUIColour(ColourScheme::UIColour::outline, Colour(0x66, 0x66, 0x66));

@@ -47,6 +47,7 @@ private:
 
 	std::vector<std::unique_ptr<juce::ToggleButton>> _midiChannelButtons{};
 
+	juce::Label _titleLabel;
 	juce::TextButton _selectAllButton;
 	juce::TextButton _clearButton;
 
