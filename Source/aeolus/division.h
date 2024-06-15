@@ -118,9 +118,9 @@ public:
 
     void getAvailableRange(int& minNote, int& maxNote) const noexcept;
 
-    int getMIDIChannel() const noexcept { return _midiChannel; }
+    int getMIDIChannelsMask() const noexcept { return _midiChannelsMask; }
     bool isForMIDIChannel(int channel) const noexcept;
-    void setMIDIChannel(int channel) noexcept { _midiChannel = channel; }
+    void setMIDIChannelsMask(int channelsMask) noexcept { _midiChannelsMask = channelsMask; }
 
     bool hasSwell() const noexcept { return _hasSwell; }
     void setHasSwell(bool v) noexcept { _hasSwell = v; }
@@ -178,7 +178,7 @@ private:
     bool _hasSwell;         ///< Whetehr this division has a swell control.
     bool _hasTremulant;     ///< Whether this division has a remulant control.
 
-    std::atomic<int> _midiChannel;          ///< Division MIDI channel.
+    std::atomic<int> _midiChannelsMask;     ///< Division MIDI channels.
     std::atomic<bool> _tremulantEnabled;    ///< Whether tremulant is enabled.
 
     float _tremulantLevel;

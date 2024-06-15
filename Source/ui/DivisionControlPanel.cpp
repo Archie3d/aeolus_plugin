@@ -25,13 +25,13 @@ using namespace juce;
 namespace ui {
 
 DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
-    : _division{division}
+    : _division{ division }
     , _midiChannelLabel{{}, "MIDI channel"}
-    , _midiChannelComboBox{}
-    , _tremulantButton{"Tremulant"}
-    , _gainSlider{*division->getParamGain()}
-    , _volumeLevelL{division->volumeLevel().left, LevelIndicator::Orientation::Vertical}
-    , _volumeLevelR{division->volumeLevel().right, LevelIndicator::Orientation::Vertical}
+    , _tremulantButton{ "Tremulant" }
+    , _midiChannels{}
+    , _gainSlider{ *division->getParamGain() }
+    , _volumeLevelL{ division->volumeLevel().left, LevelIndicator::Orientation::Vertical }
+    , _volumeLevelR{ division->volumeLevel().right, LevelIndicator::Orientation::Vertical }
 {
     jassert(division);
 
@@ -41,6 +41,7 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     _midiChannelLabel.setFont(f);
     addAndMakeVisible(_midiChannelLabel);
 
+    /* @todo remove
     _midiChannelComboBox.addItem("All", 1);
     for (int i = 1; i <= 16; ++i) {
         _midiChannelComboBox.addItem(String(i), i + 1);
@@ -52,6 +53,9 @@ DivisionControlPanel::DivisionControlPanel(aeolus::Division* division)
     };
 
     addAndMakeVisible(_midiChannelComboBox);
+    */
+
+    addAndMakeVisible(_midiChannels);
 
     _tremulantButton.setClickingTogglesState(true);
     _tremulantButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x66));
@@ -92,10 +96,11 @@ void DivisionControlPanel::resized()
     _volumeLevelL.setBounds(_gainSlider.getX() + 3, margin + 5, 2, _gainSlider.getHeight() - 10);
     _volumeLevelR.setBounds(_gainSlider.getX() + _gainSlider.getWidth() - 5, margin + 5, 2, _gainSlider.getHeight() - 10);
 
-    int offset = _gainSlider.getRight() + margin;
+    int offset = _gainSlider.getRight();
 
-    _midiChannelLabel.setBounds(offset, margin, itemWidth, 20);
-    _midiChannelComboBox.setBounds(offset, 2 * margin + 20, itemWidth - 2 * margin, 20);
+    _midiChannelLabel.setBounds(offset + margin, margin, itemWidth, 20);
+    
+    _midiChannels.setBounds(offset, 2 * margin + 20, itemWidth - margin, 20);
 
     _tremulantButton.setBounds(offset + margin, 5*margin + 40, bounds.getRight() - 3 * margin - offset, 35);
 }

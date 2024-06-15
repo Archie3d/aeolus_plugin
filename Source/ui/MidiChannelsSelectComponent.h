@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 //
-//  Copyright (C) 2021 Arthur Benilov <arthur.benilov@gmail.com>
+//  Copyright (C) 2024 Arthur Benilov <arthur.benilov@gmail.com>
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,37 +19,18 @@
 
 #pragma once
 
-#include "aeolus/globals.h"
-#include "aeolus/division.h"
-#include "ui/MidiChannelsComponent.h"
-#include "ui/ParameterSlider.h"
-#include "ui/LevelIndicator.h"
+#include  <JuceHeader.h>
 
 namespace ui {
 
-class DivisionControlPanel : public juce::Component
+class MidiChannelsSelectComponent : public juce::Component
 {
 public:
-    DivisionControlPanel(aeolus::Division* division = nullptr);
-
-    void update();
-
-    // juce::Component
-    void resized() override;
-    void paint(juce::Graphics& g) override;
+	MidiChannelsSelectComponent();
 
 private:
 
-    aeolus::Division* _division;
-
-    juce::Label _midiChannelLabel;
-    juce::TextButton _tremulantButton;
-    ui::MidiChannelsComponent _midiChannels;
-    ui::ParameterSlider _gainSlider;
-    ui::LevelIndicator _volumeLevelL;
-    ui::LevelIndicator _volumeLevelR;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DivisionControlPanel)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidiChannelsSelectComponent)
 };
 
 } // namespace ui

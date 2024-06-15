@@ -32,7 +32,7 @@ Division::Division(Engine& engine, const String& name)
     , _linkedDivisions{}
     , _hasSwell{false}
     , _hasTremulant{false}
-    , _midiChannel{0}
+    , _midiChannelsMask{ (1 << 16) - 1 } // Select all MIDI channels by default
     , _tremulantEnabled{false}
     , _tremulantLevel{0.0f}
     , _tremulantMaxLevel{TREMULANT_TARGET_LEVEL}
@@ -96,7 +96,7 @@ var Division::getPersistentState() const
 {
     auto* divisionObj = new DynamicObject();
 
-    divisionObj->setProperty("midi_channel", getMIDIChannel());
+    divisionObj->setProperty("midi_channels_mask", getMIDIChannelsMask());
     divisionObj->setProperty("tremulant_enabled", isTremulantEnabled());
 
     {
@@ -134,7 +134,18 @@ void Division::setPersistentState(const juce::var& v)
 {
     if (const auto* divisionObj = v.getDynamicObject()) {
 
-        setMIDIChannel(divisionObj->getProperty("midi_channel"));
+        if (const auto& v = divisionObj->getProperty("midi_channel"); !v.isVoid()) {
+            // Handle legacy setting with only one MIDI channel allowed
+            const int channel{ (int)v };
+
+            if (channel == 0)
+                setMIDIChannelsMask((1 << 16) - 1); // Select all MIDI channels
+            else
+                setMIDIChannelsMask(1 << (channel - 1));
+        } else {
+            setMIDIChannelsMask(divisionObj->getProperty("midi_channels_mask"));
+        }
+
         setTremulantEnabled(divisionObj->getProperty("tremulant_enabled"));
 
         if (const auto* stops = divisionObj->getProperty("stops").getArray()) {
@@ -306,9 +317,10 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
 
 bool Division::isForMIDIChannel(int channel) const noexcept
 {
-    return _midiChannel == 0        // accept any channel
-        || channel == 0             // broadcast message
-        || _midiChannel == channel;
+    const int mask{_midiChannelsMask.load() };
+
+    return channel == 0 // broadcast message
+        || (mask & (1 << channel)) != 0;
 }
 
 void Division::setTremulantEnabled(bool ena) noexcept
