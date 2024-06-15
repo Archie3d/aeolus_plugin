@@ -222,22 +222,22 @@ public:
     /**
      * Returns currently set MIDI control channel.
      */
-    int getMIDIControlChannel() const noexcept { return _midiControlChannel; }
+    int getMIDIControlChannelsMask() const noexcept { return _midiControlChannelsMask; }
 
     /**
      * Assign MIDI channel to be used to control the organ stops and sequencer.
      */
-    void setMIDIControlChannel(int c) noexcept { _midiControlChannel = c; }
+    void setMIDIControlChannelsMask(int mask) noexcept { _midiControlChannelsMask = mask; }
 
     /**
     * Returns currently set MIDI control channel.
     */
-    int getMIDISwellChannel() const noexcept { return _midiSwellChannel; }
+    int getMIDISwellChannelsMask() const noexcept { return _midiSwellChannelsMask; }
 
     /**
     * Assign MIDI channel to be used to control the organ stops and sequencer.
     */
-    void setMIDISwellChannel(int c) noexcept { _midiSwellChannel = c; }
+    void setMIDISwellChannelsMask(int mask) noexcept { _midiSwellChannelsMask = mask; }
 
     /**
      * Generate audio.
@@ -354,8 +354,8 @@ private:
 
     Level _volumeLevel;
 
-    std::atomic<int> _midiControlChannel;
-    std::atomic<int> _midiSwellChannel;
+    std::atomic<int> _midiControlChannelsMask;
+    std::atomic<int> _midiSwellChannelsMask;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Engine)
 };

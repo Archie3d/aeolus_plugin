@@ -26,6 +26,7 @@
 #include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"
 #include "ui/SequencerView.h"
+#include "ui/MidiChannelsComponent.h"
 #include "ui/OverlayComponent.h"
 
 //==============================================================================
@@ -61,7 +62,6 @@ private:
     void updateMidiKeyboardKeySwitches();
     void updateDivisionViews();
     void updateSequencerView();
-    void updateMidiControlChannel();
 
     AeolusAudioProcessor& _audioProcessor;
 
@@ -99,11 +99,11 @@ private:
 
     /// MIDI control channel selection
     juce::Label _midiControlChannelLabel;
-    juce::ComboBox _midiControlChannelComboBox;
+    ui::MidiChannelsComponent _midiControlChannels;
 
     /// MIDI swell channel selection
     juce::Label _midiSwellChannelLabel;
-    juce::ComboBox _midiSwellChannelComboBox;
+    ui::MidiChannelsComponent _midiSwellChannels;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

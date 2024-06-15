@@ -272,7 +272,9 @@ void AeolusAudioProcessor::processMidi(juce::MidiBuffer& midiMessages)
         // Handle clobal CCs
         const int ch = msg.getChannel();
 
-        if ((ch == 0 || _engine.getMIDIControlChannel() == 0 || ch == _engine.getMIDIControlChannel())
+        const int mask{ _engine.getMIDIControlChannelsMask() };
+
+        if ((ch == 0 || (mask & (ch - 1)) != 0)
             && msg.isController()) {
 
             int cc = msg.getControllerNumber();

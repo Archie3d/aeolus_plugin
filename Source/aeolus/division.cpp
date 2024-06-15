@@ -417,10 +417,10 @@ void Division::handleControlMessage(const juce::MidiMessage& msg)
     if (cc != aeolus::CC_MODULATION && cc != aeolus::CC_VOLUME)
         return;
 
-    const int swellCh{ _engine.getMIDISwellChannel() };
+    const int swellCh{ _engine.getMIDISwellChannelsMask() };
     const float value{ float(msg.getControllerValue()) / 127.0f };
 
-    if (swellCh == 0 || swellCh == msg.getChannel() || msg.getChannel() == 0) {
+    if (msg.getChannel() == 0 || (swellCh & (msg.getChannel() - 1)) != 0) {
         if (_hasSwell && cc == aeolus::CC_VOLUME) {
             *_paramGain = value;
         }

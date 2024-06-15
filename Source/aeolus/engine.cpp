@@ -348,8 +348,8 @@ Engine::Engine()
     , _interpolator{1.0f, N_OUTPUT_CHANNELS}
     , _midiKeyboardState{}
     , _volumeLevel{}
-    , _midiControlChannel{0}
-    , _midiSwellChannel{0}
+    , _midiControlChannelsMask{ (1 << 16) - 1 }
+    , _midiSwellChannelsMask{ (1 << 16) - 1 }
 {
     populateDivisions();
 
@@ -535,10 +535,10 @@ void Engine::process(AudioBuffer<float>& out, bool isNonRealtime)
 
 void Engine::processMIDIMessage(const MidiMessage& message)
 {
-    const int ch = getMIDIControlChannel();
+    const int mask = getMIDIControlChannelsMask();
 
     // Process global CCs
-    if (ch == 0 || message.getChannel() == 0 || message.getChannel() == ch) {
+    if (message.getChannel() == 0 || (mask & (message.getChannel() - 1)) != 0) {
         processControlMIDIMessage(message);
     }
 
@@ -557,15 +557,15 @@ void Engine::noteOn(int note, int midiChannel)
 {
     clearDivisionsTriggerFlag();
 
-    const int ch{ getMIDIControlChannel() };
+    const int mask{ getMIDIControlChannelsMask() };
 
     bool handled{ false };
 
     // Handle key switches
-    // @note If a key switch falls within the playable rande we need to make
+    // @note If a key switch falls within the playable range we need to make
     //       sure we don't process corresponding note-on event, otherwise
     //       navigating the sequencer will create a spurious sounds.
-    if (ch == 0 || midiChannel == 0 || midiChannel == ch) {
+    if (midiChannel == 0 || (mask & (midiChannel - 1)) != 0) {
         if (isKeySwitchBackward(note)) {
             _sequencer->stepBackward();
             handled = true;
@@ -648,8 +648,8 @@ var Engine::getPersistentState() const
     auto* obj = new DynamicObject();
 
     // Save control channel
-    obj->setProperty("midi_ctrl_channel", getMIDIControlChannel());
-    obj->setProperty("midi_swell_channel", getMIDISwellChannel());
+    obj->setProperty("midi_ctrl_channels_mask", getMIDIControlChannelsMask());
+    obj->setProperty("midi_swell_channels_mask", getMIDISwellChannelsMask());
 
     // Save the IR.
     int irNum = _selectedIR;
@@ -671,9 +671,27 @@ var Engine::getPersistentState() const
 void Engine::setPersistentState(const var& state)
 {
     if (const auto* obj = state.getDynamicObject()) {
-        // Restore control channel
-        setMIDIControlChannel(obj->getProperty("midi_ctrl_channel"));
-        setMIDISwellChannel(obj->getProperty("midi_swell_channel"));
+        // Restore control channels
+
+        if (const auto& v = obj->getProperty("midi_ctrl_channel"); !v.isVoid()) {
+            int ch = (int)v;
+            if (ch == 0)
+                setMIDIControlChannelsMask((1 << 16) - 1);
+            else
+                setMIDIControlChannelsMask(1 << (ch - 1));
+        } else {
+            setMIDIControlChannelsMask(obj->getProperty("midi_ctrl_channels_mask"));
+        }
+
+        if (const auto& v = obj->getProperty("midi_swell_channel"); !v.isVoid()) {
+            int ch = (int)v;
+            if (ch == 0)
+                setMIDISwellChannelsMask((1 << 16) - 1);
+            else
+                setMIDISwellChannelsMask(1 << (ch - 1));
+        } else {
+            setMIDISwellChannelsMask(obj->getProperty("midi_swell_channels_mask"));
+        }
 
         // Restore the IR
         int irNum = obj->getProperty("ir");

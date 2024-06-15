@@ -52,9 +52,9 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
     , _midiControlChannelLabel{{}, {"Control channel"}}
-    , _midiControlChannelComboBox{}
+    , _midiControlChannels{}
     , _midiSwellChannelLabel{{}, {"Swell channel"}}
-    , _midiSwellChannelComboBox{}
+    , _midiSwellChannels{}
 {
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
@@ -188,26 +188,29 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     addAndMakeVisible(_midiControlChannelLabel);
     addAndMakeVisible(_midiSwellChannelLabel);
 
-    _midiControlChannelComboBox.addItem("All", 1);
-    _midiSwellChannelComboBox.addItem("All", 1);
+    addAndMakeVisible(_midiControlChannels);
+    addAndMakeVisible(_midiSwellChannels);
 
-    for (int i = 1; i <= 16; ++i) {
-        _midiControlChannelComboBox.addItem(String(i), i + 1);
-        _midiSwellChannelComboBox.addItem(String(i), i + 1);
-    }
+    _midiControlChannels.currentChannelsMaskProvider = [this]() -> int {
+            return _audioProcessor.getEngine().getMIDIControlChannelsMask();
+        };
 
-    _midiControlChannelComboBox.setSelectedId(1 + _audioProcessor.getEngine().getMIDIControlChannel(), juce::dontSendNotification);
-    _midiControlChannelComboBox.onChange = [this]() {
-        _audioProcessor.getEngine().setMIDIControlChannel(_midiControlChannelComboBox.getSelectedId() - 1);
-    };
+    _midiControlChannels.onChannelsSelectionChanged = [this](int mask) {
+            _audioProcessor.getEngine().setMIDIControlChannelsMask(mask);
+        };
 
-    _midiSwellChannelComboBox.setSelectedId(1 + _audioProcessor.getEngine().getMIDISwellChannel(), juce::dontSendNotification);
-    _midiSwellChannelComboBox.onChange = [this]() {
-        _audioProcessor.getEngine().setMIDISwellChannel(_midiSwellChannelComboBox.getSelectedId() - 1);
-    };
+    _midiControlChannels.updateLabel();
 
-    addAndMakeVisible(_midiControlChannelComboBox);
-    addAndMakeVisible(_midiSwellChannelComboBox);
+    _midiSwellChannels.currentChannelsMaskProvider = [this]() -> int {
+            return _audioProcessor.getEngine().getMIDISwellChannelsMask();
+        };
+
+    _midiSwellChannels.onChannelsSelectionChanged = [this](int mask) {
+        _audioProcessor.getEngine().setMIDISwellChannelsMask(mask);
+        };
+
+    _midiSwellChannels.updateLabel();
+
 
     // Overlay and sequencer must go on the very top
 
@@ -304,10 +307,10 @@ void AeolusAudioProcessorEditor::resized()
     int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 200) / 2;
 
     _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY(), 100, 20);
-    _midiControlChannelComboBox.setBounds(_midiControlChannelLabel.getRight() + 5, _midiControlChannelLabel.getY(), 100, 20);
+    _midiControlChannels.setBounds(_midiControlChannelLabel.getRight() + 5, _midiControlChannelLabel.getY(), 100, 20);
 
     _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 100, 20);
-    _midiSwellChannelComboBox.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 20);
+    _midiSwellChannels.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 20);
 }
 
 void AeolusAudioProcessorEditor::timerCallback()
@@ -343,7 +346,6 @@ void AeolusAudioProcessorEditor::refresh()
     updateSequencerView();
     updateMidiKeyboardRange();
     updateMidiKeyboardKeySwitches();
-    updateMidiControlChannel();
 }
 
 void AeolusAudioProcessorEditor::updateMeters()
@@ -380,10 +382,4 @@ void AeolusAudioProcessorEditor::updateDivisionViews()
 void AeolusAudioProcessorEditor::updateSequencerView()
 {
     _sequencerView.update();
-}
-
-void AeolusAudioProcessorEditor::updateMidiControlChannel()
-{
-    const int ch = _audioProcessor.getEngine().getMIDIControlChannel();
-    _midiControlChannelComboBox.setSelectedId(1 + ch, juce::dontSendNotification);
 }
