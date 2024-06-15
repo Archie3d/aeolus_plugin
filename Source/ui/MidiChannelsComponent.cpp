@@ -80,7 +80,7 @@ MidiChannelsComponent::MidiChannelsComponent()
             parent);
     };
 
-    _channelsLabel.setColour(Label::textColourId, Colour(0xCC, 0xCC, 0xCC));
+    _channelsLabel.setColour(Label::textColourId, Colours::lightyellow);
 
     auto f = _channelsLabel.getFont();
     f.setHeight(14);
