@@ -306,11 +306,11 @@ void AeolusAudioProcessorEditor::resized()
 
     int x = _midiKeyboard.getRight() + (getWidth() - _midiKeyboard.getRight() - 140) / 2;
 
-    _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY() + 5, 60, 20);
-    _midiControlChannels.setBounds(_midiControlChannelLabel.getRight() + 5, _midiControlChannelLabel.getY(), 100, 20);
+    _midiControlChannelLabel.setBounds(x, _midiKeyboard.getY() + 5, 60, 24);
+    _midiControlChannels.setBounds(_midiControlChannelLabel.getRight() + 5, _midiControlChannelLabel.getY(), 100, 24);
 
-    _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 60, 20);
-    _midiSwellChannels.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 20);
+    _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 60, 24);
+    _midiSwellChannels.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 24);
 }
 
 void AeolusAudioProcessorEditor::timerCallback()

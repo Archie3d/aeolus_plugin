@@ -80,9 +80,9 @@ void DivisionControlPanel::resized()
 
     int offset = _gainSlider.getRight();
    
-    _midiChannels.setBounds(offset, 3 * margin, itemWidth, 20);
+    _tremulantButton.setBounds(offset + margin, 3 * margin, bounds.getRight() - 3 * margin - offset, 35);
 
-    _tremulantButton.setBounds(offset + margin, 5*margin + 40, bounds.getRight() - 3 * margin - offset, 35);
+    _midiChannels.setBounds(offset, bounds.getHeight() - 24 - 3 * margin, itemWidth, 24);
 }
 
 void DivisionControlPanel::paint(juce::Graphics& g)
