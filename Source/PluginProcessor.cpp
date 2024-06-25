@@ -19,6 +19,7 @@
 
 #include <chrono>
 
+#include "aeolus/globals.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -224,9 +225,9 @@ void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear(i, 0, buffer.getNumSamples());
 
-    processMidi (midiMessages);
+    processMidi(midiMessages);
 
 #if AEOLUS_MULTIBUS_OUTPUT
 
@@ -274,9 +275,7 @@ void AeolusAudioProcessor::processMidi(juce::MidiBuffer& midiMessages)
 
         const int mask{ _engine.getMIDIControlChannelsMask() };
 
-        if ((ch == 0 || (mask & (ch - 1)) != 0)
-            && msg.isController()) {
-
+        if (aeolus::midi::matchChannelToMask(mask, ch) && msg.isController()) {
             int cc = msg.getControllerNumber();
             const float value = float(msg.getControllerValue()) / 127.0f;
 

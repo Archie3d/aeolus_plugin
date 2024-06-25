@@ -53,4 +53,24 @@ float exp2ap(float x)
 
 } // namespace math
 
+//==============================================================================
+
+namespace midi {
+
+int channelToMask(int channel)
+{
+    // Zero means any MIDI channel.
+    if (channel <= 0)
+        return (1 << 16) - 1;
+
+    return 1 << (channel - 1);
+}
+
+bool matchChannelToMask(int mask, int channel)
+{
+    return (mask & channelToMask(channel)) != 0;
+}
+
+} // namespace midi
+
 AEOLUS_NAMESPACE_END

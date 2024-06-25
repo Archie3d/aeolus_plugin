@@ -204,15 +204,21 @@ struct Cos<B, A, double>
     constexpr static double value = SinCosSeries<1, 33, B, A>::value;
 };
 
-//----------------------------------------------------------
-
 template <typename T>
 constexpr bool isPowerOfTwo(T v)
 {
     return (v & (v - 1)) == 0;
 }
 
-
 } // namespace math
+
+//----------------------------------------------------------
+
+namespace midi {
+
+    int channelToMask(int channel);
+    bool matchChannelToMask(int mask, int channel);
+
+} // namespace midi
 
 AEOLUS_NAMESPACE_END

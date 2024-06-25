@@ -535,10 +535,8 @@ void Engine::process(AudioBuffer<float>& out, bool isNonRealtime)
 
 void Engine::processMIDIMessage(const MidiMessage& message)
 {
-    const int mask = getMIDIControlChannelsMask();
-
     // Process global CCs
-    if (message.getChannel() == 0 || (mask & (message.getChannel() - 1)) != 0) {
+    if (midi::matchChannelToMask(getMIDIControlChannelsMask(), message.getChannel())) {
         processControlMIDIMessage(message);
     }
 
@@ -557,15 +555,13 @@ void Engine::noteOn(int note, int midiChannel)
 {
     clearDivisionsTriggerFlag();
 
-    const int mask{ getMIDIControlChannelsMask() };
-
     bool handled{ false };
 
     // Handle key switches
     // @note If a key switch falls within the playable range we need to make
     //       sure we don't process corresponding note-on event, otherwise
     //       navigating the sequencer will create a spurious sounds.
-    if (midiChannel == 0 || (mask & (midiChannel - 1)) != 0) {
+    if (midi::matchChannelToMask(getMIDIControlChannelsMask(), midiChannel)) {
         if (isKeySwitchBackward(note)) {
             _sequencer->stepBackward();
             handled = true;

@@ -17,6 +17,7 @@
 //
 // ----------------------------------------------------------------------------
 
+#include "globals.h"
 #include "division.h"
 #include "engine.h"
 
@@ -317,10 +318,8 @@ void Division::getAvailableRange(int& minNote, int& maxNote) const noexcept
 
 bool Division::isForMIDIChannel(int channel) const noexcept
 {
-    const int mask{_midiChannelsMask.load() };
-
-    return channel == 0 // broadcast message
-        || (mask & (1 << (channel - 1))) != 0;
+    const int mask{ _midiChannelsMask.load() };
+    return midi::matchChannelToMask(mask, channel);
 }
 
 void Division::setTremulantEnabled(bool ena) noexcept
