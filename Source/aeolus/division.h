@@ -166,6 +166,8 @@ private:
 
     bool triggerVoicesForStop(int stopIndex, int note);
 
+    bool isAlreadyVoiced(int stopIndex, int node);
+
     Engine& _engine;
 
     juce::String _name;     ///< The division name.

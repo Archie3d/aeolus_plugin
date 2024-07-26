@@ -609,6 +609,9 @@ bool Division::triggerVoicesForStop(int stopIndex, int note)
 {
     jassert(isPositiveAndBelow(stopIndex, _stops.size()));
 
+    if (isAlreadyVoiced(stopIndex, note))
+        return true;
+
     const auto& stop = _stops[stopIndex];
 
     if (!stop.isEnabled())
@@ -638,6 +641,21 @@ bool Division::triggerVoicesForStop(int stopIndex, int note)
     }
 
     return voiceTriggered;
+}
+
+bool Division::isAlreadyVoiced(int stopIndex, int note)
+{
+    auto* voice = _activeVoices.first();
+
+    while (voice != nullptr) {
+        if (voice->isActive() && voice->stopIndex() == stopIndex && voice->isForNote(note)) {
+            return true;
+        }
+
+        voice = voice->next();
+    }
+
+    return false;
 }
 
 AEOLUS_NAMESPACE_END

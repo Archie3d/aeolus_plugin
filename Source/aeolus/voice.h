@@ -61,7 +61,7 @@ public:
 private:
     Engine& _engine;
     Pipewave::State _state; ///< Pipe state associated with this voice.
-    
+
     /// Index of the stop associated with this voice.
     /// This is used to tell which stops are voiced.
     int _stopIndex;
@@ -80,7 +80,7 @@ private:
 
     /// Stereo spatial modeller.
     dsp::SpatialSource _spatialSource;
-    
+
     /// Counter to account for the delayed sound before recycling the voice.
     size_t _postReleaseCounter;
 };
