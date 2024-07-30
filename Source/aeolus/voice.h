@@ -50,6 +50,7 @@ public:
     bool isOver() const noexcept;
     bool isActive() const noexcept;
     bool isForNote(int note) const noexcept;
+    int getNote() const;
 
     void setStopIndex(int idx) noexcept { _stopIndex = idx; }
     int stopIndex() const noexcept { return _stopIndex; }

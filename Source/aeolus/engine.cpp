@@ -732,10 +732,18 @@ void Engine::populateDivisions()
         loadDivisionsFromConfig(stream);
     }
 
+    // Remove all the links if any.
+    for (auto* division : _divisions) {
+        division->clearLinkedDivisions();
+    }
+
+
     // Update division links after they've been loaded.
     for (auto* division : _divisions) {
         division->populateLinkedDivisions();
     }
+
+    // @todo Do we want the divisions to be reordered by the couplings?
 }
 
 // @internal Helper to populate key switches from a single number or a list
@@ -743,7 +751,7 @@ static void populateKeySwitchesVector(std::vector<int>& switches, const var& v)
 {
     if (v.isVoid())
         return;
-    
+
     switches.clear();
 
     if (v.isInt()) {

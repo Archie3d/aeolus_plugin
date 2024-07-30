@@ -181,14 +181,19 @@ void Division::setPersistentState(const juce::var& v)
     }
 }
 
-void Division::populateLinkedDivisions()
+void Division::clearLinkedDivisions()
 {
     _linkedDivisions.clear();
+    _linkedFromDivisions.clear();
+}
 
+void Division::populateLinkedDivisions()
+{
     for (const auto& name : _linkedDivisionNames) {
         if (auto* division = _engine.getDivisionByName(name)) {
-            Link link{division, false};
+            Link link{ division, false };
             _linkedDivisions.push_back(link);
+            division->_linkedFromDivisions.push_back(this);
         }
     }
 }
@@ -358,7 +363,10 @@ void Division::noteOn(int note, int midiChannel)
     for (int stopIndex = 0; stopIndex < (int)_stops.size(); ++stopIndex)
         triggerVoicesForStop(stopIndex, note);
 
-    _keysState.set(note);
+    if (midiChannel != 0) {
+        // Update keys state only when triggered by the assigned MIDI channel
+        _keysState.set(note);
+    }
 
     // Forward to the linked divisions
     for (auto& link : _linkedDivisions) {
@@ -387,7 +395,10 @@ void Division::noteOff(int note, int midiChannel)
         voice = voice->next();
     }
 
-    _keysState.reset(note);
+    if (midiChannel != 0) {
+        // Update keys state only when triggered by the assigned MIDI channel.
+        _keysState.reset(note);
+    }
 
     // Forward to the linked divisions
     for (auto& link : _linkedDivisions) {
@@ -438,6 +449,7 @@ bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voi
     jassert(targetBuffer.getNumSamples() == SUB_FRAME_LENGTH);
     jassert(voiceBuffer.getNumSamples() == SUB_FRAME_LENGTH);
 
+    updateAggregatedKeysState();
     releaseVoicesOfDisabledStops();
     triggerVoicesOfEnabledStops();
 
@@ -554,6 +566,8 @@ void Division::releaseVoicesOfDisabledStops()
     auto* voice = _activeVoices.first();
 
     while (voice != nullptr) {
+        bool shouldRelease{ false };
+
         if (voice->isActive()) {
             const int stopIndex = voice->stopIndex();
 
@@ -561,9 +575,15 @@ void Division::releaseVoicesOfDisabledStops()
                 const auto& stop = _stops[stopIndex];
 
                 if (!stop.isEnabled())
-                    voice->release();
+                    shouldRelease = true;
+
+                if (voice->getNote() >= 0 && !_aggregatedKeysState[voice->getNote()])
+                    shouldRelease = true;
             }
         }
+
+        if (shouldRelease)
+            voice->release();
 
         voice = voice->next();
     }
@@ -571,10 +591,12 @@ void Division::releaseVoicesOfDisabledStops()
 
 void Division::triggerVoicesOfEnabledStops()
 {
-    if (_keysState.none()) {
+    if (_aggregatedKeysState.none()) {
         // No keys are pressed
         return;
     }
+
+    std::bitset<TOTAL_NOTES> missingNotes{ _aggregatedKeysState };
 
     for (int stopIndex = 0; stopIndex < _stops.size(); ++stopIndex) {
         auto& stop = _stops[stopIndex];
@@ -587,8 +609,11 @@ void Division::triggerVoicesOfEnabledStops()
         auto* voice = _activeVoices.first();
 
         while (voice != nullptr) {
-            if (voice->stopIndex() == stopIndex) {
+            const int voiceNote{ voice->getNote() };
+
+            if (voice->stopIndex() == stopIndex && voiceNote >= 0 && _aggregatedKeysState[voiceNote]) {
                 hasVoices = true;
+                missingNotes[voiceNote] = 0;
                 break;
             }
 
@@ -597,9 +622,23 @@ void Division::triggerVoicesOfEnabledStops()
 
         // Trigger voices for enabled stops
         if (!hasVoices) {
-            for (int note = 0; note < _keysState.size(); ++note) {
-                if (_keysState[note])
+            for (int note = 0; note < missingNotes.size(); ++note) {
+                if (missingNotes[note])
                     triggerVoicesForStop(stopIndex, note);
+            }
+        }
+    }
+}
+
+void Division::updateAggregatedKeysState()
+{
+    _aggregatedKeysState = _keysState;
+
+    for (const auto* division : _linkedFromDivisions) {
+        for (const auto& link : division->_linkedDivisions) {
+            if (link.division == this && link.enabled) {
+                _aggregatedKeysState |= division->_aggregatedKeysState;
+                break;
             }
         }
     }

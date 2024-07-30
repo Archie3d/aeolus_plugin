@@ -86,6 +86,11 @@ public:
     juce::String getMnemonic() const { return _mnemonic; }
 
     /**
+     * Remove all the links between the divisions.
+     */
+    void clearLinkedDivisions();
+
+    /**
      * Populate linked divisions from the division names.
      * This method must be called by the engine when all the divisions
      * have been loaded and initialized.
@@ -164,6 +169,12 @@ public:
 
 private:
 
+    /**
+     * This will construct the keys aggregated state from the division's keys state
+     * and all the coupled from divisions.
+     */
+    void updateAggregatedKeysState();
+
     bool triggerVoicesForStop(int stopIndex, int note);
 
     bool isAlreadyVoiced(int stopIndex, int node);
@@ -176,6 +187,7 @@ private:
     /// List of linked divisions names.
     juce::StringArray _linkedDivisionNames;
     std::vector<Link> _linkedDivisions;
+    std::vector<Division*> _linkedFromDivisions;
 
     bool _hasSwell;         ///< Whetehr this division has a swell control.
     bool _hasTremulant;     ///< Whether this division has a remulant control.
@@ -205,6 +217,7 @@ private:
     List<Voice> _activeVoices;  ///< Active voices on this division.
 
     std::bitset<TOTAL_NOTES> _keysState; ///< MIDI keys state 1 = on, 0 = off.
+    std::bitset<TOTAL_NOTES> _aggregatedKeysState;   ///< MIDI keys state aggregated from the coupled divisions.
 
     /// Tells whether this division has been triggered.
     /// This is used to avoid a division to be triggered multiple
