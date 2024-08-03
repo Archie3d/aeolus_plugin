@@ -155,6 +155,14 @@ bool Voice::isForNote(int note) const noexcept
     return false;
 }
 
+int Voice::getNote() const
+{
+    if (_state.pipewave != nullptr)
+        return _state.pipewave->getNote();
+
+    return -1;
+}
+
 void Voice::resetAndReturnToPool()
 {
     _engine.getVoicePool().resetAndReturnToPool(this);
