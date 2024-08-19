@@ -29,6 +29,7 @@ option(WITH_ASIO "Enable ASIO audio interface" ON)
 option(WITH_MULTIBUS_OUTPUT "Enable multibus output" OFF)
 
 add_subdirectory(JUCE)
+add_subdirectory(clap-juce-extensions EXCLUDE_FROM_ALL)
 
 set(plugin_formats
     VST3
@@ -70,6 +71,12 @@ juce_add_plugin(${TARGET}
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon256.png"
     ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
 )
+
+clap_juce_extensions_plugin(TARGET ${TARGET}
+    CLAP_ID "com.ArthurBenilov.Aeolus"
+    CLAP_FEATURES instrument "virtual analog"
+)
+
 
 target_link_libraries(${TARGET}
     PRIVATE

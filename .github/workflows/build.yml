@@ -97,6 +97,9 @@ jobs:
           ${{ matrix.path }}/Standalone
           ${{ matrix.path }}/AU
           ${{ matrix.path }}/LV2
+          ${{ matrix.path }}/CLAP
+          !${{ matrix.path }}/CLAP/*.exp
+          !${{ matrix.path }}/CLAP/*.lib
           ${{ matrix.path }}/VST3
           !${{ matrix.path }}/VST3/*.exp
           !${{ matrix.path }}/VST3/*.lib

@@ -1,11 +1,11 @@
 ![build](https://github.com/Archie3d/aeolus_plugin/actions/workflows/build.yml/badge.svg)
 
 # ![aeolus](Resources/icons/icon64.png) Aeolus
-Pipe organ emulator using additive synthesis as a **VST or AU plugin** (or a stand-alone executable).
+Pipe organ emulator using additive synthesis as a **VST, AU, or CLAP plugin** (or a stand-alone executable).
 
 Aeolus was originally developed by Fons Adriaensen and presented in 2004. The original implementation is Linux only and can be found [here](https://kokkinizita.linuxaudio.org/linuxaudio/aeolus/) (or across Linux distribution packages). At present it looks like Aeolus development has been mostly abandoned (but [Organnery](https://organnery.com/) picked up the original Aeolus project to make it run on a Raspberry Pi).
 
-This project leverages the wavetable systhesis part of the original Aeolus, improves on it, and delivers it as a standard VST plugin using [JUCE](https://github.com/juce-framework/JUCE) framework, so that it can be run in Windows/macOS VST3/AU hosts.
+This project leverages the wavetable systhesis part of the original Aeolus, improves on it, and delivers it as a virtual instrument plugin using [JUCE](https://github.com/juce-framework/JUCE) framework, so that it can be run in Windows/macOS/Linux VST3/AU/CLAP hosts.
 
 This implementation contains additional improvements to the sound generation including
 - pipes chiff noise on attack;
@@ -62,3 +62,11 @@ Pipes are arranged starting from the lowest key from the sides (buses 0 and 7) t
 Corresponding pipe position jumps between left and right following the keys (C will be on the left, C# on the right, D of the left, D# on the right and so on).
 
 > :point_right: This very same pipes spatial arrangement is used in the stereo version of the plugin to perform spatialized rendering followed by a stereo convolutional reverb.
+
+## CLAP
+CLAP plugn format currently uses the [JUCE7 Unofficial CLAP Plugin Support](https://github.com/free-audio/clap-juce-extensions).
+
+When compiling, make sure to pull all the submodules recursively:
+```shell
+git submodule update --init --recursive
+```
