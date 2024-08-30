@@ -129,10 +129,8 @@ void SequencerView::populateStepButtons()
 
     for (int i = 0; i < numSteps; ++i) {
         auto button = std::make_unique<TextButton>(String(i + 1));
-        //button->setClickingTogglesState(true);
         button->setColour(TextButton::buttonColourId, Colour(0x40, 0x33, 0x33));
         button->setColour(TextButton::buttonOnColourId, Colour(0xDF, 0xC0, 0x36));
-        //button->setRadioGroupId(radioGroupId);
 
         if (_sequencer->getCurrentStep() == i)
             button->setToggleState(true, juce::dontSendNotification);

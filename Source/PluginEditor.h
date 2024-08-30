@@ -25,6 +25,7 @@
 #include "ui/LevelIndicator.h"
 #include "ui/ParameterSlider.h"
 #include "ui/DivisionView.h"
+#include "ui/PresetView.h"
 #include "ui/SequencerView.h"
 #include "ui/MidiChannelsComponent.h"
 #include "ui/OverlayComponent.h"
@@ -38,7 +39,7 @@ class AeolusAudioProcessorEditor  : public juce::AudioProcessorEditor,
                                     public ui::SequencerView::Listener
 {
 public:
-    AeolusAudioProcessorEditor (AeolusAudioProcessor&);
+    AeolusAudioProcessorEditor(AeolusAudioProcessor&);
     ~AeolusAudioProcessorEditor() override;
 
     //==============================================================================
@@ -73,6 +74,7 @@ private:
 
     ui::OverlayComponent _overlay;
 
+    ui::PresetView _presetView;
     ui::SequencerView _sequencerView;
 
     juce::Label _versionLabel;
