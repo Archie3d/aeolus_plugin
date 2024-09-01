@@ -137,6 +137,8 @@ source_group(Source\\ui
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/ParameterSlider.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/SequencerView.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/SequencerView.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/PresetView.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/PresetView.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/StopButton.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/StopButton.cpp
 )
