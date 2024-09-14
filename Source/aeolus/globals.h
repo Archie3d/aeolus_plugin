@@ -104,7 +104,8 @@ enum {
     CC_MODULATION = 1,
     CC_VOLUME = 7,
     CC_REVERB = 91,
-    CC_STOP_BUTTONS = 98
+    CC_STOP_BUTTONS = 98,
+    CC_ALL_NOTES_OFF = 123
 };
 
 enum class StopControlMode {

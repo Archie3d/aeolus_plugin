@@ -424,7 +424,7 @@ void Division::handleControlMessage(const juce::MidiMessage& msg)
 {
     const int cc{ msg.getControllerNumber() };
 
-    if (cc != aeolus::CC_MODULATION && cc != aeolus::CC_VOLUME)
+    if (cc != aeolus::CC_MODULATION && cc != aeolus::CC_VOLUME && cc != aeolus::CC_ALL_NOTES_OFF)
         return;
 
     const int swellCh{ _engine.getMIDISwellChannelsMask() };
@@ -442,6 +442,9 @@ void Division::handleControlMessage(const juce::MidiMessage& msg)
 
     if (cc == aeolus::CC_MODULATION && hasTremulant())
         setTremulantEnabled(value > 0.5f);
+
+    if (cc == aeolus::CC_ALL_NOTES_OFF)
+        allNotesOff();
 }
 
 bool Division::process(AudioBuffer<float>& targetBuffer, AudioBuffer<float>& voiceBuffer)

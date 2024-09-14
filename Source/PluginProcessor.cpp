@@ -286,6 +286,9 @@ void AeolusAudioProcessor::processMidi(juce::MidiBuffer& midiMessages)
             case aeolus::CC_REVERB:
                 (*_parameters.reverbWet) = value;
                 break;
+            case aeolus::CC_ALL_NOTES_OFF:
+                panic();
+                break;
             default:
                 break;
             }

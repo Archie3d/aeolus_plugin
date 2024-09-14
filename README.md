@@ -32,6 +32,7 @@ Sequencer steps are controlled via the program change messages sent on the contr
 - `CC 7` controls the global volume (on the control MIDI channel) and the volume of each division which has `swell` config flag enabled (on the swell MIDI channel)
 - `CC 91` controls the reverb output level
 - `CC 98` Stops control
+- `CC 123` All notes off (on control MIDI channel or inidividual divisions).
 
 > :point_right: The stops control follows the original Aeolus convention. The control mode is set by the message `01mm0ggg`, where `mm` is the control mode, and `ggg` is the control group (division number, counter from the top starting from `0`).
 > Control modes are:
