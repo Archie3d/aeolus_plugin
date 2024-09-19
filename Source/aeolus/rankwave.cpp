@@ -102,11 +102,11 @@ void Pipewave::play(Pipewave::State& state, float* out)
 
     if (r != nullptr) {
         int k = SUB_FRAME_LENGTH;
-        float* q = out; 
+        float* q = out;
         float g = state.releaseGain;
         int i = state.releaseCount - 1;
 
-        float dg = g / SUB_FRAME_LENGTH;  
+        float dg = g / SUB_FRAME_LENGTH;
 
         if (i > 0)
             dg *= _releaseMultiplier;
@@ -154,7 +154,7 @@ void Pipewave::play(Pipewave::State& state, float* out)
         }
     }
 
-    if (p != nullptr) { 
+    if (p != nullptr) {
         int k = SUB_FRAME_LENGTH;
         float* q = out;
 
@@ -264,7 +264,7 @@ void Pipewave::genwave()
     memset(_attackStartPtr, 0, sizeof(float) * _wavetable.size());
 
     _releaseLength = (int)(ceilf (_model.getNoteRelease(_note) * _sampleRate / SUB_FRAME_LENGTH) + 1);
-    _releaseMultiplier = 1.0f - powf (0.1f, 1.0f / _releaseLength); 
+    _releaseMultiplier = 1.0f - powf (0.1f, 1.0f / _releaseLength);
     _releaseDetune = _sampleStep * (math::exp2ap (_model.getNoteReleaseDetune(_note) / 1200.0f) - 1.0f);
     _instability = _model.getNoteInstability(_note);
 
@@ -361,8 +361,8 @@ void Pipewave::looplen(float f, float sampleRate, int lmax, int& aa, int& bb)
         } else  {
             b = (int)(lmax * f / sampleRate);
             a = (int)(b * sampleRate / f + 0.5f);
-            d = sampleRate * b / a - f; 
-            break; 
+            d = sampleRate * b / a - f;
+            break;
         }
     }
 

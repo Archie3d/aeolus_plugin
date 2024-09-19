@@ -167,7 +167,7 @@ struct Convolver::Impl
     void setIR(const AudioBuffer<float>& buffer)
     {
         ir = buffer;
-        
+
         // Reset the convolver to the initial state
         irSamplesRead = 0;
         framesProcessed = 0;

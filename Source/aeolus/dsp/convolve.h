@@ -393,7 +393,7 @@ public:
         irInputBlockIndex = 0;
 
         size_t preconvolveIndex = 0;
-        const size_t preconvolveIndexStep = blocks.empty() ? 0 : Length / blocks.size();        
+        const size_t preconvolveIndexStep = blocks.empty() ? 0 : Length / blocks.size();
 
         for (size_t i = 0; i < blocks.size(); ++i) {
             blocks[i].inputSpectrumPtr = &inputSpectrumBuffer[i * Length4];

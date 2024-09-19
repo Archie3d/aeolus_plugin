@@ -30,7 +30,7 @@ AEOLUS_NAMESPACE_BEGIN
 
 /**
  * @brief Single pipe wavetable.
- * 
+ *
  * This class represents a single pipe mapped to a model (additive synth),
  * note, and frequency.
  */
@@ -127,7 +127,7 @@ private:
 
 /**
  * @brief Pipes across the keys range.
- * 
+ *
  * This class is a collection of pipes based on the same
  * additive synth model.
  */

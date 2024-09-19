@@ -29,7 +29,7 @@ namespace dsp {
 
 /**
  * @brief Lagrange interpolator.
- * 
+ *
  * @note This class does not apply an interpolation filter when downsampling.
  */
 class Interpolator

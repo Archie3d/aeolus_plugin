@@ -107,12 +107,12 @@ void N_func::clearValue(int idx)
         const float d = _v [j];
 
         while (j < N_NOTES - 1)
-            _v [++j] = d; 
+            _v [++j] = d;
     } else if (k < N_NOTES) {
         const float d = _v [k];
 
         while (k > 0)
-            _v [--k] = d; 
+            _v [--k] = d;
     }
 }
 
@@ -611,7 +611,7 @@ void Model::loadExternalPipes()
     File configFile{ aeolus::getCustomOrganConfigFile() };
     const String configFileName{ configFile.getFileName() };
     File configFolder{ configFile.getParentDirectory() };
-    
+
     if (!configFolder.exists())
         return;
 

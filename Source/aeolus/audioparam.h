@@ -36,7 +36,7 @@ public:
                    float min = 0.0f,
                    float max = 1.0f,
                    float smooth = 0.5f);
-    
+
     void setName(const juce::String& n) { _paramName = n; }
     const juce::String& name() const noexcept { return _paramName; }
     void setValue(float v, float s, bool force = false);

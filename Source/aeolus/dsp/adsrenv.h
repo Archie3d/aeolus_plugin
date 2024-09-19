@@ -49,7 +49,7 @@ public:
     {
         float attack      = 0.0f;
         float decay       = 0.0f;
-        float sustain     = 1.0f; 
+        float sustain     = 1.0f;
         float release     = 1.0f;
     };
 

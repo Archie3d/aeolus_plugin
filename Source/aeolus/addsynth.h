@@ -29,7 +29,7 @@ AEOLUS_NAMESPACE_BEGIN
 
 /**
  * @brief Interpolated per-note look-up table.
- * 
+ *
  * This class stores a float parameter across the
  * N_NOTES points. Notes in between get interpolated linearly.
  */
@@ -61,7 +61,7 @@ private:
 
 /**
  * @brief Interpolated per-note look-up table for harmonics.
- * 
+ *
  * This class keeps a per-note LUT for each of the N_HARM harmonics.
  */
 class HN_func final
@@ -176,7 +176,7 @@ private:
 
 /**
  * @brief A collection of all available stops.
- * 
+ *
  * This class holds a collection of all available stops.
  * These stops models are shared among all the plugin instances.
  */

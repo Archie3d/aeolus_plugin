@@ -68,7 +68,7 @@ struct Worker::Impl
     bool addJob (Job* job)
     {
         jassert(job != nullptr);
-        
+
         const auto ok = jobsQueue.send (job);
         wakeUp();
 

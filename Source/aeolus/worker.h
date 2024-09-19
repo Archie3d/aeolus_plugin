@@ -28,7 +28,7 @@ AEOLUS_NAMESPACE_BEGIN
 
 /**
  * @brief Schedule jobs run on a separate thread.
- * 
+ *
  * This class uses a lock-free queue to schedulre jobs
  * on audio thread, and execute them on a side thead.
  * This is normally used for samples streaming.
@@ -59,7 +59,7 @@ public:
 
     /**
      * @brief Add job to the queue.
-     * 
+     *
      * @note This must be called from audio thread only.
      */
     bool addJob(Job* job);

@@ -53,7 +53,7 @@ struct AlignedMemory
 
                 //Calculate the offset and store it behind our aligned pointer
                 *((offset_t *)ptr - 1) = (offset_t) ((uintptr_t)ptr - (uintptr_t)p);
-            }            
+            }
         }
 
         return ptr;

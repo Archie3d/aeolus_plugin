@@ -80,12 +80,12 @@ void Stop::initFromVar(const var& v)
             const auto pipeObj = obj->getProperty("pipe");
 
             const auto rankwaves { getRankwavesFromPipeVar(pipeObj) };
-            
+
             if (!rankwaves.empty())
                 addZone(rankwaves);
 
         } else if (obj->hasProperty("zones")) {
-            
+
             if (const auto* zonesArr = obj->getProperty("zones").getArray()) {
                 for (int i = 0; i < zonesArr->size(); ++i) {
                     if (const auto* zoneObj = zonesArr->getUnchecked(i).getDynamicObject()) {
@@ -96,7 +96,7 @@ void Stop::initFromVar(const var& v)
                             if (range->size() >= 2)
                                 zone.keyRange = Range<int>((int)range->getFirst(), (int)range->getLast() + 1);
                         }
-                        
+
                         if (!zone.rankwaves.empty())
                             _zones.push_back(zone);
                     }
@@ -125,7 +125,7 @@ void Stop::addZone(const std::vector<Rankwave*> rw)
 
     Zone zone{};
     zone.keyRange = Range<int>(rw[0]->getNoteMin(), rw[0]->getNoteMax() + 1);
-    
+
     for (auto* ptr : rw) {
         Range<int> range(ptr->getNoteMin(), ptr->getNoteMax() + 1);
         zone.keyRange = zone.keyRange.getUnionWith(range);\

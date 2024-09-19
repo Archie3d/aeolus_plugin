@@ -29,7 +29,7 @@ namespace dsp {
 
 /**
  * @brief Sound source spatial modeller.
- * 
+ *
  * This class take mono audio source and models a stereo output
  * based on the source and listener relative positions.
  * All positioning is performed in 2D space. Positions are specified in meters.
