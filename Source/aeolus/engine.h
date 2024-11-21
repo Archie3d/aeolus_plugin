@@ -72,6 +72,7 @@ public:
 
         float gain;
         bool zeroDelay;
+        size_t startOffset; // Sample offset from the beginning of the IR waveform
 
         juce::AudioBuffer<float> waveform;
     };
