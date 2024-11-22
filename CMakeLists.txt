@@ -113,6 +113,12 @@ source_group(Source
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Parameters.cpp
 )
 
+source_group(Source\\mts
+    FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/mts/libMTSClient.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/mts/libMTSClient.cpp
+)
+
 source_group(Source\\ui
     FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/CustomLookAndFeel.h

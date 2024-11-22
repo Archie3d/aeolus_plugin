@@ -54,6 +54,7 @@ private:
 namespace settings {
 const static char* tuningFrequency = "tuningFrequency";
 const static char* tuningTemperament = "tuningTemperament";
+const static char* mtsEnabled = "mtsEnabled";
 }
 
 EngineGlobal::EngineGlobal()
@@ -62,6 +63,8 @@ EngineGlobal::EngineGlobal()
     , _tuningFrequency(TUNING_FREQUENCY_DEFAULT)
     , _globalProperties{}
 {
+    _mtsClient = MTS_RegisterClient();
+
     PropertiesFile::Options options{};
 
     options.applicationName = ProjectInfo::projectName;
@@ -80,6 +83,9 @@ EngineGlobal::EngineGlobal()
 
 EngineGlobal::~EngineGlobal()
 {
+    if (_mtsClient != nullptr)
+        MTS_DeregisterClient(_mtsClient);
+
     saveSettings();
     clearSingletonInstance();
 }
@@ -108,6 +114,8 @@ void EngineGlobal::loadSettings()
 
         if (scaleType >= (int)Scale::First && scaleType < (int)Scale::Total)
             _scale.setType(static_cast<Scale::Type>(scaleType));
+
+        _mtsEnabled = propertiesFile->getBoolValue(settings::mtsEnabled, false);
     }
 }
 
@@ -116,6 +124,7 @@ void EngineGlobal::saveSettings()
     if (auto* propertiesFile = _globalProperties.getUserSettings()) {
         propertiesFile->setValue(settings::tuningFrequency, _tuningFrequency);
         propertiesFile->setValue(settings::tuningTemperament, (int)_scale.getType());
+        propertiesFile->setValue(settings::mtsEnabled, _mtsEnabled);
     }
 
     _globalProperties.saveIfNeeded();
@@ -164,6 +173,33 @@ void EngineGlobal::updateStops(float sampleRate)
         rw->prepareToPlay(sampleRate);
 */
 }
+
+bool EngineGlobal::isConnectedToMTSMaster()
+{
+    if (_mtsClient != nullptr)
+        return MTS_HasMaster(_mtsClient);
+
+    return false;
+}
+
+String EngineGlobal::getMTSScaleName()
+{
+    if (_mtsClient == nullptr)
+        return {};
+
+    return String(MTS_GetScaleName(_mtsClient));
+}
+
+double EngineGlobal::getMTSNoteToFrequency(int midiNote, int midiChannel)
+{
+    if (_mtsClient == nullptr || !isConnectedToMTSMaster())
+    {
+        return _scale.getFrequencyForMidoNote(midiNote);
+    }
+
+    return MTS_NoteToFrequency(_mtsClient, (char)midiNote, (char)midiChannel);
+}
+
 
 void EngineGlobal::rebuildRankwaves()
 {

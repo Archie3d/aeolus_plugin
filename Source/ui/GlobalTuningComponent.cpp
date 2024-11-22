@@ -32,6 +32,7 @@ GlobalTuningComponent::GlobalTuningComponent()
     , _tuningFrequencySlider{Slider::IncDecButtons, Slider::TextBoxLeft}
     , _scaleLabel{{}, "Scale"}
     , _scaleComboBox{}
+    , _useMTSButton{"Use global MTS tuning"}
     , _defaultButton{"Default"}
     , _okButton{"OK"}
     , _cancelButton{"Cancel"}
@@ -44,7 +45,7 @@ GlobalTuningComponent::GlobalTuningComponent()
     auto font = _globalTuningLabel.getFont();
     font.setHeight(font.getHeight() * 1.2f);
     _globalTuningLabel.setFont(font);
-    
+
     addAndMakeVisible(_tuningFrequencyLabel);
     addAndMakeVisible(_tuningFrequencySlider);
     _tuningFrequencySlider.setTextBoxStyle(Slider::TextBoxLeft, false, 70, 20);
@@ -59,10 +60,19 @@ GlobalTuningComponent::GlobalTuningComponent()
     }
     _scaleComboBox.setSelectedId(g->getScale().getType() + 1);
 
+    addAndMakeVisible(_useMTSButton);
+
+    _useMTSButton.onClick = [this] {
+        // We only update the visuals, but don't change the global state here
+        updateEnablement();
+    };
+
     addAndMakeVisible(_defaultButton);
     _defaultButton.onClick = [this] {
+        _useMTSButton.setToggleState(false, dontSendNotification);
         _tuningFrequencySlider.setValue(aeolus::TUNING_FREQUENCY_DEFAULT);
         _scaleComboBox.setSelectedId(aeolus::Scale::EqualTemp + 1);
+        updateEnablement();
     };
 
     addAndMakeVisible(_okButton);
@@ -75,9 +85,13 @@ GlobalTuningComponent::GlobalTuningComponent()
         if (onCancel) onCancel();
     };
 
+    _useMTSButton.setColour(ToggleButton::textColourId, Colour(0xFF, 0xFF, 0xFF));
+
     _cancelButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _okButton.setColour(TextButton::buttonColourId, Colour(0x66, 0x66, 0x33));
     _defaultButton.setColour(TextButton::buttonColourId, Colour(0x46, 0x60, 0x16));
+
+    captureState();
 }
 
 float GlobalTuningComponent::getTuningFrequency() const
@@ -90,6 +104,11 @@ aeolus::Scale::Type GlobalTuningComponent::getTuningScaleType() const
     return static_cast<aeolus::Scale::Type>(_scaleComboBox.getSelectedId() - 1);
 }
 
+bool GlobalTuningComponent::isMTSTuningEnabled() const
+{
+    return _useMTSButton.getToggleState();
+}
+
 void GlobalTuningComponent::resized()
 {
     constexpr int margin = 6;
@@ -100,7 +119,13 @@ void GlobalTuningComponent::resized()
     _globalTuningLabel.setBounds(bounds.removeFromTop(20));
 
     bounds.removeFromTop(3 * margin);
+
     auto row = bounds.removeFromTop(20);
+    _useMTSButton.setBounds(row);
+
+    bounds.removeFromTop(3 * margin);
+
+    row = bounds.removeFromTop(20);
     _tuningFrequencyLabel.setBounds(row.removeFromLeft(120));
     _tuningFrequencySlider.setBounds(row.removeFromLeft(110));
 
@@ -109,11 +134,32 @@ void GlobalTuningComponent::resized()
     _scaleLabel.setBounds(row.removeFromLeft(80));
     _scaleComboBox.setBounds(row.removeFromLeft(150));
 
+
     row = bounds.removeFromBottom(20);
     _defaultButton.setBounds(row.removeFromLeft(60));
     _cancelButton.setBounds(row.removeFromRight(60));
     row.removeFromRight(margin);
     _okButton.setBounds(row.removeFromRight(60));
+}
+
+void GlobalTuningComponent::captureState()
+{
+    auto* g = aeolus::EngineGlobal::getInstance();
+    const bool ena{ g->isMTSEnabled() };
+
+    _useMTSButton.setToggleState(ena, dontSendNotification);
+    updateEnablement();
+}
+
+void GlobalTuningComponent::updateEnablement()
+{
+    auto* g = aeolus::EngineGlobal::getInstance();
+    const bool ena{ !_useMTSButton.getToggleState() };
+
+    _tuningFrequencyLabel.setEnabled(ena);
+    _tuningFrequencySlider.setEnabled(ena);
+    _scaleLabel.setEnabled(ena);
+    _scaleComboBox.setEnabled(ena);
 }
 
 } // namespace ui

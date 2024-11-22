@@ -55,6 +55,11 @@ public:
 
     const Table& getTable() const;
 
+    /**
+     * Calculate a MIDI note frequency (Hz) given the tuning A frequency.
+     */
+    float getFrequencyForMidoNote(int midiNote, float tuningFrequency = 440.0f) const;
+
     static juce::String getNameForType(Type type);
 
 private:

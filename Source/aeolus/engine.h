@@ -32,6 +32,8 @@
 #include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
 
+#include "mts/libMTSClient.h"
+
 #include <optional>
 #include <vector>
 
@@ -96,6 +98,13 @@ public:
     const Scale& getScale() const noexcept { return _scale; }
     void setScaleType(Scale::Type type) noexcept { _scale.setType(type); }
 
+    bool isConnectedToMTSMaster();
+    juce::String getMTSScaleName();
+    double getMTSNoteToFrequency(int midiNote, int midiChannel);
+
+    bool isMTSEnabled() const { return _mtsEnabled; }
+    void setMTSEnabled(bool shouldBeEnabled) { _mtsEnabled = shouldBeEnabled; }
+
     void rebuildRankwaves();
 
     JUCE_DECLARE_SINGLETON (EngineGlobal, false)
@@ -118,6 +127,9 @@ private:
     float _sampleRate;
     Scale _scale;
     float _tuningFrequency;
+
+    MTSClient* _mtsClient{};
+    bool _mtsEnabled{};
 
     juce::ApplicationProperties _globalProperties;
 };

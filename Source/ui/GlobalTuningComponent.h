@@ -31,6 +31,7 @@ public:
 
     float getTuningFrequency() const;
     aeolus::Scale::Type getTuningScaleType() const;
+    bool isMTSTuningEnabled() const;
 
     void resized() override;
 
@@ -38,11 +39,17 @@ public:
     std::function<void()> onCancel{};
 
 private:
+
+    void captureState();
+    void updateEnablement();
+
     juce::Label _globalTuningLabel;
     juce::Label _tuningFrequencyLabel;
     juce::Slider _tuningFrequencySlider;
     juce::Label _scaleLabel;
     juce::ComboBox _scaleComboBox;
+
+    juce::ToggleButton _useMTSButton;
 
     juce::TextButton _defaultButton;
     juce::TextButton _okButton;

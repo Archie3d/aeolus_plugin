@@ -49,6 +49,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
     , _tuningButton{"tuningButton", DrawableButton::ImageFitted}
+    , _mtsConnectedLabel{{}, "connected to MTS master"}
+    , _mtsDisconnectedLabel{{}, "no MTS master found"}
     , _panicButton{"PANIC"}
     , _cancelButton{"Cancel"}
     , _midiControlChannelLabel{{}, {"Control"}}
@@ -132,19 +134,26 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     _tuningButton.onClick = [this] {
         auto content = std::make_unique<ui::GlobalTuningComponent>();
-        content->setSize(240, 144);
+        content->setSize(240, 182);
         auto* contentPtr = content.get();
 
         auto& box = CallOutBox::launchAsynchronously(std::move(content), _tuningButton.getBounds(), this);
         contentPtr->onCancel = [&box] { box.dismiss(); };
         contentPtr->onOk = [&box, contentPtr] {
+            auto* g = aeolus::EngineGlobal::getInstance();
+            const bool mtsWasEnabled{ g->isMTSEnabled() };
+            bool mtsChanged{ contentPtr->isMTSTuningEnabled() != mtsWasEnabled };
+
             const float freq = contentPtr->getTuningFrequency();
             const auto scaleType = contentPtr->getTuningScaleType();
 
-            auto* g = aeolus::EngineGlobal::getInstance();
-            const bool changed = (g->getTuningFrequency() != freq) || (g->getScale().getType() != scaleType);
+            const bool scaleChanged = (g->getTuningFrequency() != freq) || (g->getScale().getType() != scaleType);
 
-            if (changed) {
+            if (mtsChanged) {
+                g->setMTSEnabled(contentPtr->isMTSTuningEnabled());
+            }
+
+            if (scaleChanged) {
                 g->setTuningFrequency(freq);
                 g->setScaleType(scaleType);
                 g->rebuildRankwaves();
@@ -154,6 +163,12 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
             box.dismiss();
         };
     };
+
+    addAndMakeVisible(_mtsConnectedLabel);
+    addAndMakeVisible(_mtsDisconnectedLabel);
+
+    _mtsConnectedLabel.setColour(Label::textColourId, Colour(204, 255, 204));
+    _mtsDisconnectedLabel.setColour(Label::textColourId, Colour(255, 204, 204));
 
     _panicButton.setColour(TextButton::textColourOffId, Colour(0xFF, 0xFF, 0xFF));
     _panicButton.setColour(TextButton::buttonColourId, Colour(0xCC, 0x33, 0x00));
@@ -276,6 +291,9 @@ void AeolusAudioProcessorEditor::resized()
 
     _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin - 2, 24, 24);
 
+    _mtsConnectedLabel.setBounds(_tuningButton.getRight() + 40, margin, 160, 20);
+    _mtsDisconnectedLabel.setBounds(_mtsConnectedLabel.getBounds());
+
     _panicButton.setBounds(getWidth() - 90, margin, 50, 20);
 
     constexpr int T = margin * 2 + 20;
@@ -341,11 +359,23 @@ void AeolusAudioProcessorEditor::populateDivisions()
 
 void AeolusAudioProcessorEditor::refresh()
 {
+    updateMTS();
     updateMeters();
     updateDivisionViews();
     updateSequencerView();
     updateMidiKeyboardRange();
     updateMidiKeyboardKeySwitches();
+}
+
+void AeolusAudioProcessorEditor::updateMTS()
+{
+    auto* g = aeolus::EngineGlobal::getInstance();
+
+    const bool mtsEnabled{ g->isMTSEnabled() };
+    const bool mtsConnected{ g->isConnectedToMTSMaster() };
+
+    _mtsConnectedLabel.setVisible(mtsEnabled && mtsConnected);
+    _mtsDisconnectedLabel.setVisible(mtsEnabled && !mtsConnected);
 }
 
 void AeolusAudioProcessorEditor::updateMeters()

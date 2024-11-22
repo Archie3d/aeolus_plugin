@@ -57,6 +57,7 @@ private:
     void populateDivisions();
     void refresh();
 
+    void updateMTS();
     void updateMeters();
     void updateMidiKeyboardRange();
     void updateMidiKeyboardKeySwitches();
@@ -90,6 +91,9 @@ private:
     ui::LevelIndicator _volumeLevelR;
 
     juce::DrawableButton _tuningButton;
+
+    juce::Label _mtsConnectedLabel;
+    juce::Label _mtsDisconnectedLabel;
 
     /// Kill all active voices button
     juce::TextButton _panicButton;

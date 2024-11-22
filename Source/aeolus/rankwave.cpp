@@ -415,10 +415,10 @@ void Rankwave::createPipes(const Scale& scale, float tuningFrequency)
     const auto fd = _model.getFd();
 
     const auto& s = scale.getTable();
-    float fbase = tuningFrequency * fn / (fd * s[9]);
+    float fbase = tuningFrequency * fn / fd;
 
     for (int i = _noteMin; i <= _noteMax; ++i) {
-        auto pipe = std::make_unique<Pipewave>(_model, i - _noteMin, ldexpf(fbase * s[i % 12], i/12 - 5));
+        auto pipe = std::make_unique<Pipewave>(_model, i - _noteMin, scale.getFrequencyForMidoNote(i, fbase));
 
         _pipes.add(pipe.release());
     }
@@ -429,12 +429,11 @@ void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
     const auto fn = _model.getFn();
     const auto fd = _model.getFd();
 
-    const auto& s = scale.getTable();
-    float fbase = tuningFrequency * fn / (fd * s[9]);
+    float fbase = tuningFrequency * fn / fd;
 
     for (int i = _noteMin; i <= _noteMax; ++i) {
         Pipewave* pipe = _pipes[i - _noteMin];
-        pipe->setFrequency(ldexpf(fbase * s[i % 12], i/12 - 5));
+        pipe->setFrequency(scale.getFrequencyForMidoNote(i, fbase));
         pipe->setNeedsToBeRebuilt(true);
     }
 }

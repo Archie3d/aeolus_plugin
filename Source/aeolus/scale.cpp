@@ -224,6 +224,13 @@ const Scale::Table& Scale::getTable() const
     return it->second;
 }
 
+float Scale::getFrequencyForMidoNote(int midiNote, float tuningFrequency) const
+{
+    const auto& scaleTable{ getTable() };
+    float fbase{ tuningFrequency / scaleTable[9] };
+    return ldexpf(fbase * scaleTable[midiNote % 12], midiNote / 12 - 5);
+}
+
 juce::String Scale::getNameForType(Type type)
 {
     static const std::map<Type, juce::String> names {
