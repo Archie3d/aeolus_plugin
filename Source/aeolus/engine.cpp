@@ -210,25 +210,9 @@ void EngineGlobal::rebuildRankwaves()
         rw->retunePipes(_scale, _tuningFrequency);
     }
 
-    // Kill all the active voices
-    int numActiveVoices = 0;
-
-    do {
-        for (auto* processor : _processors) {
-            const auto numVoices{ processor->getNumberOfActiveVoices() };
-
-            if (numVoices > 0) {
-                processor->killAllVoices();
-                numActiveVoices += numVoices;
-            }
-        }
-
-        // Wait for the voices to release
-        if (numActiveVoices > 0) {
-            Thread::sleep(10);
-        }
-
-    } while (numActiveVoices > 0);
+    // @note We don't kill active voices - they will be using pipes from a parallel set.
+    //       However, switching tuning very fast (while keeping the voice sustained)
+    //       may result in voice to be killed.
 
     updateStops(_sampleRate);
 }

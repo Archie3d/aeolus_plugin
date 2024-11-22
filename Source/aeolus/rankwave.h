@@ -72,6 +72,7 @@ public:
 
     Pipewave() = delete;
     Pipewave(Addsynth& model, int note, float freq);
+    Pipewave(Pipewave& other);
     ~Pipewave();
 
     const Addsynth& getModel() const noexcept { return _model; }
@@ -138,7 +139,8 @@ public:
 
     void createPipes(const Scale& scale, float tuningFreq);
 
-    // Recalculate pipes tuning based on the current global scale and A4 frequency.
+    // Recalculate pipes tuning based on the current global scale and A4 frequency,
+    // or global MTS tuning if enabed.
     void retunePipes(const Scale& scale, float tuningFreq);
 
     juce::String getStopName() const { return _model.getStopName(); }
@@ -155,7 +157,10 @@ private:
     int _noteMin;
     int _noteMax;
 
-    juce::OwnedArray<Pipewave> _pipes;
+    // Two sets of pipes to be able to switch between tunings
+    // without releasing all the voices.
+    std::array<juce::OwnedArray<Pipewave>, 2> _pipes;
+    std::atomic<int> _pipeSetIndex{ 0 };
 };
 
 AEOLUS_NAMESPACE_END
