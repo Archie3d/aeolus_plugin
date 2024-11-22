@@ -238,12 +238,15 @@ void EngineGlobal::loadIRs()
 {
     _irs.clear();
 
+    // Here we offset the IRs predelay and use non-zero convolution instead.
+
     _irs.push_back({
         "York Guildhall Council Chamber",
         BinaryData::york_council_chamber_wav,
         BinaryData::york_council_chamber_wavSize,
         0.25f,
-        true,
+        false,
+        216,
         {}
     });
 
@@ -252,7 +255,8 @@ void EngineGlobal::loadIRs()
         BinaryData::st_laurentius_molenbeek_wav,
         BinaryData::st_laurentius_molenbeek_wavSize,
         0.8f,
-        true,
+        false,
+        15,
         {}
     });
 
@@ -261,7 +265,8 @@ void EngineGlobal::loadIRs()
         BinaryData::st_andrews_church_wav,
         BinaryData::st_andrews_church_wavSize,
         1.0f,
-        true,
+        false,
+        1796,
         {}
     });
 
@@ -270,7 +275,8 @@ void EngineGlobal::loadIRs()
         BinaryData::st_georges_far_wav,
         BinaryData::st_georges_far_wavSize,
         1.0f,
-        true,
+        false,
+        1776,
         {}
     });
 
@@ -279,7 +285,8 @@ void EngineGlobal::loadIRs()
         BinaryData::lady_chapel_stalbans_wav,
         BinaryData::lady_chapel_stalbans_wavSize,
         1.0f,
-        true,
+        false,
+        385,
         {}
     });
 
@@ -288,7 +295,8 @@ void EngineGlobal::loadIRs()
         BinaryData::_1st_baptist_nashville_balcony_wav,
         BinaryData::_1st_baptist_nashville_balcony_wavSize,
         1.0f,
-        true,
+        false,
+        1764,
         {}
     });
 
@@ -298,6 +306,7 @@ void EngineGlobal::loadIRs()
         BinaryData::elveden_hall_suffolk_england_wavSize,
         0.1f,
         false,
+        28,
         {}
     });
 
@@ -306,7 +315,8 @@ void EngineGlobal::loadIRs()
         BinaryData::r1_nuclear_reactor_hall_wav,
         BinaryData::r1_nuclear_reactor_hall_wavSize,
         0.4f,
-        true,
+        false,
+        1995,
         {}
     });
 
@@ -315,7 +325,8 @@ void EngineGlobal::loadIRs()
         BinaryData::york_uni_sportscentre_wav,
         BinaryData::york_uni_sportscentre_wavSize,
         0.4f,
-        true,
+        false,
+        1309,
         {}
     });
 
@@ -324,7 +335,8 @@ void EngineGlobal::loadIRs()
         BinaryData::york_minster_wav,
         BinaryData::york_minster_wavSize,
         0.3f,
-        true,
+        false,
+        3098,
         {}
     });
 
@@ -338,7 +350,8 @@ void EngineGlobal::loadIRs()
         std::unique_ptr<InputStream> stream = std::make_unique<MemoryInputStream>(ir.data, ir.size, false);
         std::unique_ptr<AudioFormatReader> reader{manager.createReaderFor(std::move(stream))};
         ir.waveform.setSize(reader->numChannels, (int)reader->lengthInSamples);
-        reader->read(&ir.waveform, 0, ir.waveform.getNumSamples(), 0, true, true);
+        const auto offset{ (juce::int64)ir.startOffset };
+        reader->read(&ir.waveform, 0, ir.waveform.getNumSamples() - offset, offset, true, true);
 
         ir.waveform.applyGain(ir.gain);
 
