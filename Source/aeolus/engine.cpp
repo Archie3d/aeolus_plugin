@@ -79,6 +79,8 @@ EngineGlobal::EngineGlobal()
 
     loadRankwaves();
     loadIRs();
+
+    startTimer(100);
 }
 
 EngineGlobal::~EngineGlobal()
@@ -190,14 +192,14 @@ String EngineGlobal::getMTSScaleName()
     return String(MTS_GetScaleName(_mtsClient));
 }
 
-double EngineGlobal::getMTSNoteToFrequency(int midiNote, int midiChannel)
+float EngineGlobal::getMTSNoteToFrequency(int midiNote, int midiChannel)
 {
     if (_mtsClient == nullptr || !isConnectedToMTSMaster())
     {
         return _scale.getFrequencyForMidoNote(midiNote);
     }
 
-    return MTS_NoteToFrequency(_mtsClient, (char)midiNote, (char)midiChannel);
+    return (float)MTS_NoteToFrequency(_mtsClient, (char)midiNote, (char)midiChannel);
 }
 
 
@@ -211,22 +213,22 @@ void EngineGlobal::rebuildRankwaves()
     // Kill all the active voices
     int numActiveVoices = 0;
 
-    for (auto* processor : _processors) {
-        processor->killAllVoices();
-        numActiveVoices += processor->getNumberOfActiveVoices();
-    }
-
-    Thread::sleep(100);
-
-    // Wait for the voices to release
-    while (numActiveVoices > 0) {
-        numActiveVoices = 0;
+    do {
         for (auto* processor : _processors) {
-            processor->killAllVoices();
-            numActiveVoices += processor->getNumberOfActiveVoices();
-            Thread::sleep(100);
+            const auto numVoices{ processor->getNumberOfActiveVoices() };
+
+            if (numVoices > 0) {
+                processor->killAllVoices();
+                numActiveVoices += numVoices;
+            }
         }
-    }
+
+        // Wait for the voices to release
+        if (numActiveVoices > 0) {
+            Thread::sleep(10);
+        }
+
+    } while (numActiveVoices > 0);
 
     updateStops(_sampleRate);
 }
@@ -360,6 +362,33 @@ void EngineGlobal::loadIRs()
     }
 
 }
+
+bool EngineGlobal::updateMTSTuningCache()
+{
+    bool changed{};
+
+    for (int midiNote = 0; midiNote < _mtsTuningCache.size(); ++midiNote) {
+        const float f{ getMTSNoteToFrequency(midiNote, 0) };
+        if (_mtsTuningCache[midiNote] != f) {
+            _mtsTuningCache[midiNote] = f;
+            changed = true;
+        }
+    }
+
+  return changed;
+}
+
+void EngineGlobal::timerCallback()
+{
+    if (!_mtsEnabled) return;
+
+    auto changed{ updateMTSTuningCache() };
+
+    if (changed) {
+        rebuildRankwaves();
+    }
+}
+
 
 JUCE_IMPLEMENT_SINGLETON(EngineGlobal)
 

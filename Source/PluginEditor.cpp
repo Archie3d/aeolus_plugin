@@ -149,11 +149,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
             const bool scaleChanged = (g->getTuningFrequency() != freq) || (g->getScale().getType() != scaleType);
 
-            if (mtsChanged) {
+            if (mtsChanged || scaleChanged) {
                 g->setMTSEnabled(contentPtr->isMTSTuningEnabled());
-            }
-
-            if (scaleChanged) {
                 g->setTuningFrequency(freq);
                 g->setScaleType(scaleType);
                 g->rebuildRankwaves();

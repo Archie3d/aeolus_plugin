@@ -46,7 +46,8 @@ class Engine;
  *
  * This class in a singleton which is shared among all the plugin instances.
  */
-class EngineGlobal : public juce::DeletedAtShutdown
+class EngineGlobal : public juce::DeletedAtShutdown,
+                     private juce::Timer
 {
 public:
 
@@ -100,7 +101,7 @@ public:
 
     bool isConnectedToMTSMaster();
     juce::String getMTSScaleName();
-    double getMTSNoteToFrequency(int midiNote, int midiChannel);
+    float getMTSNoteToFrequency(int midiNote, int midiChannel);
 
     bool isMTSEnabled() const { return _mtsEnabled; }
     void setMTSEnabled(bool shouldBeEnabled) { _mtsEnabled = shouldBeEnabled; }
@@ -116,6 +117,15 @@ private:
     void loadRankwaves();
     void loadIRs();
 
+    /**
+     * Refresh MTS tuning table for all MIDI notes.
+     * Returns true if there was a change to the tuning.
+     */
+    bool updateMTSTuningCache();
+
+    // juce::Timer
+    void timerCallback() override;
+
     juce::Array<ProcessorProxy*> _processors;
 
     juce::OwnedArray<Rankwave> _rankwaves;
@@ -130,6 +140,7 @@ private:
 
     MTSClient* _mtsClient{};
     bool _mtsEnabled{};
+    std::array<float, 128> _mtsTuningCache{};
 
     juce::ApplicationProperties _globalProperties;
 };

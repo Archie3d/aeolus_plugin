@@ -426,15 +426,32 @@ void Rankwave::createPipes(const Scale& scale, float tuningFrequency)
 
 void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
 {
-    const auto fn = _model.getFn();
-    const auto fd = _model.getFd();
+    auto* g = aeolus::EngineGlobal::getInstance();
 
-    float fbase = tuningFrequency * fn / fd;
+    const float fnd = (float)_model.getFn() / (float)_model.getFd();
+    jassert(fnd > 0.0f);
 
-    for (int i = _noteMin; i <= _noteMax; ++i) {
-        Pipewave* pipe = _pipes[i - _noteMin];
-        pipe->setFrequency(scale.getFrequencyForMidoNote(i, fbase));
-        pipe->setNeedsToBeRebuilt(true);
+    if (g->isMTSEnabled()) {
+        // Use MTS provided tuning
+        for (int i = _noteMin; i <= _noteMax; ++i) {
+            Pipewave* pipe = _pipes[i - _noteMin];
+            const float f{ g->getMTSNoteToFrequency(i, 0) * fnd };
+
+            if (pipe->getPipeFrequency() != f) {
+                pipe->setFrequency(f);
+                pipe->setNeedsToBeRebuilt(true);
+            }
+        }
+
+    } else {
+        // Use local scale
+        float fbase = tuningFrequency * fnd;
+
+        for (int i = _noteMin; i <= _noteMax; ++i) {
+            Pipewave* pipe = _pipes[i - _noteMin];
+            pipe->setFrequency(scale.getFrequencyForMidoNote(i, fbase));
+            pipe->setNeedsToBeRebuilt(true);
+        }
     }
 }
 
