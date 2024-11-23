@@ -482,7 +482,7 @@ void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
         // Use MTS provided tuning
         for (int i = _noteMin; i <= _noteMax; ++i) {
             Pipewave* pipe = _pipes[nextPipeSetIndex][i - _noteMin];
-            const float f{ g->getMTSNoteToFrequency(i, 0) * fnd };
+            const float f{ g->getMTSNoteToFrequency(i) * fnd };
 
             if (pipe->getPipeFrequency() != f) {
                 pipe->setFrequency(f);

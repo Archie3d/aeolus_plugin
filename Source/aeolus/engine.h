@@ -102,10 +102,11 @@ public:
 
     bool isConnectedToMTSMaster();
     juce::String getMTSScaleName();
-    float getMTSNoteToFrequency(int midiNote, int midiChannel);
+    float getMTSNoteToFrequency(int midiNote, int midiChannel = -1);
+    bool shouldMTSFilterNote(int midiNote, int midiChannel = -1);
 
     bool isMTSEnabled() const { return _mtsEnabled; }
-    void setMTSEnabled(bool shouldBeEnabled) { _mtsEnabled = shouldBeEnabled; }
+    void setMTSEnabled(bool shouldBeEnabled);
 
     void rebuildRankwaves();
 

@@ -62,6 +62,7 @@ EngineGlobal::EngineGlobal()
     , _scale(Scale::EqualTemp)
     , _tuningFrequency(TUNING_FREQUENCY_DEFAULT)
     , _globalProperties{}
+    , _mtsClient{ nullptr }
 {
     _mtsClient = MTS_RegisterClient();
 
@@ -117,7 +118,7 @@ void EngineGlobal::loadSettings()
         if (scaleType >= (int)Scale::First && scaleType < (int)Scale::Total)
             _scale.setType(static_cast<Scale::Type>(scaleType));
 
-        _mtsEnabled = propertiesFile->getBoolValue(settings::mtsEnabled, false);
+        setMTSEnabled(propertiesFile->getBoolValue(settings::mtsEnabled, false));
     }
 }
 
@@ -202,6 +203,25 @@ float EngineGlobal::getMTSNoteToFrequency(int midiNote, int midiChannel)
     return (float)MTS_NoteToFrequency(_mtsClient, (char)midiNote, (char)midiChannel);
 }
 
+bool EngineGlobal::shouldMTSFilterNote(int midiNote, int midiChannel)
+{
+    if (_mtsClient == nullptr || !isConnectedToMTSMaster())
+        return false;
+
+    return MTS_ShouldFilterNote(_mtsClient, (char)midiNote, (char)midiChannel);
+}
+
+void EngineGlobal::setMTSEnabled(bool shouldBeEnabled)
+{
+    _mtsEnabled = shouldBeEnabled;
+
+    if (_mtsEnabled && _mtsClient == nullptr) {
+        _mtsClient = MTS_RegisterClient();
+    } else if (!_mtsEnabled && _mtsClient != nullptr) {
+        MTS_DeregisterClient(_mtsClient);
+        _mtsClient = nullptr;
+    }
+}
 
 void EngineGlobal::rebuildRankwaves()
 {
@@ -365,7 +385,7 @@ bool EngineGlobal::updateMTSTuningCache()
     bool changed{};
 
     for (int midiNote = 0; midiNote < _mtsTuningCache.size(); ++midiNote) {
-        const float f{ getMTSNoteToFrequency(midiNote, 0) };
+        const float f{ getMTSNoteToFrequency(midiNote) };
         if (_mtsTuningCache[midiNote] != f) {
             _mtsTuningCache[midiNote] = f;
             changed = true;
@@ -635,8 +655,14 @@ void Engine::noteOn(int note, int midiChannel)
 
     // Handle keys
     if (!handled) {
-        for (auto* division : _divisions)
-            division->noteOn(note, midiChannel);
+
+        // Ignore note-on event if filtered by MTS.
+        auto* g = aeolus::EngineGlobal::getInstance();
+
+        if (!g->shouldMTSFilterNote(note, midiChannel)) {
+            for (auto* division : _divisions)
+                division->noteOn(note, midiChannel);
+        }
     }
 }
 
