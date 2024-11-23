@@ -284,6 +284,7 @@ void Pipewave::genwave()
 
     Pipewave::looplen(f1 * _sampleRate, _sampleStep * _sampleRate, (int)(_sampleRate / 6.0f), _loopLength, nc);
     jassert(_loopLength > 0);
+    jassert(nc > 0);
 
     if (_loopLength < _sampleStep * SUB_FRAME_LENGTH) {
         int k = (_sampleStep * SUB_FRAME_LENGTH - 1) / _loopLength + 1;
@@ -406,8 +407,9 @@ void Pipewave::looplen(float f, float sampleRate, int lmax, int& aa, int& bb)
         }
     }
 
-    aa = a;
-    bb = b;
+    // Avoid zero loops (can happen with some weird tunings).
+    aa = std::max(1, a);
+    bb = std::max(1, b);
 }
 
 void Pipewave::attgain(float* att, int n, float p)
@@ -473,7 +475,6 @@ void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
     auto* g = aeolus::EngineGlobal::getInstance();
 
     const float fnd = (float)_model.getFn() / (float)_model.getFd();
-    jassert(fnd > 0.0f);
 
     int pipeSetIndex{ _pipeSetIndex.load() };
     int nextPipeSetIndex{ (pipeSetIndex + 1) % (int)_pipes.size() };
@@ -482,7 +483,9 @@ void Rankwave::retunePipes(const Scale& scale, float tuningFrequency)
         // Use MTS provided tuning
         for (int i = _noteMin; i <= _noteMax; ++i) {
             Pipewave* pipe = _pipes[nextPipeSetIndex][i - _noteMin];
-            const float f{ g->getMTSNoteToFrequency(i) * fnd };
+
+            // @note MTS tuning may return some weird frequencies, we need to clamp them
+            const float f{ jlimit(0.1f, SAMPLE_RATE * 0.5f - 0.1f, g->getMTSNoteToFrequency(i) * fnd) };
 
             if (pipe->getPipeFrequency() != f) {
                 pipe->setFrequency(f);
