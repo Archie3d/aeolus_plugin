@@ -258,15 +258,16 @@ void EngineGlobal::loadIRs()
 {
     _irs.clear();
 
-    // Here we offset the IRs predelay and use non-zero convolution instead.
+    // Here we offset the IRs predelay for non-zero convolution instead.
+    constexpr bool zeroDelay{ true };
 
     _irs.push_back({
         "York Guildhall Council Chamber",
         BinaryData::york_council_chamber_wav,
         BinaryData::york_council_chamber_wavSize,
         0.25f,
-        false,
-        216,
+        zeroDelay,
+        zeroDelay ? 0 : 216,
         {}
     });
 
@@ -275,8 +276,8 @@ void EngineGlobal::loadIRs()
         BinaryData::st_laurentius_molenbeek_wav,
         BinaryData::st_laurentius_molenbeek_wavSize,
         0.8f,
-        false,
-        15,
+        zeroDelay,
+        zeroDelay ? 0 : 15,
         {}
     });
 
@@ -285,8 +286,8 @@ void EngineGlobal::loadIRs()
         BinaryData::st_andrews_church_wav,
         BinaryData::st_andrews_church_wavSize,
         1.0f,
-        false,
-        1796,
+        zeroDelay,
+        zeroDelay ? 0 : 1796,
         {}
     });
 
@@ -295,8 +296,8 @@ void EngineGlobal::loadIRs()
         BinaryData::st_georges_far_wav,
         BinaryData::st_georges_far_wavSize,
         1.0f,
-        false,
-        1776,
+        zeroDelay,
+        zeroDelay ? 0 : 1776,
         {}
     });
 
@@ -305,8 +306,8 @@ void EngineGlobal::loadIRs()
         BinaryData::lady_chapel_stalbans_wav,
         BinaryData::lady_chapel_stalbans_wavSize,
         1.0f,
-        false,
-        385,
+        zeroDelay,
+        zeroDelay ? 0 : 385,
         {}
     });
 
@@ -315,8 +316,8 @@ void EngineGlobal::loadIRs()
         BinaryData::_1st_baptist_nashville_balcony_wav,
         BinaryData::_1st_baptist_nashville_balcony_wavSize,
         1.0f,
-        false,
-        1764,
+        zeroDelay,
+        zeroDelay ? 0 : 1764,
         {}
     });
 
@@ -325,8 +326,8 @@ void EngineGlobal::loadIRs()
         BinaryData::elveden_hall_suffolk_england_wav,
         BinaryData::elveden_hall_suffolk_england_wavSize,
         0.1f,
-        false,
-        28,
+        false,  // This one is delayed on purpose
+        0,      // 28
         {}
     });
 
@@ -335,8 +336,8 @@ void EngineGlobal::loadIRs()
         BinaryData::r1_nuclear_reactor_hall_wav,
         BinaryData::r1_nuclear_reactor_hall_wavSize,
         0.4f,
-        false,
-        1995,
+        zeroDelay,
+        zeroDelay ? 0 : 1995,
         {}
     });
 
@@ -345,8 +346,8 @@ void EngineGlobal::loadIRs()
         BinaryData::york_uni_sportscentre_wav,
         BinaryData::york_uni_sportscentre_wavSize,
         0.4f,
-        false,
-        1309,
+        zeroDelay,
+        zeroDelay ? 0 : 1309,
         {}
     });
 
