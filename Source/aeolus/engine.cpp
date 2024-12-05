@@ -356,8 +356,8 @@ void EngineGlobal::loadIRs()
         BinaryData::york_minster_wav,
         BinaryData::york_minster_wavSize,
         0.3f,
-        false,
-        3098,
+        zeroDelay,
+        zeroDelay ? 0 : 3098,
         {}
     });
 
