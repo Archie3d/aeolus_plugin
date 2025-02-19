@@ -20,6 +20,7 @@
 #include "aeolus/engine.h"
 #include "ui/CustomLookAndFeel.h"
 #include "ui/GlobalTuningComponent.h"
+#include "ui/SettingsComponent.h"
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -49,6 +50,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeLevelL{p.getEngine().getVolumeLevel().left, ui::LevelIndicator::Orientation::Horizontal}
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
     , _tuningButton{"tuningButton", DrawableButton::ImageFitted}
+    , _settingsButton{"settingsButton", DrawableButton::ImageFitted}
     , _mtsConnectedLabel{{}, "connected to MTS master"}
     , _mtsDisconnectedLabel{{}, "no MTS master found"}
     , _panicButton{"PANIC"}
@@ -58,10 +60,15 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _midiSwellChannelLabel{{}, {"Swell"}}
     , _midiSwellChannels{}
 {
+    auto* g = aeolus::EngineGlobal::getInstance();
+
     setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
-    setSize (1420, 640);
-    setResizeLimits(1024, 600, 4096, 4096);
+    setSize(1420, 640);
+    setResizeLimits(640, 480, 4096, 4096);
+
+    _uiScalingPercent = g->getUIScalingFactor();
+    setScaleFactor(1e-2f * _uiScalingPercent);
 
     addAndMakeVisible(_versionLabel);
     _versionLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 10, Font::plain));
@@ -84,10 +91,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     // Mutlibus configuration does not have a reverb
 
     addAndMakeVisible(_reverbLabel);
-
     addAndMakeVisible(_reverbComboBox);
-
-    auto* g = aeolus::EngineGlobal::getInstance();
 
     int id = 0;
     for (const auto& ir : g->getIRs()) {
@@ -119,6 +123,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     _volumeSlider.setLookAndFeel(&ui::CustomLookAndFeel::getInstance());
 
     addAndMakeVisible(_tuningButton);
+    addAndMakeVisible(_settingsButton);
 
     auto loadSVG = [](const char* data, size_t size) -> std::unique_ptr<Drawable> {
         if (auto xml = parseXML(String::fromUTF8(data, (int)size))) {
@@ -127,10 +132,12 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
         return nullptr;
     };
 
-    auto normalIcon = loadSVG(BinaryData::tuningfork_svg, BinaryData::tuningfork_svgSize);
-    auto hoverIcon = loadSVG(BinaryData::tuningforkhover_svg, BinaryData::tuningforkhover_svgSize);
-    _tuningButton.setImages(normalIcon.get(), hoverIcon.get());
-    _tuningButton.setMouseCursor(MouseCursor::PointingHandCursor);
+    {
+        auto normalIcon = loadSVG(BinaryData::tuningfork_svg, BinaryData::tuningfork_svgSize);
+        auto hoverIcon = loadSVG(BinaryData::tuningforkhover_svg, BinaryData::tuningforkhover_svgSize);
+        _tuningButton.setImages(normalIcon.get(), hoverIcon.get());
+        _tuningButton.setMouseCursor(MouseCursor::PointingHandCursor);
+    }
 
     _tuningButton.onClick = [this] {
         auto content = std::make_unique<ui::GlobalTuningComponent>();
@@ -159,6 +166,35 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
             box.dismiss();
         };
+    };
+
+    {
+        auto normalIcon = loadSVG(BinaryData::settings_svg, BinaryData::settings_svgSize);
+        auto hoverIcon = loadSVG(BinaryData::settingshover_svg, BinaryData::settingshover_svgSize);
+        _settingsButton.setImages(normalIcon.get(), hoverIcon.get());
+        _settingsButton.setMouseCursor(MouseCursor::PointingHandCursor);
+    }
+
+    _settingsButton.onClick = [this] {
+        auto content = std::make_unique<ui::SettingsComponent>();
+        content->setSize(240, 120);
+        auto* contentPtr = content.get();
+
+        auto& box = CallOutBox::launchAsynchronously(std::move(content), _settingsButton.getBounds(), this);
+        contentPtr->onCancel = [&box] { box.dismiss(); };
+        contentPtr->onOk = [&box, contentPtr] {
+            auto* g = aeolus::EngineGlobal::getInstance();
+            const float uiScalingFactor = contentPtr->getUIScalingFactor();
+            const bool uiScalingFactorChanged = (g->getUIScalingFactor() != uiScalingFactor);
+
+            if (uiScalingFactorChanged) {
+                g->setUIScalingFactor(uiScalingFactor);
+                g->saveSettings();
+            }
+
+            box.dismiss();
+        };
+
     };
 
     addAndMakeVisible(_mtsConnectedLabel);
@@ -236,6 +272,8 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     addAndMakeVisible(_sequencerView);
 
+    g->addListener(this);
+
     resized();
 
     startTimerHz(10);
@@ -243,13 +281,16 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
 AeolusAudioProcessorEditor::~AeolusAudioProcessorEditor()
 {
+    auto* g = aeolus::EngineGlobal::getInstance();
+    g->removeListener(this);
+
     _sequencerView.removeListener(this);
 };
 
 //==============================================================================
 void AeolusAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
     g.setColour(Colour(0x36, 0x35, 0x33));
     g.fillRect(0, 0, getWidth(), 30);
@@ -287,8 +328,9 @@ void AeolusAudioProcessorEditor::resized()
     _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
 
     _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin - 2, 24, 24);
+    _settingsButton.setBounds(_tuningButton.getRight() + 20, margin - 2, 24, 24);
 
-    _mtsConnectedLabel.setBounds(_tuningButton.getRight() + 40, margin, 160, 20);
+    _mtsConnectedLabel.setBounds(_settingsButton.getRight() + 40, margin, 160, 20);
     _mtsDisconnectedLabel.setBounds(_mtsConnectedLabel.getBounds());
 
     _panicButton.setBounds(getWidth() - 90, margin, 50, 20);
@@ -298,7 +340,7 @@ void AeolusAudioProcessorEditor::resized()
     constexpr int sequencerPadding = 6;
     constexpr int keyboardHeight = 70;
 
-    int y = 0;;
+    int y = 0;
 
     for (auto* divisionView : _divisionViews) {
         const auto h = divisionView->getEstimatedHeightForWidth(getWidth());
@@ -331,6 +373,26 @@ void AeolusAudioProcessorEditor::resized()
 void AeolusAudioProcessorEditor::timerCallback()
 {
     refresh();
+}
+
+void AeolusAudioProcessorEditor::onUIScalingFactorChanged(float scalingPercent)
+{
+    juce::Component* comp{ this };
+
+    while (comp->getParentComponent() != nullptr)
+        comp = comp->getParentComponent();
+
+    const auto width{ comp->getWidth() };
+    const auto height{ comp->getHeight() };
+    const float scaling{ 1e-2f * scalingPercent };
+
+    setScaleFactor(scaling);
+    
+    float adjust{ scalingPercent / _uiScalingPercent };
+
+    comp->setSize(width * adjust, height * adjust);
+
+    _uiScalingPercent = scalingPercent;
 }
 
 void AeolusAudioProcessorEditor::onSequencerEnterProgramMode()

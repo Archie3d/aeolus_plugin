@@ -55,6 +55,7 @@ namespace settings {
 const static char* tuningFrequency = "tuningFrequency";
 const static char* tuningTemperament = "tuningTemperament";
 const static char* mtsEnabled = "mtsEnabled";
+const static char* uiScalingFactor = "uiScalingFactor";
 }
 
 EngineGlobal::EngineGlobal()
@@ -105,6 +106,18 @@ void EngineGlobal::unregisterProcessorProxy(ProcessorProxy* proxy)
     _processors.removeAllInstancesOf(proxy);
 }
 
+void EngineGlobal::addListener(Listener* listener)
+{
+    jassert(listener != nullptr);
+    _listeners.add(listener);
+}
+
+void EngineGlobal::removeListener(Listener* listener)
+{
+    jassert(listener != nullptr);
+    _listeners.remove(listener);
+}
+
 void EngineGlobal::loadSettings()
 {
     if (auto* propertiesFile = _globalProperties.getUserSettings()) {
@@ -119,6 +132,10 @@ void EngineGlobal::loadSettings()
             _scale.setType(static_cast<Scale::Type>(scaleType));
 
         setMTSEnabled(propertiesFile->getBoolValue(settings::mtsEnabled, false));
+
+        const float uiScalingFactor = (float)propertiesFile->getDoubleValue(settings::uiScalingFactor, UI_SCALING_DEFAULT);
+        if (uiScalingFactor >= UI_SCALING_MIN && uiScalingFactor <= UI_SCALING_MAX)
+            _uiScalingFactor = uiScalingFactor;
     }
 }
 
@@ -128,6 +145,7 @@ void EngineGlobal::saveSettings()
         propertiesFile->setValue(settings::tuningFrequency, _tuningFrequency);
         propertiesFile->setValue(settings::tuningTemperament, (int)_scale.getType());
         propertiesFile->setValue(settings::mtsEnabled, _mtsEnabled);
+        propertiesFile->setValue(settings::uiScalingFactor, _uiScalingFactor);
     }
 
     _globalProperties.saveIfNeeded();
@@ -221,6 +239,13 @@ void EngineGlobal::setMTSEnabled(bool shouldBeEnabled)
         MTS_DeregisterClient(_mtsClient);
         _mtsClient = nullptr;
     }
+}
+
+void EngineGlobal::setUIScalingFactor(float f)
+{
+    _uiScalingFactor = jlimit(UI_SCALING_MIN, UI_SCALING_MAX, f);
+    DBG("SCALE: " << _uiScalingFactor);
+    _listeners.call([&](Listener& listener){ listener.onUIScalingFactorChanged(_uiScalingFactor); });
 }
 
 void EngineGlobal::rebuildRankwaves()

@@ -64,6 +64,16 @@ public:
     void registerProcessorProxy(ProcessorProxy* proxy);
     void unregisterProcessorProxy(ProcessorProxy* proxy);
 
+    class Listener
+    {
+    public:
+        virtual ~Listener() = default;
+        virtual void onUIScalingFactorChanged(float scalingPercent) = 0;
+    };
+
+    void addListener(Listener* listener);
+    void removeListener(Listener* listener);
+
     /**
      * Impulse response descriptor for IRs embedded as binary resources.
      */
@@ -108,6 +118,9 @@ public:
     bool isMTSEnabled() const { return _mtsEnabled; }
     void setMTSEnabled(bool shouldBeEnabled);
 
+    float getUIScalingFactor() const noexcept { return _uiScalingFactor; }
+    void setUIScalingFactor(float f);
+
     void rebuildRankwaves();
 
     JUCE_DECLARE_SINGLETON (EngineGlobal, false)
@@ -130,6 +143,8 @@ private:
 
     juce::Array<ProcessorProxy*> _processors;
 
+    juce::ListenerList<Listener> _listeners;
+
     juce::OwnedArray<Rankwave> _rankwaves;
     juce::HashMap<juce::String, Rankwave*> _rankwavesByName;
 
@@ -143,6 +158,8 @@ private:
     MTSClient* _mtsClient{};
     bool _mtsEnabled{};
     std::array<float, 128> _mtsTuningCache{};
+
+    float _uiScalingFactor{ UI_SCALING_DEFAULT };
 
     juce::ApplicationProperties _globalProperties;
 };

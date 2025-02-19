@@ -35,6 +35,7 @@
  */
 class AeolusAudioProcessorEditor  : public juce::AudioProcessorEditor,
                                     public juce::Timer,
+                                    public aeolus::EngineGlobal::Listener,
                                     public ui::SequencerView::Listener
 {
 public:
@@ -47,6 +48,9 @@ public:
 
     // juce::Timer
     void timerCallback() override;
+
+    // aeolus::EngineGlobal::Listener
+    void onUIScalingFactorChanged(float scalingPercent) override;
 
     // SequencerView::Listener
     void onSequencerEnterProgramMode() override;
@@ -91,6 +95,7 @@ private:
     ui::LevelIndicator _volumeLevelR;
 
     juce::DrawableButton _tuningButton;
+    juce::DrawableButton _settingsButton;
 
     juce::Label _mtsConnectedLabel;
     juce::Label _mtsDisconnectedLabel;
@@ -108,6 +113,8 @@ private:
     /// MIDI swell channel selection
     juce::Label _midiSwellChannelLabel;
     ui::MidiChannelsComponent _midiSwellChannels;
+
+    float _uiScalingPercent{};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
 };

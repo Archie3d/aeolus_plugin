@@ -97,6 +97,12 @@ constexpr static float TUNING_FREQUENCY_MAX = 550.0f;
 constexpr static float TUNING_FREQUENCY_STEP = 1.0f;
 constexpr static float TUNING_FREQUENCY_DEFAULT = 440.0f;
 
+/// Global UI scaling factor (percent)
+constexpr static float UI_SCALING_MIN = 25.0f;
+constexpr static float UI_SCALING_MAX = 150.0f;
+constexpr static float UI_SCALING_SETP = 1.0f;
+constexpr static float UI_SCALING_DEFAULT = 100.0f;
+
 //==============================================================================
 
 // MIDI controls
