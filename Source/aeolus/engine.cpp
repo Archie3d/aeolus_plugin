@@ -244,7 +244,6 @@ void EngineGlobal::setMTSEnabled(bool shouldBeEnabled)
 void EngineGlobal::setUIScalingFactor(float f)
 {
     _uiScalingFactor = jlimit(UI_SCALING_MIN, UI_SCALING_MAX, f);
-    DBG("SCALE: " << _uiScalingFactor);
     _listeners.call([&](Listener& listener){ listener.onUIScalingFactorChanged(_uiScalingFactor); });
 }
 
