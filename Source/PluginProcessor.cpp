@@ -115,14 +115,6 @@ void AeolusAudioProcessor::changeProgramName(int /* index */, const juce::String
 void AeolusAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     _engine.prepareToPlay((float)sampleRate, samplesPerBlock);
-
-    juce::dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = aeolus::N_OUTPUT_CHANNELS;
-    _limiter.prepare(spec);
-    _limiter.setThreshold(6.0f);
-    _limiter.setRelease(10.0f);
 }
 
 void AeolusAudioProcessor::releaseResources()
@@ -255,10 +247,6 @@ void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     _engine.process(outL, outR, buffer.getNumSamples(), isNonRealtime());
 
 #endif // AEOLUS_MULTIBUS_OUTPUT
-
-    // Apply limiter
-    juce::dsp::AudioBlock<float> block(buffer);
-    _limiter.process(juce::dsp::ProcessContextReplacing<float>(block));
 
     auto timestampStop = high_resolution_clock::now();
     auto duration_us = duration_cast<microseconds> (timestampStop - timestampStart).count();

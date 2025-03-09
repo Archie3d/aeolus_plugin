@@ -87,7 +87,6 @@ target_link_libraries(${TARGET}
         juce::juce_audio_plugin_client
         juce::juce_gui_basics
         juce::juce_gui_extra
-        juce::juce_dsp
     PUBLIC
         juce::juce_recommended_config_flags
 )
@@ -202,6 +201,8 @@ source_group(Source\\aeolus\\dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/filter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/interpolator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/interpolator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/limiter.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/limiter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/spatial.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/aeolus/dsp/spatial.cpp
 )

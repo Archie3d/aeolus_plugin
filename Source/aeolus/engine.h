@@ -31,6 +31,7 @@
 #include "aeolus/levelmeter.h"
 #include "aeolus/dsp/convolver.h"
 #include "aeolus/dsp/interpolator.h"
+#include "aeolus/dsp/limiter.h"
 
 #include "mts/libMTSClient.h"
 
@@ -384,6 +385,10 @@ private:
 
     juce::AudioBuffer<float> _tremulantBuffer;
     float _tremulantPhase;
+
+    dsp::Limiter::Spec _limiterSpec;
+    std::array<dsp::Limiter::State, aeolus::N_OUTPUT_CHANNELS> _limiterState;
+    dsp::Limiter _limiter;
 
     dsp::Convolver _convolver;
     std::atomic<int> _selectedIR;
