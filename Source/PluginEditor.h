@@ -96,6 +96,7 @@ private:
 
     juce::DrawableButton _tuningButton;
     juce::DrawableButton _settingsButton;
+    juce::DrawableButton _fxButton;
 
     juce::Label _mtsConnectedLabel;
     juce::Label _mtsDisconnectedLabel;

@@ -131,6 +131,8 @@ source_group(Source\\ui
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/DivisionView.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/GlobalTuningComponent.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/GlobalTuningComponent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/FxComponent.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/FxComponent.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/SettingsComponent.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/SettingsComponent.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/ui/MidiChannelsComponent.h

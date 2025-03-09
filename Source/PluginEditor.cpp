@@ -20,6 +20,7 @@
 #include "aeolus/engine.h"
 #include "ui/CustomLookAndFeel.h"
 #include "ui/GlobalTuningComponent.h"
+#include "ui/FxComponent.h"
 #include "ui/SettingsComponent.h"
 
 #include "PluginProcessor.h"
@@ -51,6 +52,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     , _volumeLevelR{p.getEngine().getVolumeLevel().right, ui::LevelIndicator::Orientation::Horizontal}
     , _tuningButton{"tuningButton", DrawableButton::ImageFitted}
     , _settingsButton{"settingsButton", DrawableButton::ImageFitted}
+    , _fxButton{"fxButton", DrawableButton::ImageFitted}
     , _mtsConnectedLabel{{}, "connected to MTS master"}
     , _mtsDisconnectedLabel{{}, "no MTS master found"}
     , _panicButton{"PANIC"}
@@ -124,6 +126,7 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     addAndMakeVisible(_tuningButton);
     addAndMakeVisible(_settingsButton);
+    addAndMakeVisible(_fxButton);
 
     auto loadSVG = [](const char* data, size_t size) -> std::unique_ptr<Drawable> {
         if (auto xml = parseXML(String::fromUTF8(data, (int)size))) {
@@ -194,7 +197,27 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
             box.dismiss();
         };
+    };
 
+    {
+        auto normalIcon = loadSVG(BinaryData::fx_svg, BinaryData::fx_svgSize);
+        auto hoverIcon = loadSVG(BinaryData::fxhover_svg, BinaryData::fxhover_svgSize);
+        _fxButton.setImages(normalIcon.get(), hoverIcon.get());
+        _fxButton.setMouseCursor(MouseCursor::PointingHandCursor);
+    }
+
+    _fxButton.onClick = [this] {
+        auto content = std::make_unique<ui::FxComponent>();
+        content->setSize(240, 220);
+        auto* contentPtr = content.get();
+
+        auto& box = CallOutBox::launchAsynchronously(std::move(content), _fxButton.getBounds(), this);
+        contentPtr->onCancel = [&box] { box.dismiss(); };
+        contentPtr->onOk = [&box, contentPtr] {
+            // @todo Enable limiter and set its parameters
+            //_audioProcessor.getEngine().setReverbWet(contentPtr->getReverbWet());
+            box.dismiss();
+        };
     };
 
     addAndMakeVisible(_mtsConnectedLabel);
@@ -328,7 +351,8 @@ void AeolusAudioProcessorEditor::resized()
     _volumeLevelR.setBounds(_volumeSlider.getX() + 5, _volumeSlider.getY() + _volumeSlider.getHeight() - 4, _volumeSlider.getWidth() - 10, 2);
 
     _tuningButton.setBounds(_volumeSlider.getRight() + 40, margin - 2, 24, 24);
-    _settingsButton.setBounds(_tuningButton.getRight() + 20, margin - 2, 24, 24);
+    _fxButton.setBounds(_tuningButton.getRight() + 20, margin - 2, 24, 24);
+    _settingsButton.setBounds(_fxButton.getRight() + 20, margin - 2, 24, 24);
 
     _mtsConnectedLabel.setBounds(_settingsButton.getRight() + 40, margin, 160, 20);
     _mtsDisconnectedLabel.setBounds(_mtsConnectedLabel.getBounds());
@@ -387,7 +411,7 @@ void AeolusAudioProcessorEditor::onUIScalingFactorChanged(float scalingPercent)
     const float scaling{ 1e-2f * scalingPercent };
 
     setScaleFactor(scaling);
-    
+
     float adjust{ scalingPercent / _uiScalingPercent };
 
     comp->setSize(width * adjust, height * adjust);
