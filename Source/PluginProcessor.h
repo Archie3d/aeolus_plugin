@@ -99,6 +99,8 @@ private:
 
     aeolus::Engine _engine;
 
+    juce::dsp::Limiter<float> _limiter;
+
     Parameters _parameters;
 
     std::atomic<float> _processLoad;

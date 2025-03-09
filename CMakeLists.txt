@@ -87,6 +87,7 @@ target_link_libraries(${TARGET}
         juce::juce_audio_plugin_client
         juce::juce_gui_basics
         juce::juce_gui_extra
+        juce::juce_dsp
     PUBLIC
         juce::juce_recommended_config_flags
 )
