@@ -33,11 +33,13 @@ struct Limiter
         float threshold;
         float attack;
         float release;
+        int sustain;
     };
 
     struct State
     {
         float gain;
+        int sustain;
     };
 
     static void updateSpec(Spec& spec);

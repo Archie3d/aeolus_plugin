@@ -30,6 +30,7 @@ void Limiter::updateSpec(Limiter::Spec& spec)
 void Limiter::resetState(const Limiter::Spec& spec, Limiter::State& state)
 {
     state.gain = 1.0f;
+    state.sustain = 0;
 }
 
 float Limiter::tick(const Limiter::Spec& spec, Limiter::State& state, float in)
@@ -37,8 +38,17 @@ float Limiter::tick(const Limiter::Spec& spec, Limiter::State& state, float in)
     const float level = std::abs(in);
 
     const float targetGain = (level > spec.threshold) ? spec.threshold / level : 1.0f;
-    state.gain = (state.gain > targetGain) ? std::max(state.gain / spec.attack, targetGain)
-                                           : std::min(state.gain * spec.release, targetGain);
+
+    if (state.gain > targetGain) {
+        state.gain = std::max(state.gain + (targetGain - state.gain) * spec.attack, targetGain);
+        state.sustain = spec.sustain;
+    } else {
+        if (state.sustain > 0) {
+            state.sustain--;
+        } else {
+            state.gain = std::min(state.gain + (targetGain - state.gain) * spec.release, targetGain);
+        }
+    }
 
     return in * state.gain;
 }
@@ -47,16 +57,28 @@ void Limiter::process(const Limiter::Spec& spec, Limiter::State& state, const fl
 {
     float targetGain = 1.0f;
     float gain = state.gain;
+    int sustain = state.sustain;
 
     for (size_t i = 0; i < size; ++i) {
         const float level = std::abs(in[i]);
         targetGain = (level > spec.threshold) ? spec.threshold / level : 1.0f;
-        gain = (gain > targetGain) ? std::max(gain / spec.attack, targetGain)
-                                   : std::min(gain * spec.release, targetGain);
+
+        if (gain > targetGain) {
+            gain = std::max(gain + (targetGain - gain) * spec.attack, targetGain);
+            sustain = spec.sustain;
+        } else {
+            if (sustain > 0) {
+                sustain--;
+            } else {
+                gain = std::min(gain + (targetGain - gain) * spec.release, targetGain);
+            }
+        }
+
         out[i] = in[i] * gain;
     }
 
     state.gain = gain;
+    state.sustain = sustain;
 }
 
 } // namespace dsp

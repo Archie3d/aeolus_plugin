@@ -473,9 +473,10 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
     auto* g = EngineGlobal::getInstance();
     g->updateStops(SAMPLE_RATE_F);
 
-    _limiterSpec.threshold = 0.9f;
-    _limiterSpec.attack = 1.001f;
-    _limiterSpec.release = 1.00001f;
+    _limiterSpec.threshold = 0.75f;
+    _limiterSpec.attack = 10000.0f / sampleRate;
+    _limiterSpec.release = 1.0f / sampleRate;
+    _limiterSpec.sustain = std::max(0, int(sampleRate * 0.5f));
 
     for (auto& state : _limiterState)
         dsp::Limiter::resetState(_limiterSpec, state);
@@ -590,12 +591,12 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
 
     applyVolume(origOutL, origOutR, origNumFrames);
 
-    _volumeLevel.left.process(origOutL, origNumFrames);
-    _volumeLevel.right.process(origOutR, origNumFrames);
-
     // Apply limiter
     dsp::Limiter::process(_limiterSpec, _limiterState[0], origOutL, origOutL, origNumFrames);
     dsp::Limiter::process(_limiterSpec, _limiterState[1], origOutR, origOutR, origNumFrames);
+
+    _volumeLevel.left.process(origOutL, origNumFrames);
+    _volumeLevel.right.process(origOutR, origNumFrames);
 }
 
 void Engine::process(AudioBuffer<float>& out, bool isNonRealtime)
