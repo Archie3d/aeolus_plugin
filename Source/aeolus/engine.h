@@ -263,6 +263,16 @@ public:
     Level& getVolumeLevel() noexcept { return _volumeLevel; }
 
     /**
+     * Enable or disable master limiter.
+     */
+    void enableLimiter(bool shouldBeEnabled);
+
+    /**
+     * @return Whether the limiter is enabled.
+     */
+    bool isLimiterEnabled() const;
+
+    /**
      * Returns currently set MIDI control channel.
      */
     int getMIDIControlChannelsMask() const noexcept { return _midiControlChannelsMask; }
@@ -389,6 +399,7 @@ private:
     dsp::Limiter::Spec _limiterSpec;
     std::array<dsp::Limiter::State, aeolus::N_OUTPUT_CHANNELS> _limiterState;
     dsp::Limiter _limiter;
+    std::atomic<bool> _limiterEnabled{};
 
     dsp::Convolver _convolver;
     std::atomic<int> _selectedIR;

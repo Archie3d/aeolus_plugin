@@ -21,6 +21,7 @@
 
 #include <functional>
 #include "aeolus/globals.h"
+#include "Parameters.h"
 
 namespace ui {
 
@@ -30,16 +31,25 @@ namespace ui {
 class FxComponent : public juce::Component
 {
 public:
-    FxComponent();
+    FxComponent(Parameters& engine);
 
     void resized() override;
+
+    bool isLimiterEnabled() const;
 
     std::function<void()> onOk{};
     std::function<void()> onCancel{};
 
 private:
 
+    void captureState();
+    void updateEnablement();
+
+    Parameters& _parameters;
+
     juce::Label _fxLabel;
+
+    juce::ToggleButton _enableLimiterButton;
 
     juce::TextButton _okButton;
     juce::TextButton _cancelButton;

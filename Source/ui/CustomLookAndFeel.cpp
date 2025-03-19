@@ -26,16 +26,16 @@ namespace ui {
 const Font& CustomLookAndFeel::getStopButtonFont()
 {
 
-    static Font font(Typeface::createSystemTypefaceFor(BinaryData::WignersFriendRoman1GY8e_ttf,
-                                                       BinaryData::WignersFriendRoman1GY8e_ttfSize));
+    static Font font(FontOptions(Typeface::createSystemTypefaceFor(BinaryData::WignersFriendRoman1GY8e_ttf,
+                                                                   BinaryData::WignersFriendRoman1GY8e_ttfSize)));
 
     return font;
 }
 
 const Font& CustomLookAndFeel::getManualLabelFont()
 {
-    static Font font(Typeface::createSystemTypefaceFor(BinaryData::BalgrufJRye7_ttf,
-                                                       BinaryData::BalgrufJRye7_ttfSize));
+    static Font font(FontOptions(Typeface::createSystemTypefaceFor(BinaryData::BalgrufJRye7_ttf,
+                                                                   BinaryData::BalgrufJRye7_ttfSize)));
     return font;
 }
 

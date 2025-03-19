@@ -73,17 +73,17 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     setScaleFactor(1e-2f * _uiScalingPercent);
 
     addAndMakeVisible(_versionLabel);
-    _versionLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 10, Font::plain));
+    _versionLabel.setFont(Font(FontOptions(Font::getDefaultMonospacedFontName(), 10, Font::plain)));
     _versionLabel.setJustificationType (Justification::right);
 
     addAndMakeVisible(_cpuLoadLabel);
-    _cpuLoadValueLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 12, Font::plain));
+    _cpuLoadValueLabel.setFont(Font(FontOptions(Font::getDefaultMonospacedFontName(), 12, Font::plain)));
     _cpuLoadValueLabel.setJustificationType (Justification::right);
     _cpuLoadValueLabel.setColour(Label::textColourId, Colours::lightyellow);
     addAndMakeVisible(_cpuLoadValueLabel);
 
     addAndMakeVisible(_voiceCountLabel);
-    _voiceCountValueLabel.setFont (Font(Font::getDefaultMonospacedFontName(), 12, Font::plain));
+    _voiceCountValueLabel.setFont(Font(FontOptions(Font::getDefaultMonospacedFontName(), 12, Font::plain)));
     _voiceCountValueLabel.setJustificationType (Justification::right);
     _voiceCountValueLabel.setColour(Label::textColourId, Colours::lightyellow);
     addAndMakeVisible(_voiceCountValueLabel);
@@ -207,15 +207,20 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
     }
 
     _fxButton.onClick = [this] {
-        auto content = std::make_unique<ui::FxComponent>();
-        content->setSize(240, 220);
+        auto& params{ _audioProcessor.getParametersContainer() };
+        auto content = std::make_unique<ui::FxComponent>(params);
+        content->setSize(240, 120);
         auto* contentPtr = content.get();
+        bool limiterWasEnabled{ _audioProcessor.getParametersContainer().limiterEnabled->get() };
 
         auto& box = CallOutBox::launchAsynchronously(std::move(content), _fxButton.getBounds(), this);
-        contentPtr->onCancel = [&box] { box.dismiss(); };
-        contentPtr->onOk = [&box, contentPtr] {
-            // @todo Enable limiter and set its parameters
-            //_audioProcessor.getEngine().setReverbWet(contentPtr->getReverbWet());
+        contentPtr->onCancel = [&box, &params, limiterWasEnabled] {
+            // Return to the original state
+            (*params.limiterEnabled) = limiterWasEnabled;
+            box.dismiss();
+        };
+        contentPtr->onOk = [&box, &params, contentPtr] {
+            (*params.limiterEnabled) = contentPtr->isLimiterEnabled();
             box.dismiss();
         };
     };
