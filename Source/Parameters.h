@@ -34,6 +34,8 @@ struct Parameters
 
     std::vector<juce::AudioParameterFloat*> divisionsGain;
 
+    juce::AudioParameterBool* limiterEnabled;
+
     Parameters(AeolusAudioProcessor& proc);
 
     juce::var toVar() const;

@@ -31,6 +31,13 @@ Parameters::Parameters(AeolusAudioProcessor& proc)
     processor.addParameter(reverbWet = new AudioParameterFloat(ParameterID{"reverb_wet", 1}, "Reverb", 0.0f, 1.0f, 0.25f));
     processor.addParameter(volume = new AudioParameterFloat(ParameterID{"volume", 1}, "Volume", 0.0f, 1.0f, 0.5f));
 
+
+    auto onOffAttributes = AudioParameterBoolAttributes()
+                            .withStringFromValueFunction([] (auto x, auto) { return x ? "On" : "Off"; })
+                            .withLabel("enabled");
+
+    processor.addParameter(limiterEnabled = new AudioParameterBool(ParameterID{"limiter", 1}, "Limiter", false, onOffAttributes));
+
     auto& engine = proc.getEngine();
 
     for (int i = 0; i < engine.getDivisionCount(); ++i) {

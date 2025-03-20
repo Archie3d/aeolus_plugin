@@ -244,7 +244,6 @@ void EngineGlobal::setMTSEnabled(bool shouldBeEnabled)
 void EngineGlobal::setUIScalingFactor(float f)
 {
     _uiScalingFactor = jlimit(UI_SCALING_MIN, UI_SCALING_MAX, f);
-    DBG("SCALE: " << _uiScalingFactor);
     _listeners.call([&](Listener& listener){ listener.onUIScalingFactorChanged(_uiScalingFactor); });
 }
 
@@ -397,7 +396,7 @@ void EngineGlobal::loadIRs()
         std::unique_ptr<AudioFormatReader> reader{manager.createReaderFor(std::move(stream))};
         ir.waveform.setSize(reader->numChannels, (int)reader->lengthInSamples);
         const auto offset{ (juce::int64)ir.startOffset };
-        reader->read(&ir.waveform, 0, ir.waveform.getNumSamples() - offset, offset, true, true);
+        reader->read(&ir.waveform, 0, (int)(ir.waveform.getNumSamples() - offset), offset, true, true);
 
         ir.waveform.applyGain(ir.gain);
 
@@ -473,8 +472,8 @@ void Engine::prepareToPlay(float sampleRate, int frameSize)
     auto* g = EngineGlobal::getInstance();
     g->updateStops(SAMPLE_RATE_F);
 
-    _limiterSpec.threshold = 0.75f;
-    _limiterSpec.attack = 10000.0f / sampleRate;
+    _limiterSpec.threshold = 0.8f;
+    _limiterSpec.attack = 1000.0f / sampleRate;
     _limiterSpec.release = 1.0f / sampleRate;
     _limiterSpec.sustain = std::max(0, int(sampleRate * 0.5f));
 
@@ -531,6 +530,16 @@ void Engine::setReverbWet(float v)
 void Engine::setVolume(float v)
 {
     _params[VOLUME].setValue(v);
+}
+
+void Engine::enableLimiter(bool shouldBeEnabled)
+{
+    _limiterEnabled = shouldBeEnabled;
+}
+
+bool Engine::isLimiterEnabled() const
+{
+    return _limiterEnabled;
 }
 
 void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime)
@@ -592,8 +601,10 @@ void Engine::process(float* outL, float* outR, int numFrames, bool isNonRealtime
     applyVolume(origOutL, origOutR, origNumFrames);
 
     // Apply limiter
-    dsp::Limiter::process(_limiterSpec, _limiterState[0], origOutL, origOutL, origNumFrames);
-    dsp::Limiter::process(_limiterSpec, _limiterState[1], origOutR, origOutR, origNumFrames);
+    if (_limiterEnabled) {
+        dsp::Limiter::process(_limiterSpec, _limiterState[0], origOutL, origOutL, origNumFrames);
+        dsp::Limiter::process(_limiterSpec, _limiterState[1], origOutR, origOutR, origNumFrames);
+    }
 
     _volumeLevel.left.process(origOutL, origNumFrames);
     _volumeLevel.right.process(origOutR, origNumFrames);
