@@ -238,10 +238,4 @@ endif()
 
 if(APPLE)
     target_compile_definitions(${TARGET} PUBLIC JUCE_AU=1)
-
-    # This option is relevant to x86_64 target architecture,
-    # but I do not see how to detect the target architecture
-    # during CMake generation time. So this will cause warnings when
-    # compiling for arm64.
-    target_compile_options(${TARGET} PRIVATE "-mfma")
 endif()

@@ -29,11 +29,15 @@
 #if defined (__APPLE__) && defined (__x86_64__) && TARGET_OS_OSX
 #   include <x86intrin.h>
 #   define SIMD
+#   define SIMD_FMA 0   // Disable fma on Apple targets
+#   define SIMD_AVX 0
 #elif defined (_MSC_VER)
 #   include <pmmintrin.h>
 #   include <immintrin.h>
 #   include <intrin.h>
 #   define SIMD
+#   define SIMD_FMA 1
+#   define SIMD_AVX 1
 #endif
 
 AEOLUS_NAMESPACE_BEGIN
@@ -358,6 +362,7 @@ namespace sse {
         }
     }
 
+#if SIMD_FMA
     namespace fma {
 
         void mul_const_add(float* out, const float* in, const float k, size_t size)
@@ -507,11 +512,12 @@ namespace sse {
         }
 
     } // namespace fma
+#endif // SIMD_FMA
 
 } // namespace sse
 
 namespace avx {
-
+#if SIMD_AVX
     void add(float* out, const float* in, size_t size)
     {
         assert ((size & 0x7) == 0);
@@ -758,7 +764,7 @@ namespace avx {
     }
 
     namespace fma {
-
+#if SIMD_FMA
         void mul_const_add(float* out, const float* in, const float k, size_t size)
         {
             assert ((size & 0x7) == 0);
@@ -947,9 +953,9 @@ namespace avx {
 
             _mm256_zeroupper();
         }
-
+#endif // SIMD_FMA
     } // namespace fma
-
+#endif // SIMD_AVX
 } // namespace avx
 
 #endif // SIMD
@@ -983,6 +989,7 @@ static const bool simd_map = []() -> bool {
         simd::complex_mul_conj     = &sse::complex_mul_conj;
         simd::fft_step             = &sse::fft_step;
 
+#if SIMD_FMA
         if (cpu.fma) {
             simd::mul_const_add        = &sse::fma::mul_const_add;
             simd::mul_reduce           = &sse::fma::mul_reduce;
@@ -991,8 +998,10 @@ static const bool simd_map = []() -> bool {
             simd::complex_mul_conj     = &sse::fma::complex_mul_conj;
             simd::fft_step             = &sse::fma::fft_step;
         }
+#endif // SIMD_FMA
     }
 
+#if SIMD_AVX
     if (cpu.avx) {
         simd::add                  = &avx::add;
         simd::mul_const_add        = &avx::mul_const_add;
@@ -1004,6 +1013,7 @@ static const bool simd_map = []() -> bool {
         simd::complex_mul_conj     = &avx::complex_mul_conj;
         simd::fft_step             = &avx::fft_step;
 
+#if SIMD_FMA
         if (cpu.fma) {
             simd::mul_const_add        = &avx::fma::mul_const_add;
             simd::mul_reduce           = &avx::fma::mul_reduce;
@@ -1012,7 +1022,9 @@ static const bool simd_map = []() -> bool {
             simd::complex_mul_conj     = &avx::fma::complex_mul_conj;
             simd::fft_step             = &avx::fma::fft_step;
         }
+#endif // SIMD_FMA
     }
+#endif // SIMD_AVX
 
     return true;
 }();
