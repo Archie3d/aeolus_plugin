@@ -51,6 +51,11 @@ To create the `organ_config.json` start with [default one embedded into the plug
 
 It is also possible to use custom pipe configs in `.ae0` or `.json` format. These have to be placed to the `Documents/Aeolus` folder for then can be referenced from the `organ_config.json` (use pipe file name without the extension in the`"pipe"`attribute of the `organ_config.json`).
 
+## MTS support
+When enabled, use a MIDI Tuning Standard (MTS) master (like [MTS-ESP Mini](https://oddsound.com/mtsespmini.php)) to change the tuning.
+> :point_right: Tuning change will affect newly played notes.
+> All plugin instances are affected by the tuning change.
+
 ## Multibus output
 When compiled with the `WITH_MULTIBUS_OUTPUT` CMake option enabled, the generated plugin will ouput to the `8` separate _monofonic_ buses. Each bus corresponds to the pipes groups placement in space according to the internal horizontal arrangement of the pipes.
 
@@ -65,7 +70,7 @@ Corresponding pipe position jumps between left and right following the keys (C w
 > :point_right: This very same pipes spatial arrangement is used in the stereo version of the plugin to perform spatialized rendering followed by a stereo convolutional reverb.
 
 ## CLAP
-CLAP plugn format currently uses the [JUCE7 Unofficial CLAP Plugin Support](https://github.com/free-audio/clap-juce-extensions).
+CLAP plugn format currently uses the [JUCE Unofficial CLAP Plugin Support](https://github.com/free-audio/clap-juce-extensions).
 
 When compiling, make sure to pull all the submodules recursively:
 ```shell
