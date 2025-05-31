@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-2019]
+        os: [ubuntu-latest, macos-latest, windows-2022]
         include:
           - os: ubuntu-latest
             name: linux
@@ -38,9 +38,9 @@ jobs:
             generator: Unix Makefiles
             path: ./build/Aeolus_artefacts/Release
             asio: OFF
-          - os: windows-2019
+          - os: windows-2022
             name: win
-            generator: Visual Studio 16 2019
+            generator: Visual Studio 17 2022
             path: ./build/Aeolus_artefacts/Release
             asio: ON
 
@@ -54,7 +54,7 @@ jobs:
       run: brew install ninja
 
     - name: Install Windows dependencies
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2022'
       run: choco install ninja
 
     - name: Checkout code
@@ -63,7 +63,7 @@ jobs:
         submodules: recursive
 
     - name: Download ASIO SDK
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2022'
       shell: cmake -P {0}
       env:
         ASIOSDK_URL: 'https://download.steinberg.net/sdk_downloads/asiosdk_2.3.3_2019-06-14.zip'
