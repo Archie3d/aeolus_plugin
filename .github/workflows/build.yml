@@ -47,7 +47,7 @@ jobs:
     steps:
     - name: Install Linux dependencies
       if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get update && sudo apt-get install ninja-build libx11-dev libfreetype-dev libasound2-dev libxrandr-dev libxinerama-dev libxcursor-dev
+      run: sudo apt-get update && sudo apt-get install ninja-build libx11-dev libfreetype-dev libfontconfig-dev libasound2-dev libxrandr-dev libxinerama-dev libxcursor-dev
 
     - name: Install macOS dependencies
       if: matrix.os == 'macos-latest'
