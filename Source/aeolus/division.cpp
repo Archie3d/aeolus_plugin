@@ -350,12 +350,12 @@ float Division::getTremulantLevel(bool update)
     return level;
 }
 
-void Division::noteOn(int note, int midiChannel)
+void Division::noteOn(int note, int midiChannel, bool viaLink)
 {
     if (hasBeenTriggered())
         return;
 
-    if (!isForMIDIChannel(midiChannel))
+    if (!isForMIDIChannel(midiChannel) && !viaLink)
         return;
 
     _triggerFlag = true;
@@ -364,24 +364,24 @@ void Division::noteOn(int note, int midiChannel)
         triggerVoicesForStop(stopIndex, note);
 
     if (midiChannel != 0) {
-        // Update keys state only when triggered by the assigned MIDI channel
+        // Update keys state only when triggered by the assigned MIDI channel.
         _keysState.set(note);
     }
 
     // Forward to the linked divisions
     for (auto& link : _linkedDivisions) {
         if (link.enabled) {
-            link.division->noteOn(note, 0);
+            link.division->noteOn(note, 0, true);
         }
     }
 }
 
-void Division::noteOff(int note, int midiChannel)
+void Division::noteOff(int note, int midiChannel, bool viaLink)
 {
     if (hasBeenTriggered())
         return;
 
-    if (!isForMIDIChannel(midiChannel))
+    if (!isForMIDIChannel(midiChannel) && !viaLink)
         return;
 
     _triggerFlag = true;
@@ -403,7 +403,7 @@ void Division::noteOff(int note, int midiChannel)
     // Forward to the linked divisions
     for (auto& link : _linkedDivisions) {
         if (link.enabled) {
-            link.division->noteOff(note, 0);
+            link.division->noteOff(note, 0, true);
         }
     }
 }
@@ -599,14 +599,16 @@ void Division::triggerVoicesOfEnabledStops()
         return;
     }
 
-    std::bitset<TOTAL_NOTES> missingNotes{ _aggregatedKeysState };
-
     for (int stopIndex = 0; stopIndex < _stops.size(); ++stopIndex) {
+        // This set will contains all the keys that should be voiced.
+        std::bitset<TOTAL_NOTES> missingNotes{ _aggregatedKeysState };
+
         auto& stop = _stops[stopIndex];
 
         if (!stop.isEnabled())
             continue;
 
+        // Do we have any voices playing on this stop?
         bool hasVoices = false;
 
         auto* voice = _activeVoices.first();
@@ -615,19 +617,17 @@ void Division::triggerVoicesOfEnabledStops()
             const int voiceNote{ voice->getNote() };
 
             if (voice->stopIndex() == stopIndex && voiceNote >= 0 && _aggregatedKeysState[voiceNote]) {
-                hasVoices = true;
+                // We already have a voice for this note, so remove it from the set.
                 missingNotes[voiceNote] = 0;
-                break;
             }
 
             voice = voice->next();
         }
 
-        // Trigger voices for enabled stops
-        if (!hasVoices) {
-            for (int note = 0; note < missingNotes.size(); ++note) {
-                if (missingNotes[note])
-                    triggerVoicesForStop(stopIndex, note);
+        // Trigger missing voices for enabled stops.
+        for (int note = 0; note < missingNotes.size(); ++note) {
+            if (missingNotes[note]) {
+                triggerVoicesForStop(stopIndex, note);
             }
         }
     }
