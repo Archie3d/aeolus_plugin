@@ -140,8 +140,8 @@ public:
 
     // All the following methods must be called on the audio thread.
 
-    void noteOn(int note, int midiChannel);
-    void noteOff(int note, int midiChannel);
+    void noteOn(int note, int midiChannel, bool viaLink=false);
+    void noteOff(int note, int midiChannel, bool viaLink=false);
     void allNotesOff();
 
     void handleControlMessage(const juce::MidiMessage& msg);
