@@ -424,14 +424,19 @@ void Division::handleControlMessage(const juce::MidiMessage& msg)
 {
     const int cc{ msg.getControllerNumber() };
 
-    if (cc != aeolus::CC_MODULATION && cc != aeolus::CC_VOLUME && cc != aeolus::CC_ALL_NOTES_OFF)
-        return;
+    if (cc != aeolus::CC_MODULATION &&
+        cc != aeolus::CC_VOLUME &&
+        cc != aeolus::CC_EXPRESSION &&
+        cc != aeolus::CC_ALL_NOTES_OFF) {
+
+            return;
+    }
 
     const int swellCh{ _engine.getMIDISwellChannelsMask() };
     const float value{ float(msg.getControllerValue()) / 127.0f };
 
-    if (msg.getChannel() == 0 || (swellCh & (msg.getChannel() - 1)) != 0) {
-        if (_hasSwell && cc == aeolus::CC_VOLUME) {
+    if (msg.getChannel() == 0 || midi::matchChannelToMask(swellCh, msg.getChannel())) {
+        if (_hasSwell && (cc == aeolus::CC_VOLUME || cc == aeolus::CC_EXPRESSION)) {
             *_paramGain = value;
         }
     }

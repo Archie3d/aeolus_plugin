@@ -109,6 +109,7 @@ constexpr static float UI_SCALING_DEFAULT = 100.0f;
 enum {
     CC_MODULATION = 1,
     CC_VOLUME = 7,
+    CC_EXPRESSION = 11,
     CC_REVERB = 91,
     CC_STOP_BUTTONS = 98,
     CC_ALL_NOTES_OFF = 123
