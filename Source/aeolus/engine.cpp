@@ -56,6 +56,7 @@ const static char* tuningFrequency = "tuningFrequency";
 const static char* tuningTemperament = "tuningTemperament";
 const static char* mtsEnabled = "mtsEnabled";
 const static char* uiScalingFactor = "uiScalingFactor";
+const static char* uiMaximized = "uiMaximized";
 }
 
 EngineGlobal::EngineGlobal()
@@ -136,6 +137,8 @@ void EngineGlobal::loadSettings()
         const float uiScalingFactor = (float)propertiesFile->getDoubleValue(settings::uiScalingFactor, UI_SCALING_DEFAULT);
         if (uiScalingFactor >= UI_SCALING_MIN && uiScalingFactor <= UI_SCALING_MAX)
             _uiScalingFactor = uiScalingFactor;
+
+        _uiMaximized = propertiesFile->getBoolValue(settings::uiMaximized, false);
     }
 }
 
@@ -146,6 +149,7 @@ void EngineGlobal::saveSettings()
         propertiesFile->setValue(settings::tuningTemperament, (int)_scale.getType());
         propertiesFile->setValue(settings::mtsEnabled, _mtsEnabled);
         propertiesFile->setValue(settings::uiScalingFactor, _uiScalingFactor);
+        propertiesFile->setValue(settings::uiMaximized, _uiMaximized);
     }
 
     _globalProperties.saveIfNeeded();
@@ -245,6 +249,11 @@ void EngineGlobal::setUIScalingFactor(float f)
 {
     _uiScalingFactor = jlimit(UI_SCALING_MIN, UI_SCALING_MAX, f);
     _listeners.call([&](Listener& listener){ listener.onUIScalingFactorChanged(_uiScalingFactor); });
+}
+
+void EngineGlobal::setUIMaximized(bool maximized)
+{
+    _uiMaximized = maximized;
 }
 
 void EngineGlobal::rebuildRankwaves()

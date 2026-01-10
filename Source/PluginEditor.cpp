@@ -26,6 +26,10 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#if JucePlugin_Build_Standalone
+#   include <juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h>
+#endif
+
 using namespace juce;
 
 //==============================================================================
@@ -71,6 +75,16 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor (AeolusAudioProcessor& p)
 
     _uiScalingPercent = g->getUIScalingFactor();
     setScaleFactor(1e-2f * _uiScalingPercent);
+
+#if JucePlugin_Build_Standalone
+    if (g->getUIMaximized()) {
+        juce::Timer::callAfterDelay(300, [this]() {
+            if (auto* peer = getPeer()) {
+                peer->setFullScreen(true);
+            }
+        });
+    }
+#endif
 
     addAndMakeVisible(_versionLabel);
     _versionLabel.setFont(Font(FontOptions(Font::getDefaultMonospacedFontName(), 10, Font::plain)));
@@ -397,6 +411,13 @@ void AeolusAudioProcessorEditor::resized()
 
     _midiSwellChannelLabel.setBounds(x, _midiControlChannelLabel.getBottom() + 5, 60, 24);
     _midiSwellChannels.setBounds(_midiSwellChannelLabel.getRight() + 5, _midiSwellChannelLabel.getY(), 100, 24);
+
+#if JucePlugin_Build_Standalone
+    if (auto* peer = getPeer()) {
+        auto* g = aeolus::EngineGlobal::getInstance();
+        g->setUIMaximized(peer->isFullScreen());
+    }
+#endif
 }
 
 void AeolusAudioProcessorEditor::timerCallback()

@@ -122,6 +122,9 @@ public:
     float getUIScalingFactor() const noexcept { return _uiScalingFactor; }
     void setUIScalingFactor(float f);
 
+    bool getUIMaximized() const { return _uiMaximized; }
+    void setUIMaximized(bool maximized);
+
     void rebuildRankwaves();
 
     JUCE_DECLARE_SINGLETON (EngineGlobal, false)
@@ -161,6 +164,7 @@ private:
     std::array<float, 128> _mtsTuningCache{};
 
     float _uiScalingFactor{ UI_SCALING_DEFAULT };
+    bool _uiMaximized{ false };
 
     juce::ApplicationProperties _globalProperties;
 };
