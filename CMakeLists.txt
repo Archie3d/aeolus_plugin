@@ -37,7 +37,8 @@ set(plugin_formats
 )
 
 if(APPLE)
-    list(APPEND plugin_formats AU)
+    list(APPEND plugin_formats AU AUv3)
+    set(CMAKE_XCODE_GENERATE_SCHEME "YES" CACHE INTERNAL "")
 elseif(UNIX AND NOT APPLE)
     list(APPEND plugin_formats LV2)
 endif()
@@ -70,13 +71,20 @@ juce_add_plugin(${TARGET}
     LV2URI "https://github.com/Archie3d/aeolus_plugin"
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon256.png"
     ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/icon64.png"
+
+    HARDENED_RUNTIME_ENABLED TRUE
+    AU_SANDBOX_SAFE TRUE
+    APP_SANDBOX_ENABLED TRUE
+
+    APP_SANDBOX_OPTIONS
+        "com.apple.security.files.user-selected.read-write"
+        "com.apple.security.assets.music.read-write"
 )
 
 clap_juce_extensions_plugin(TARGET ${TARGET}
     CLAP_ID "com.ArthurBenilov.Aeolus"
     CLAP_FEATURES instrument "virtual analog"
 )
-
 
 target_link_libraries(${TARGET}
     PRIVATE

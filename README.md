@@ -77,3 +77,15 @@ When compiling, make sure to pull all the submodules recursively:
 ```shell
 git submodule update --init --recursive
 ```
+
+## AUv3
+To build an AUv3 pluging the project myst be generated for Xcode:
+```shell
+cmake -S . -B build -G Xcode
+cmake --build build --config Release --target Aeolus_Standalone
+```
+This will produce a standalone application that contains the AUv3 plugins bundled:
+```
+./build/Aeolus_artefacts/Release/Standalone/Aeolus.app
+```
+Running the application for the first time will register the plugin.
